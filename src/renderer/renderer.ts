@@ -1,6 +1,12 @@
 import { programFromSources, loadTextureFromImage, setupUnitQuad, TexInfo } from './webglutils.js';
 const { glMatrix, mat4, vec3 } = require('gl-matrix');
 
+export let viewport = {
+    x: 0,
+    y: 0,
+    height: 256,
+    width: 256,
+}
 
 let v_shader_source = `#version 300 es
 
@@ -151,9 +157,12 @@ function drawImage(tex: WebGLTexture, texWidth: number, texHeight: number, dstX:
     gl.bindTexture(gl.TEXTURE_2D, tex);
 
     let matrix = mat4.create();
-    mat4.identity(matrix);
-    mat4.ortho(matrix, 0, gl.canvas.clientWidth, gl.canvas.clientHeight, 0, -1, 1);
+    
+    // use orthographic projection to scale coords to -1->1
+    mat4.ortho(matrix, 0, viewport.width, viewport.height, 0, -1, 1);
+    
     mat4.translate(matrix, matrix, vec3.fromValues(dstX, dstY, 0));
+    mat4.translate(matrix, matrix, vec3.fromValues(-viewport.x, -viewport.y, 0));
     mat4.scale(matrix, matrix, vec3.fromValues(texWidth, texHeight, 1));
 
     gl.uniformMatrix4fv(mat_loc, false, matrix);

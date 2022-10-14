@@ -1,10 +1,10 @@
-import {createSprite, addToUpdateQueue, begin_rendering} from './renderer/renderer.js';
+import {createSprite, addToUpdateQueue, begin_rendering, viewport} from './renderer/renderer.js';
 
 
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 const gl = canvas.getContext("webgl2") as WebGL2RenderingContext;
 let p = {
-    sprite: createSprite(0, 0, './images/BlackHole.png'),
+    sprite: createSprite(100, 100, './images/BlackHole.png'),
     dx: 100,
     dy: 100,
     update: function(dt: number){
@@ -18,5 +18,12 @@ let p = {
         }
     }
 }
-addToUpdateQueue(p);
+
+let viewport_updater = {
+    update: function(dt: number) {
+        viewport.height += 20 * dt;
+        viewport.width += 20 * dt;
+    }
+}
+addToUpdateQueue(viewport_updater);
 begin_rendering();
