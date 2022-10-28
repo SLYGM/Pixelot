@@ -1,37 +1,82 @@
-type Entity = number;
-
-abstract class Component {}
+export abstract class Component {
+    /**
+     * The list of components that this component depends on.
+     * E.g. Velocity depends on Position.
+     */
+    readonly dependencies = [];
+}
 
 type ComponentType<T extends Component> = new (...args: any[]) => T;
 
 /** 
- * A collection of components.
+ * The base class inherited by all game objects.
+ *
+ * @example
+ * An example user-defined game object:
+ * ```
+ * class Player extends GameObjectBase {
+ *   times_jumped: number;
+ *   onCreate() {
+ *     this.times_jumped = 0;
+ *   }
+ *   update() {
+ *     if (event.key == "space") {
+ *       this.get(Velocity).y = 10;
+ *       this.times_jumped++;
+ *     }
+ *   }
+ * }
+ * ```
  */
-class ComponentList {
+export abstract class GameObjectBase {
     // Mapping from component name to component instance
-    private map: Map<string, Component> = new Map();
+    private component_map: Map<string, Component> = new Map();
+
+    /**
+     * User-defined function that is called when the entity is spawned.
+     */
+    abstract onCreate(): void;
+
+    /**
+     * User-defined function that is called every frame.
+     *
+     * @param scene The scene that the entity is in.
+     */
+    abstract update(scene: Scene): void;
 
     /**
      * Add a new component to the entity.
-     * Returns itself allowing calls to be chained. E.g.
+     * Returns itself allowing calls to be chained.
+     * @example
      * ```
      * entity.add(new Position(0, 0)).add(new Velocity(0, 0));
      * ```
      * @param component The component to add
      */
     public add(component: Component) {
-        this.map.set(component.constructor.name, component);
+        // TODO: Check if the component has all its dependencies
+        this.component_map.set(component.constructor.name, component);
         return this;
     }
 
-    // Get the component instance of the given type
+    /**
+     * Get the component instance of the given type.
+     *
+     * @param c The type of the component to get.
+     * @returns The component instance.
+     */
     public get<T extends Component>(c: ComponentType<T>): T {
-        return this.map.get(c.name) as T;
+        return this.component_map.get(c.name) as T;
     }
 
-    // Returns true if the entity has the given component
+    /**
+     * Returns true if the entity has the given component.
+     *
+     * @param c The type of the component to check.
+     * @returns True if the entity has the component.
+     */
     public has<T extends Component>(c: ComponentType<T>): boolean {
-        return this.map.has(c.name);
+        return this.component_map.has(c.name);
     }
 
     // Returns true if the entity has all the given components
@@ -41,48 +86,43 @@ class ComponentList {
 
     // Remove the component of the given type
     public remove<T extends Component>(c: ComponentType<T>) {
-        this.map.delete(c.name);
+        this.component_map.delete(c.name);
     }
 }
 
-abstract class System {
+export abstract class System {
     /**
-     * A list of components that this system requires.
+     * The component that this system acts on.
      */
-    abstract components: ComponentType<Component>[];
+    abstract component: ComponentType<Component>;
 
     /**
-     * This function is run once per frame for each entity that has the required components.
+     * This function is run once per frame for each entity that has the required component.
      */
-    abstract update(scene: Scene, entity: Entity): void;
+    abstract update(scene: Scene, entity: GameObjectBase): void;
 }
 
-class Scene {
-    private entities: Map<Entity, ComponentList>;
-    private max_entity_id: Entity = 0;
+export class Scene {
+    private entities: GameObjectBase[];
     private systems: Set<System>;
 
+    // The time that has elapsed since the last frame.
+    public dt: number;
+
     constructor() {
-        this.entities = new Map();
+        this.entities = [];
         this.systems = new Set();
     }
 
-    // Create a new entity
-    newEntity(): ComponentList {
-        const entity = this.max_entity_id++;
-        const components = new ComponentList();
-        this.entities.set(entity, components);
-        return components;
-    }
-
-    // Get the component list of the given entity
-    entity(entity: Entity): ComponentList {
-        return this.entities.get(entity);
+    // Add an entity to the Scene
+    spawn<T extends GameObjectBase>(entity: T) {
+        this.entities.push(entity);
+        entity.onCreate();
     }
 
     // Remove the given entity from the scene
-    delete(entity: Entity) {
-        this.entities.delete(entity);
+    delete(entity: GameObjectBase) {
+        this.entities = this.entities.filter(e => e != entity);
     }
 
     // Add a system to the Scene
@@ -95,15 +135,24 @@ class Scene {
         this.systems.delete(system);
     }
 
-    // Run all systems
+    // Perform all the updates for the current frame
     update() {
+        // TODO: Calculate dt properly. For now its just 1.
+        this.dt = 1;
+
+        // Run all systems
         // TODO: Make more efficient by precomputing the entities that each system needs
         for (const system of this.systems) {
-            for (const [entity, _] of this.entities) {
-                if (this.entity(entity).hasAll(system.components)) {
+            for (const entity of this.entities) {
+                if (entity.has(system.component)) {
                     system.update(this, entity);
                 }
             }
+        }
+
+        // Run all entity update functions
+        for (const entity of this.entities) {
+            entity.update(this);
         }
     }
 }
@@ -116,6 +165,8 @@ class Position extends Component {
 }
 
 class Velocity extends Component {
+    dependencies = [Position];
+
     x: number = 0;
     y: number = 0;
 
@@ -127,21 +178,41 @@ class Velocity extends Component {
 }
 
 class MovementSystem extends System {
-    components = [Position, Velocity];
+    component = Velocity;
 
-    update(scene: Scene, entity: Entity) {
+    update(scene: Scene, entity: GameObjectBase) {
         console.log("Updating entity", entity);
-        const position = scene.entity(entity).get(Position);
-        const velocity = scene.entity(entity).get(Velocity);
-        position.x += velocity.x;
-        position.y += velocity.y;
+        const position = entity.get(Position);
+        const velocity = entity.get(Velocity);
+        position.x += velocity.x * scene.dt;
+        position.y += velocity.y * scene.dt;
+    }
+}
+
+class Player extends GameObjectBase {
+    health: number;
+    onCreate() {
+        this.health = 10;
+        // in practice these components would be added via the editor UI rather than in code like this
+        this.add(new Position).add(new Velocity(1, 1));
+    }
+    update(scene: Scene) {
+        if (this.health <= 0) {
+            console.log("Player is dead");
+            scene.delete(this);
+        }
+    }
+    takeDamage(amount: number) {
+        this.health -= amount;
     }
 }
 
 let scene = new Scene();
-scene.newEntity().add(new Position()).add(new Velocity(1, 1));
+let player = new Player();
+scene.spawn(player);
 scene.addSystem(new MovementSystem());
 scene.update();
 
 // position is now (1, 1)
-console.log(scene.entity(0).get(Position));
+console.log(player.get(Position));
+player.takeDamage(10);
