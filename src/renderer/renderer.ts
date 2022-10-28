@@ -78,6 +78,8 @@ let program: WebGLProgram;
 let mat_loc: WebGLUniformLocation;
 let tex_loc: WebGLUniformLocation;
 let vao: WebGLVertexArrayObject;
+let fb: WebGLFramebuffer;
+let targetTexture: WebGLTexture;
 
 let rendering = false;
 
@@ -103,6 +105,39 @@ function init() {
     gl.bindVertexArray(vao);
     
     setupUnitQuad(gl, program);
+
+    // create to render to
+    const targetTextureWidth = 256;
+    const targetTextureHeight = 256;
+    targetTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, targetTexture);
+    
+    // define size and format of level 0
+    const level = 0;
+    const internalFormat = gl.RGBA;
+    const border = 0;
+    const format = gl.RGBA;
+    const type = gl.UNSIGNED_BYTE;
+    const data = null;
+    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                    targetTextureWidth, targetTextureHeight, border,
+                    format, type, data);
+    
+    // set the filtering so we don't need mips
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    // Create and bind the framebuffer
+    fb = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+    
+    // attach the texture as the first color attachment
+    const attachmentPoint = gl.COLOR_ATTACHMENT0;
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, targetTexture, level);
+
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 }
 
 function update(dt: number) {
@@ -112,9 +147,9 @@ function update(dt: number) {
 }
 
 function draw() {
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
-    gl.clearColor(0, 0, 0, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+    
+    gl.clearColor(1, 1, 1, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     sprites.forEach(function(sprite){
@@ -126,6 +161,16 @@ function draw() {
             sprite.y
         );
     })
+
+    // render to screen
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.bindTexture(gl.TEXTURE_2D, targetTexture);
+    let matrix = mat4.create();
+    mat4.ortho(matrix, 0, 1, 1, 0, -1, 1);
+    gl.uniformMatrix4fv(mat_loc, false, matrix);
+    let offset = 0;
+    let count = 6;
+    gl.drawArrays(gl.TRIANGLES, offset, count);
 }
 
 
