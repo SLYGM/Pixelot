@@ -1,4 +1,5 @@
-import { programFromSources, loadTextureFromImage, setupUnitQuad, TexInfo, createTexAndBuffer } from './webglutils.js';
+import { programFromSources, loadTextureFromImage, setupUnitQuad, TexInfo } from './webglutils.js';
+import { postProcessing, init as postProcessInit, addPostProcess } from './post_process.js';
 const { glMatrix, mat4, vec3 } = require('gl-matrix');
 
 export let viewport = {
@@ -24,6 +25,35 @@ void main() {
 `;
 
 let f_shader_source = `#version 300 es
+precision highp float;
+
+in vec2 v_texcoord;
+
+uniform sampler2D u_texture;
+
+out vec4 outColor;
+
+void main() {
+   outColor = texture(u_texture, v_texcoord);
+}
+`;
+
+
+let v2 = `#version 300 es
+
+in vec4 a_position;
+in vec2 a_texcoord;
+
+out vec2 v_texcoord;
+
+void main() {
+  // the screen coordinates are in the range [-1, 1], whereas the unit quad is in the range [0, 1]
+  gl_Position = a_position * vec4(2, 2, 1, 1) - vec4(1, 1, 0, 0);
+  v_texcoord = a_texcoord;
+}
+`;
+
+let f2 = `#version 300 es
 precision highp float;
 
 in vec2 v_texcoord;
@@ -74,16 +104,12 @@ function log(message: string) {
 }
 
 let gl: WebGL2RenderingContext;
-let program: WebGLProgram;
+let basic_program: WebGLProgram;
 let mat_loc: WebGLUniformLocation;
 let tex_loc: WebGLUniformLocation;
 let vao: WebGLVertexArrayObject;
 
-let frame_buffers: WebGLFramebuffer[];
-let curr_buffer = 0;
-let post_queue: WebGLProgram[] = [];
-let textures: WebGLTexture[];
-let basic_program: WebGLProgram;
+
 
 
 
@@ -96,38 +122,36 @@ function init() {
         return log("Failed to get webgl2 context");
     }
 
-    let prog = programFromSources(gl, v_shader_source, f_shader_source);
-    for (let i = 0; i < 2; i++) {
-        post_queue.push(prog);
-    }
-    basic_program = prog
-
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.enable(gl.BLEND);
 
-    program = programFromSources(gl, v_shader_source, f_shader_source);
-    if (!program) {
+    basic_program = programFromSources(gl, v_shader_source, f_shader_source);
+    if (!basic_program) {
         return log("Failed to create program");
     }
-    program = basic_program;
     
-    mat_loc = gl.getUniformLocation(program, "u_matrix");
-    tex_loc = gl.getUniformLocation(program, "u_texture");
+    mat_loc = gl.getUniformLocation(basic_program, "u_matrix");
+    tex_loc = gl.getUniformLocation(basic_program, "u_texture");
     
     vao = gl.createVertexArray();
     gl.bindVertexArray(vao);
     
-    setupUnitQuad(gl, program);
-
-    let {fb: fb1, tex: tex1} = createTexAndBuffer(gl);
-    let {fb: fb2, tex: tex2} = createTexAndBuffer(gl);
-    frame_buffers = [fb1, fb2];
-    textures = [tex1, tex2];
+    setupUnitQuad(gl, basic_program);
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+    // add test post-processing
+    let test_prog = programFromSources(gl, v2, f2);
+    let test_post = {
+        program: test_prog,
+        draw_func: function(gl: WebGL2RenderingContext) {
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+    }
+    addPostProcess(test_post);
+
+    postProcessInit(gl);
 }
-
-
 
 
 function update(dt: number) {
@@ -136,10 +160,8 @@ function update(dt: number) {
     });
 }
 
+
 function draw() {
-    gl.bindFramebuffer(gl.FRAMEBUFFER, frame_buffers[curr_buffer]);
-    curr_buffer = (curr_buffer+1) % 2;
-    
     gl.clearColor(1, 1, 1, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -153,34 +175,9 @@ function draw() {
         );
     })
 
-    post_processing();
+    postProcessing(gl);
 }
 
-function post_processing() {
-    for (const prog of post_queue) {
-        gl.useProgram(prog);
-        render_to_buffer(frame_buffers[curr_buffer]);
-        curr_buffer = (curr_buffer+1) % 2;
-    }
-    render_to_screen();
-}
-
-function render_to_screen() {
-    gl.useProgram(basic_program);
-    gl.bindTexture(gl.TEXTURE_2D, textures[curr_buffer]);
-    render_to_buffer(null);
-}
-
-function render_to_buffer(buffer: WebGLFramebuffer | null){
-    gl.bindFramebuffer(gl.FRAMEBUFFER, buffer);
-    gl.bindTexture(gl.TEXTURE_2D, textures[(curr_buffer + 1)%2]);
-    let matrix = mat4.create();
-    mat4.ortho(matrix, 0, 1, 0, 1, -1, 1);
-    gl.uniformMatrix4fv(mat_loc, false, matrix);
-    let offset = 0;
-    let count = 6;
-    gl.drawArrays(gl.TRIANGLES, offset, count);
-}
 
 let then = 0;
 function render(time: number) {
@@ -213,7 +210,6 @@ function drawImage(tex: WebGLTexture, texWidth: number, texHeight: number, dstX:
     
     // use orthographic projection to scale coords to -1->1
     mat4.ortho(matrix, 0, viewport.width, 0, viewport.height, -1, 1);
-    
     mat4.translate(matrix, matrix, vec3.fromValues(dstX, dstY, 0));
     mat4.translate(matrix, matrix, vec3.fromValues(-viewport.x, -viewport.y, 0));
     mat4.scale(matrix, matrix, vec3.fromValues(texWidth, texHeight, 1));
@@ -231,8 +227,10 @@ export function begin_rendering() {
     requestAnimationFrame(render);
 }
 
+
 export function stop_rendering() {
     rendering = false;
 }
+
 
 init();
