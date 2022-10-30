@@ -1,8 +1,5 @@
 import {createSprite, addToUpdateQueue, begin_rendering, viewport} from './renderer/renderer.js';
 
-
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-const gl = canvas.getContext("webgl2") as WebGL2RenderingContext;
 let p = {
     sprite: createSprite(100, 100, './images/BlackHole.png'),
     dx: 100,
@@ -10,10 +7,10 @@ let p = {
     update: function(dt: number){
         this.sprite.x += this.dx * dt;
         this.sprite.y += this.dy * dt
-        if (this.sprite.x + this.sprite.tex.width > gl.canvas.clientWidth || this.sprite.x < 0){
+        if (this.sprite.x + this.sprite.tex.width > viewport.width || this.sprite.x < 0){
             this.dx *= -1;
         }
-        if (this.sprite.y + this.sprite.tex.height > gl.canvas.clientHeight || this.sprite.y < 0){
+        if (this.sprite.y + this.sprite.tex.height > viewport.height || this.sprite.y < 0){
             this.dy *= -1;
         }
     }
@@ -21,9 +18,10 @@ let p = {
 
 let viewport_updater = {
     update: function(dt: number) {
-        viewport.height += 20 * dt;
-        viewport.width += 20 * dt;
+        viewport.height += 0 * dt;
+        viewport.width += 0 * dt;
     }
 }
 addToUpdateQueue(viewport_updater);
+addToUpdateQueue(p);
 begin_rendering();

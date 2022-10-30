@@ -79,14 +79,6 @@ export function loadTextureFromImage(gl: WebGL2RenderingContext, path: string): 
     return tex_info;
 }
 
-
-
-
-function log(message: string) {
-    console.log(message);
-    return undefined;
-}
-
 export function setupUnitQuad(gl: WebGL2RenderingContext, program: WebGLProgram) {
     let pos_attr_loc = gl.getAttribLocation(program, "a_position");
     let texcoord_attr_loc = gl.getAttribLocation(program, "a_texcoord");
@@ -131,4 +123,38 @@ export function setupUnitQuad(gl: WebGL2RenderingContext, program: WebGLProgram)
         0,          // stride
         0           // offset
     );
+}
+
+export function createTexAndBuffer(gl: WebGL2RenderingContext) {
+    const targetTextureWidth = gl.canvas.width;
+    const targetTextureHeight = gl.canvas.height;
+    let targetTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, targetTexture);
+    
+    // define size and format of level 0
+    const level = 0;
+    const internalFormat = gl.RGBA;
+    const border = 0;
+    const format = gl.RGBA;
+    const type = gl.UNSIGNED_BYTE;
+    const data = null;
+    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
+                    targetTextureWidth, targetTextureHeight, border,
+                    format, type, data);
+    
+    // set the filtering so we don't need mips
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    // Create and bind the framebuffer
+    let fb = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+    
+    // attach the texture as the first color attachment
+    const attachmentPoint = gl.COLOR_ATTACHMENT0;
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, targetTexture, level);
+
+    return {fb: fb, tex: targetTexture};
 }
