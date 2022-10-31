@@ -34,7 +34,7 @@ let post_queue: PostProcess[] = [];
 let textures: WebGLTexture[];
 let basic_process: PostProcess;
 
-type PostProcess = {
+export type PostProcess = {
     program: WebGLProgram,
     draw_func: (gl: WebGL2RenderingContext) => void,
 }
