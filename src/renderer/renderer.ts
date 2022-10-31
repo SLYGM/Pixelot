@@ -63,7 +63,44 @@ uniform sampler2D u_texture;
 out vec4 outColor;
 
 void main() {
-   outColor = texture(u_texture, v_texcoord) * vec4(1.0, 0.95, 0.95, 1.0);
+   //outColor = texture(u_texture, v_texcoord) * vec4(1.0, 0.75, 0.75, 1.0);
+    if (v_texcoord.x < 0.5) {
+        outColor = vec4(0.0, 0.0, 0.0, 1.0);
+    } else {
+        outColor = texture(u_texture, v_texcoord);
+    }
+}
+`;
+
+let v3 = `#version 300 es
+
+in vec4 a_position;
+in vec2 a_texcoord;
+
+out vec2 v_texcoord;
+
+void main() {
+  // the screen coordinates are in the range [-1, 1], whereas the unit quad is in the range [0, 1]
+  gl_Position = a_position * vec4(2, 2, 1, 1) - vec4(1, 1, 0, 0);
+  v_texcoord = a_texcoord;
+}
+`;
+
+let f3 = `#version 300 es
+precision highp float;
+
+in vec2 v_texcoord;
+
+uniform sampler2D u_texture;
+
+out vec4 outColor;
+
+void main() {
+    if (texture(u_texture, v_texcoord) == vec4(0.0, 0.0, 0.0, 1.0)) {
+        outColor = vec4(0.0, 1.0, 1.0, 1.0);
+    } else {
+        outColor = texture(u_texture, v_texcoord);
+    }
 }
 `;
 glMatrix.setMatrixArrayType(Array);
@@ -139,6 +176,7 @@ function init() {
     setupUnitQuad(gl, basic_program);
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    postProcessInit(gl);
 
     // add test post-processing
     let test_prog = programFromSources(gl, v2, f2);
@@ -148,9 +186,16 @@ function init() {
             gl.drawArrays(gl.TRIANGLES, 0, 6);
         }
     }
-    addPostProcess(test_post);
+    let test_prog2 = programFromSources(gl, v3, f3);
+    let test_post2 = {
+        program: test_prog2,
+        draw_func: function(gl: WebGL2RenderingContext) {
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+    }
 
-    postProcessInit(gl);
+    addPostProcess(test_post2);
+    addPostProcess(test_post);
 }
 
 
