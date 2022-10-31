@@ -1,7 +1,7 @@
 import {createSprite, addToUpdateQueue, begin_rendering, viewport} from './renderer/renderer.js';
 
 let p = {
-    sprite: createSprite(100, 100, './images/BlackHole.png'),
+    sprite: createSprite(100, 100, './images/frog.png'),
     dx: 100,
     dy: 100,
     update: function(dt: number){

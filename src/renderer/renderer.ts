@@ -173,7 +173,7 @@ function drawImage(tex: WebGLTexture, texWidth: number, texHeight: number, dstX:
     let matrix = mat4.create();
     
     // use orthographic projection to scale coords to -1->1
-    mat4.ortho(matrix, 0, viewport.width, 0, viewport.height, -1, 1);
+    mat4.ortho(matrix, 0, viewport.width, viewport.height, 0, -1, 1);
     mat4.translate(matrix, matrix, vec3.fromValues(dstX, dstY, 0));
     mat4.translate(matrix, matrix, vec3.fromValues(-viewport.x, -viewport.y, 0));
     mat4.scale(matrix, matrix, vec3.fromValues(texWidth, texHeight, 1));
