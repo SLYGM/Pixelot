@@ -6,8 +6,8 @@ const { glMatrix, mat4, vec3 } = require('gl-matrix');
 export let viewport = {
     x: 0,
     y: 0,
-    height: 600,
-    width: 450,
+    sx: 1.0,
+    sy: 1.0
 }
 
 let v_shader_source = `#version 300 es
@@ -111,7 +111,7 @@ function init() {
     
     setupUnitQuad(gl, basic_program);
 
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.viewport(0, 0, 426, 240); //TODO: replace hardcoded resolution with global constant
     postProcessInit(gl);
 
     BarShader.activate(gl);
@@ -173,7 +173,7 @@ function drawImage(tex: WebGLTexture, texWidth: number, texHeight: number, dstX:
     let matrix = mat4.create();
     
     // use orthographic projection to scale coords to -1->1
-    mat4.ortho(matrix, 0, viewport.width, viewport.height, 0, -1, 1);
+    mat4.ortho(matrix, 0, 426 * viewport.sx, 240 * viewport.sy, 0, -1, 1); //TODO: replace hardcoded resolution with global constant
     mat4.translate(matrix, matrix, vec3.fromValues(dstX, dstY, 0));
     mat4.translate(matrix, matrix, vec3.fromValues(-viewport.x, -viewport.y, 0));
     mat4.scale(matrix, matrix, vec3.fromValues(texWidth, texHeight, 1));
