@@ -33,6 +33,21 @@ abstract class GameObjectBase {
     private component_map: Map<string, Component> = new Map();
 
     /**
+     * Constructor which wraps the object in a proxy.
+     * This allows the user to access the components directly.
+     */
+    constructor() {
+        return new Proxy(this, {
+            get: (target, prop: string) => {
+                if (this.component_map.has(prop)) {
+                    return this.component_map.get(prop);
+                }
+                return target[prop];
+            },
+        });
+    }
+
+    /**
      * User-defined function that is called when the entity is spawned.
      */
     abstract onCreate(): void;
@@ -52,7 +67,12 @@ abstract class GameObjectBase {
      * @param component The component to add
      */
     public add(component: Component) {
-        // TODO: Check if the component has all its dependencies
+        // Check if the component has all its dependencies
+        for (const dependency of component.dependencies) {
+            if (!this.has(dependency)) {
+                throw new Error("Component '" + component.constructor.name + "' requires '" + dependency.name + "'");
+            }
+        }
         this.component_map.set(component.constructor.name, component);
         return this;
     }
@@ -95,37 +115,60 @@ abstract class System {
     abstract component: ComponentType<Component>;
 
     /**
-     * This function is run once per frame for each entity that has the required component.
+     * This function is run once per frame.
+     * @param scene The scene that the system is in.
+     * @param entities The list of entities that the system acts on.
      */
-    abstract update(entity: GameObjectBase): void;
+    abstract update(entities: Set<GameObjectBase>): void;
 }
 
 class Scene {
+    // The list of entities in the scene
     private entities: GameObjectBase[];
-    private systems: Set<System>;
+    // A map from systems to the entities that they act on
+    private systems: Map<System, Set<GameObjectBase>>;
 
     // The time that has elapsed since the last frame.
     public dt: number;
 
     constructor() {
         this.entities = [];
-        this.systems = new Set();
+        this.systems = new Map<System, Set<GameObjectBase>>();
     }
 
     // Add an entity to the Scene
     spawn<T extends GameObjectBase>(entity: T) {
         this.entities.push(entity);
         entity.onCreate();
+        // Add the entity to the systems that require it
+        for (const [system, entities] of this.systems) {
+            if (entity.has(system.component)) {
+                entities.add(entity);
+            }
+        }
     }
 
     // Remove the given entity from the scene
     delete(entity: GameObjectBase) {
         this.entities = this.entities.filter(e => e != entity);
+        // Remove the entity from the systems that require it
+        for (const [system, entities] of this.systems) {
+            if (entity.has(system.component)) {
+                entities.delete(entity);
+            }
+        }
+
+    }
+
+    // Get all entities that have all the given component
+    getEntitiesWith<T extends Component>(component: ComponentType<T>): GameObjectBase[] {
+        return this.entities.filter(e => e.has(component));
     }
 
     // Add a system to the Scene
     addSystem(system: System) {
-        this.systems.add(system);
+        let entities = new Set<GameObjectBase>(this.getEntitiesWith(system.component));
+        this.systems.set(system, entities);
     }
 
     // Remove a system from the scene
@@ -139,13 +182,8 @@ class Scene {
         this.dt = 1;
 
         // Run all systems
-        // TODO: Make more efficient by precomputing the entities that each system needs
-        for (const system of this.systems) {
-            for (const entity of this.entities) {
-                if (entity.has(system.component)) {
-                    system.update(entity);
-                }
-            }
+        for (const [system, entities] of this.systems) {
+            system.update(entities);
         }
 
         // Run all entity update functions
@@ -178,12 +216,14 @@ class Velocity extends Component {
 class MovementSystem extends System {
     component = Velocity;
 
-    update(entity: GameObjectBase) {
-        console.log("Updating entity", entity);
-        const position = entity.get(Position);
-        const velocity = entity.get(Velocity);
-        position.x += velocity.x * $scene.dt;
-        position.y += velocity.y * $scene.dt;
+    update(entities: Set<GameObjectBase>) {
+        for (const entity of entities) {
+            console.log("Updating entity", entity);
+            const position = entity.get(Position);
+            const velocity = entity.get(Velocity);
+            position.x += velocity.x * $scene.dt;
+            position.y += velocity.y * $scene.dt;
+        }
     }
 }
 
@@ -205,12 +245,16 @@ class Player extends GameObjectBase {
     }
 }
 
-var $scene = new Scene();
-var player = new Player();
-$scene.spawn(player);
+let $scene = new Scene();
+let player: any = new Player();
 $scene.addSystem(new MovementSystem());
+$scene.spawn(player);
 $scene.update();
 
 // position is now (1, 1)
+// this is an example of how since player is a proxy we can access the position component directly
+// although TypeScript doesn't play nice with proxies so we have to set the type to any.
+// This shouldn't be a problem since the user is working in JS not TS anyway.
+console.log(player.Position);
 player.takeDamage(10);
-console.log(player);
+$scene.update();
