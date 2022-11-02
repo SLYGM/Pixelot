@@ -33,13 +33,13 @@ function createProgram(gl: WebGL2RenderingContext, vertex_shader: WebGLShader, f
     gl.deleteProgram(program);
 }
 
-export type TexInfo = {
+type TexInfo = {
     width: number;
     height: number;
     texture: WebGLTexture | null;
 }
 
-export function programFromSources(gl: WebGL2RenderingContext, v_shader_source: string, f_shader_source: string) {
+function programFromSources(gl: WebGL2RenderingContext, v_shader_source: string, f_shader_source: string) {
     let v_shader = createShader(gl, gl.VERTEX_SHADER, v_shader_source);
     let f_shader = createShader(gl, gl.FRAGMENT_SHADER, f_shader_source);
 
@@ -50,7 +50,7 @@ export function programFromSources(gl: WebGL2RenderingContext, v_shader_source: 
     return createProgram(gl, v_shader, f_shader);
 }
 
-export function loadTextureFromImage(gl: WebGL2RenderingContext, path: string): TexInfo{
+function loadTextureFromImage(gl: WebGL2RenderingContext, path: string): TexInfo{
     let tex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, tex);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
@@ -87,7 +87,7 @@ function log(message: string) {
     return undefined;
 }
 
-export function setupUnitQuad(gl: WebGL2RenderingContext, program: WebGLProgram) {
+function setupUnitQuad(gl: WebGL2RenderingContext, program: WebGLProgram) {
     let pos_attr_loc = gl.getAttribLocation(program, "a_position");
     let texcoord_attr_loc = gl.getAttribLocation(program, "a_texcoord");
 

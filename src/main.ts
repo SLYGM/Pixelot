@@ -1,8 +1,4 @@
-import {createSprite, addToUpdateQueue, begin_rendering, viewport} from './renderer/renderer.js';
-
-
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-const gl = canvas.getContext("webgl2") as WebGL2RenderingContext;
 let p = {
     sprite: createSprite(100, 100, './images/BlackHole.png'),
     dx: 100,

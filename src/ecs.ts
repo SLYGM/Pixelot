@@ -1,4 +1,4 @@
-export abstract class Component {
+abstract class Component {
     /**
      * The list of components that this component depends on.
      * E.g. Velocity depends on Position.
@@ -28,7 +28,7 @@ type ComponentType<T extends Component> = new (...args: any[]) => T;
  * }
  * ```
  */
-export abstract class GameObjectBase {
+abstract class GameObjectBase {
     // Mapping from component name to component instance
     private component_map: Map<string, Component> = new Map();
 
@@ -39,10 +39,8 @@ export abstract class GameObjectBase {
 
     /**
      * User-defined function that is called every frame.
-     *
-     * @param scene The scene that the entity is in.
      */
-    abstract update(scene: Scene): void;
+    abstract update(): void;
 
     /**
      * Add a new component to the entity.
@@ -90,7 +88,7 @@ export abstract class GameObjectBase {
     }
 }
 
-export abstract class System {
+abstract class System {
     /**
      * The component that this system acts on.
      */
@@ -99,10 +97,10 @@ export abstract class System {
     /**
      * This function is run once per frame for each entity that has the required component.
      */
-    abstract update(scene: Scene, entity: GameObjectBase): void;
+    abstract update(entity: GameObjectBase): void;
 }
 
-export class Scene {
+class Scene {
     private entities: GameObjectBase[];
     private systems: Set<System>;
 
@@ -145,14 +143,14 @@ export class Scene {
         for (const system of this.systems) {
             for (const entity of this.entities) {
                 if (entity.has(system.component)) {
-                    system.update(this, entity);
+                    system.update(entity);
                 }
             }
         }
 
         // Run all entity update functions
         for (const entity of this.entities) {
-            entity.update(this);
+            entity.update();
         }
     }
 }
@@ -180,12 +178,12 @@ class Velocity extends Component {
 class MovementSystem extends System {
     component = Velocity;
 
-    update(scene: Scene, entity: GameObjectBase) {
+    update(entity: GameObjectBase) {
         console.log("Updating entity", entity);
         const position = entity.get(Position);
         const velocity = entity.get(Velocity);
-        position.x += velocity.x * scene.dt;
-        position.y += velocity.y * scene.dt;
+        position.x += velocity.x * $scene.dt;
+        position.y += velocity.y * $scene.dt;
     }
 }
 
@@ -196,10 +194,10 @@ class Player extends GameObjectBase {
         // in practice these components would be added via the editor UI rather than in code like this
         this.add(new Position).add(new Velocity(1, 1));
     }
-    update(scene: Scene) {
+    update() {
         if (this.health <= 0) {
             console.log("Player is dead");
-            scene.delete(this);
+            $scene.delete(this);
         }
     }
     takeDamage(amount: number) {
@@ -207,12 +205,12 @@ class Player extends GameObjectBase {
     }
 }
 
-let scene = new Scene();
-let player = new Player();
-scene.spawn(player);
-scene.addSystem(new MovementSystem());
-scene.update();
+var $scene = new Scene();
+var player = new Player();
+$scene.spawn(player);
+$scene.addSystem(new MovementSystem());
+$scene.update();
 
 // position is now (1, 1)
-console.log(player.get(Position));
 player.takeDamage(10);
+console.log(player);
