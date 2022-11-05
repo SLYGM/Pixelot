@@ -7,13 +7,14 @@
 </head>
 
 <body>
-    <script src="build/main.js" type="module"></script>
-    <!--TODO: replace hardcoded resolution with global constant-->
-    <canvas id="canvas" width="426" height="240"></canvas>
-</body>
-
-<script>
+  <!--TODO: replace hardcoded resolution with global constant-->
+  <canvas id="canvas" width="426" height="240"></canvas>
+  <script>
     let win = nw.Window.get();
     win.resizeTo(852, 480); //2x internal res
-</script>
+  </script>
+  <script src="build/main.js" type="module"></script>
+</body>
+
+
 </html>

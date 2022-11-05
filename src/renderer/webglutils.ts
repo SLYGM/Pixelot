@@ -127,9 +127,9 @@ export function setupUnitQuad(gl: WebGL2RenderingContext, program: WebGLProgram)
     );
 }
 
-export function createTexAndBuffer(gl: WebGL2RenderingContext) {
-    const targetTextureWidth = gl.canvas.width;
-    const targetTextureHeight = gl.canvas.height;
+export function createTexAndBuffer(gl: WebGL2RenderingContext, width: number, height: number) {
+    const targetTextureWidth = width;
+    const targetTextureHeight = height;
     let targetTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, targetTexture);
     

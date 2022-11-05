@@ -54,6 +54,7 @@ type Updatable = {
 
 let sprites: Sprite[] = [];
 let update_queue: Updatable[] = [];
+let canvas: HTMLCanvasElement;
 
 export function createSprite(x: number, y: number, image_path: string): Sprite {
     let tex = loadTextureFromImage(gl, image_path);
@@ -89,7 +90,8 @@ let vao: WebGLVertexArrayObject;
 let rendering = false;
 
 function init() {
-    let canvas = <HTMLCanvasElement>document.getElementById("canvas");
+    canvas = <HTMLCanvasElement>document.getElementById("canvas");
+
     gl = canvas.getContext("webgl2");
     if (!gl) {
         return log("Failed to get webgl2 context");
@@ -111,8 +113,7 @@ function init() {
     
     setupUnitQuad(gl, basic_program);
 
-    gl.viewport(0, 0, 426, 240); //TODO: replace hardcoded resolution with global constant
-    postProcessInit(gl);
+    postProcessInit(gl, canvas);
 
     BarShader.activate(gl);
 }
@@ -126,6 +127,7 @@ function update(dt: number) {
 
 
 function draw() {
+    gl.viewport(0, 0, 426, 240); //TODO: replace hardcoded resolution with global constant
     gl.clearColor(1, 1, 1, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -139,7 +141,7 @@ function draw() {
         );
     })
 
-    postProcessing(gl);
+    postProcessing(gl, canvas);
 }
 
 
