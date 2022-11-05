@@ -23,3 +23,5 @@ let viewport_updater = {
 }
 addToUpdateQueue(viewport_updater);
 begin_rendering();
+
+ScriptManager.loadScripts(["damage.js"]);
