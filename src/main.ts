@@ -1,3 +1,7 @@
+ComponentManager.loadComponents();
+ScriptManager.loadScripts(["damage.js"]);
+
+
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 let p = {
     sprite: createSprite(100, 100, './images/BlackHole.png'),
@@ -24,4 +28,3 @@ let viewport_updater = {
 addToUpdateQueue(viewport_updater);
 begin_rendering();
 
-ScriptManager.loadScripts(["damage.js"]);
