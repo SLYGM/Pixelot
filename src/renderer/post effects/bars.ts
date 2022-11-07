@@ -14,7 +14,7 @@ class BarShader extends PostProcess {
     }
     `;
 
-    //https://clemz.io/article-retro-shaders-web$gl.html
+    //https://clemz.io/article-retro-shaders-webgl.html
     let f_shader=`#version 300 es
 
     precision highp float;
