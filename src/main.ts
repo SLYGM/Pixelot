@@ -1,5 +1,3 @@
-import {createSprite, addToUpdateQueue, begin_rendering, viewport} from './renderer/renderer.js';
-
 let p = {
     sprite: createSprite(0,150, './images/frog.png'),
     dx: 50,
@@ -17,5 +15,6 @@ let p = {
     }
 }
 
+PostProcessing.add(new BarShader());
 addToUpdateQueue(p);
 begin_rendering();
