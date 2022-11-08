@@ -1,7 +1,6 @@
-import { programFromSources, loadTextureFromImage, setupUnitQuad, TexInfo } from './webglutils.js';
 const { glMatrix, mat4, vec3 } = require('gl-matrix');
 
-export let viewport = {
+let viewport = {
     x: 0,
     y: 0,
     height: 256,
@@ -52,7 +51,7 @@ type Updatable = {
 let sprites: Sprite[] = [];
 let update_queue: Updatable[] = [];
 
-export function createSprite(x: number, y: number, image_path: string): Sprite {
+function createSprite(x: number, y: number, image_path: string): Sprite {
     let tex = loadTextureFromImage(gl, image_path);
     let sprite = {
         x: x,
@@ -63,14 +62,8 @@ export function createSprite(x: number, y: number, image_path: string): Sprite {
     return sprite;
 }
 
-export function addToUpdateQueue(object: Updatable) {
+function addToUpdateQueue(object: Updatable) {
     update_queue.push(object);
-}
-
-
-function log(message: string) {
-    console.log(message);
-    return undefined;
 }
 
 let gl: WebGL2RenderingContext;
@@ -173,12 +166,12 @@ function drawImage(tex: WebGLTexture, texWidth: number, texHeight: number, dstX:
 }
 
 
-export function begin_rendering() {
+function begin_rendering() {
     rendering = true;
     requestAnimationFrame(render);
 }
 
-export function stop_rendering() {
+function stop_rendering() {
     rendering = false;
 }
 

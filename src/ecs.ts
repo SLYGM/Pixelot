@@ -1,37 +1,100 @@
-type Entity = number;
-
-abstract class Component {}
+abstract class Component {
+    /**
+     * The list of components that this component depends on.
+     * E.g. Velocity depends on Position.
+     */
+    readonly dependencies = [];
+}
 
 type ComponentType<T extends Component> = new (...args: any[]) => T;
 
 /** 
- * A collection of components.
+ * The base class inherited by all game objects.
+ *
+ * @example
+ * An example user-defined game object:
+ * ```
+ * class Player extends GameObjectBase {
+ *   times_jumped: number;
+ *   onCreate() {
+ *     this.times_jumped = 0;
+ *   }
+ *   update() {
+ *     if (event.key == "space") {
+ *       this.get(Velocity).y = 10;
+ *       this.times_jumped++;
+ *     }
+ *   }
+ * }
+ * ```
  */
-class ComponentList {
+abstract class GameObjectBase {
     // Mapping from component name to component instance
-    private map: Map<string, Component> = new Map();
+    private component_map: Map<string, Component> = new Map();
+
+    /**
+     * Constructor which wraps the object in a proxy.
+     * This allows the user to access the components directly.
+     */
+    constructor() {
+        return new Proxy(this, {
+            get: (target, prop: string) => {
+                if (this.component_map.has(prop)) {
+                    return this.component_map.get(prop);
+                }
+                return target[prop];
+            },
+        });
+    }
+
+    /**
+     * User-defined function that is called when the entity is spawned.
+     */
+    abstract onCreate(): void;
+
+    /**
+     * User-defined function that is called every frame.
+     */
+    abstract update(): void;
 
     /**
      * Add a new component to the entity.
-     * Returns itself allowing calls to be chained. E.g.
+     * Returns itself allowing calls to be chained.
+     * @example
      * ```
      * entity.add(new Position(0, 0)).add(new Velocity(0, 0));
      * ```
      * @param component The component to add
      */
     public add(component: Component) {
-        this.map.set(component.constructor.name, component);
+        // Check if the component has all its dependencies
+        for (const dependency of component.dependencies) {
+            if (!this.has(dependency)) {
+                throw new Error("Component '" + component.constructor.name + "' requires '" + dependency.name + "'");
+            }
+        }
+        this.component_map.set(component.constructor.name, component);
         return this;
     }
 
-    // Get the component instance of the given type
+    /**
+     * Get the component instance of the given type.
+     *
+     * @param c The type of the component to get.
+     * @returns The component instance.
+     */
     public get<T extends Component>(c: ComponentType<T>): T {
-        return this.map.get(c.name) as T;
+        return this.component_map.get(c.name) as T;
     }
 
-    // Returns true if the entity has the given component
+    /**
+     * Returns true if the entity has the given component.
+     *
+     * @param c The type of the component to check.
+     * @returns True if the entity has the component.
+     */
     public has<T extends Component>(c: ComponentType<T>): boolean {
-        return this.map.has(c.name);
+        return this.component_map.has(c.name);
     }
 
     // Returns true if the entity has all the given components
@@ -41,53 +104,71 @@ class ComponentList {
 
     // Remove the component of the given type
     public remove<T extends Component>(c: ComponentType<T>) {
-        this.map.delete(c.name);
+        this.component_map.delete(c.name);
     }
 }
 
 abstract class System {
     /**
-     * A list of components that this system requires.
+     * The component that this system acts on.
      */
-    abstract components: ComponentType<Component>[];
+    abstract component: ComponentType<Component>;
 
     /**
-     * This function is run once per frame for each entity that has the required components.
+     * This function is run once per frame.
+     * @param scene The scene that the system is in.
+     * @param entities The list of entities that the system acts on.
      */
-    abstract update(scene: Scene, entity: Entity): void;
+    abstract update(entities: Set<GameObjectBase>): void;
 }
 
 class Scene {
-    private entities: Map<Entity, ComponentList>;
-    private max_entity_id: Entity = 0;
-    private systems: Set<System>;
+    // The list of entities in the scene
+    private entities: GameObjectBase[];
+    // A map from systems to the entities that they act on
+    private systems: Map<System, Set<GameObjectBase>>;
+
+    // The time that has elapsed since the last frame.
+    public dt: number;
 
     constructor() {
-        this.entities = new Map();
-        this.systems = new Set();
+        this.entities = [];
+        this.systems = new Map<System, Set<GameObjectBase>>();
     }
 
-    // Create a new entity
-    newEntity(): ComponentList {
-        const entity = this.max_entity_id++;
-        const components = new ComponentList();
-        this.entities.set(entity, components);
-        return components;
-    }
-
-    // Get the component list of the given entity
-    entity(entity: Entity): ComponentList {
-        return this.entities.get(entity);
+    // Add an entity to the Scene
+    spawn<T extends GameObjectBase>(entity: T) {
+        this.entities.push(entity);
+        entity.onCreate();
+        // Add the entity to the systems that require it
+        for (const [system, entities] of this.systems) {
+            if (entity.has(system.component)) {
+                entities.add(entity);
+            }
+        }
     }
 
     // Remove the given entity from the scene
-    delete(entity: Entity) {
-        this.entities.delete(entity);
+    delete(entity: GameObjectBase) {
+        this.entities = this.entities.filter(e => e != entity);
+        // Remove the entity from the systems that require it
+        for (const [system, entities] of this.systems) {
+            if (entity.has(system.component)) {
+                entities.delete(entity);
+            }
+        }
+
+    }
+
+    // Get all entities that have all the given component
+    getEntitiesWith<T extends Component>(component: ComponentType<T>): GameObjectBase[] {
+        return this.entities.filter(e => e.has(component));
     }
 
     // Add a system to the Scene
     addSystem(system: System) {
-        this.systems.add(system);
+        let entities = new Set<GameObjectBase>(this.getEntitiesWith(system.component));
+        this.systems.set(system, entities);
     }
 
     // Remove a system from the scene
@@ -95,16 +176,76 @@ class Scene {
         this.systems.delete(system);
     }
 
-    // Run all systems
+    // Perform all the updates for the current frame
     update() {
-        // TODO: Make more efficient by precomputing the entities that each system needs
-        for (const system of this.systems) {
-            for (const [entity, _] of this.entities) {
-                if (this.entity(entity).hasAll(system.components)) {
-                    system.update(this, entity);
-                }
-            }
+        // TODO: Calculate dt properly. For now its just 1.
+        this.dt = 1;
+
+        // Run all systems
+        for (const [system, entities] of this.systems) {
+            system.update(entities);
         }
+
+        // Run all entity update functions
+        for (const entity of this.entities) {
+            entity.update();
+        }
+    }
+}
+
+
+class ComponentManager {
+    private static components = [];
+    private static imported = new Map<string, boolean>();
+    private static dependencies = new Map<string, string[]>();
+    private static componentsFolder = "build/components/"
+
+    static loadComponents() {
+        const fs = require('fs');
+        let files = (fs.readdirSync(this.componentsFolder) as string[]);
+        files.forEach(file => {
+            let fileName = file.split(".")[0];
+            if (StringUtils.isPostfix(file, ".settings.json")) {
+                let settings = JSON.parse(fs.readFileSync(this.componentsFolder + file));
+                if (settings["dependencies"] == undefined) return;
+                this.dependencies.set(fileName, settings["dependencies"]);
+            }
+            else if (StringUtils.isPostfix(file, ".js")) {
+                this.components.push(fileName);
+                this.imported.set(fileName, false);
+            }
+        });
+        this.components.forEach(component => {
+            this.loadComponent(component, new Map<string,boolean>())
+        });
+    }
+
+    private static loadComponent(component:string, stack:Map<string,boolean>) : boolean {
+        if (this.imported.get(component)) return true;
+        if (!this.imported.has(component)) {
+            console.trace("Required component '" + component + "' does not have its own script under build/components/.")
+            return false;
+        }
+        if (stack.has(component) && stack.get(component)) {
+            console.trace("Failed to import components. Circular dependency on component '" + component + "'.")
+            return false;
+        }
+        if (this.dependencies.has(component)) {
+            stack.set(component, true);
+            for (let dep of this.dependencies.get(component)) {
+                let res = this.loadComponent(dep, stack);
+                if (!res) return false;
+            }
+            stack.set(component, false)
+        }
+        this.importComponent(component);
+        this.imported.set(component, true);
+        return true;
+    }
+
+    private static importComponent(component:string) {
+        if (this.imported.get(component)) return;
+        ScriptUtils.loadScript(this.componentsFolder + component + ".js");
     }
 }
 
@@ -116,6 +257,8 @@ class Position extends Component {
 }
 
 class Velocity extends Component {
+    dependencies = [Position];
+
     x: number = 0;
     y: number = 0;
 
@@ -127,21 +270,47 @@ class Velocity extends Component {
 }
 
 class MovementSystem extends System {
-    components = [Position, Velocity];
+    component = Velocity;
 
-    update(scene: Scene, entity: Entity) {
-        console.log("Updating entity", entity);
-        const position = scene.entity(entity).get(Position);
-        const velocity = scene.entity(entity).get(Velocity);
-        position.x += velocity.x;
-        position.y += velocity.y;
+    update(entities: Set<GameObjectBase>) {
+        for (const entity of entities) {
+            console.log("Updating entity", entity);
+            const position = entity.get(Position);
+            const velocity = entity.get(Velocity);
+            position.x += velocity.x * $scene.dt;
+            position.y += velocity.y * $scene.dt;
+        }
     }
 }
 
-let scene = new Scene();
-scene.newEntity().add(new Position()).add(new Velocity(1, 1));
-scene.addSystem(new MovementSystem());
-scene.update();
+class Player extends GameObjectBase {
+    health: number;
+    onCreate() {
+        this.health = 10;
+        // in practice these components would be added via the editor UI rather than in code like this
+        this.add(new Position).add(new Velocity(1, 1));
+    }
+    update() {
+        if (this.health <= 0) {
+            console.log("Player is dead");
+            $scene.delete(this);
+        }
+    }
+    takeDamage(amount: number) {
+        this.health -= amount;
+    }
+}
+
+let $scene = new Scene();
+let player: any = new Player();
+$scene.addSystem(new MovementSystem());
+$scene.spawn(player);
+$scene.update();
 
 // position is now (1, 1)
-console.log(scene.entity(0).get(Position));
+// this is an example of how since player is a proxy we can access the position component directly
+// although TypeScript doesn't play nice with proxies so we have to set the type to any.
+// This shouldn't be a problem since the user is working in JS not TS anyway.
+console.log(player.Position);
+player.takeDamage(10);
+$scene.update();
