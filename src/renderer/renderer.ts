@@ -7,12 +7,13 @@ class Renderer {
         in vec4 a_position;
         in vec2 a_texcoord;
         
+        uniform mat4 u_projection;
         uniform mat4 u_matrix;
         
         out vec2 v_texcoord;
         
         void main() {
-            gl_Position = u_matrix * a_position;
+            gl_Position = u_projection * u_matrix * a_position;
             v_texcoord = a_texcoord;
         }
     `;
@@ -35,6 +36,7 @@ class Renderer {
     
     shader: {
         prog: WebGLProgram;
+        proj_loc: WebGLUniformLocation;
         mat_loc: WebGLUniformLocation;
         tex_loc: WebGLUniformLocation;
     }
@@ -48,7 +50,7 @@ class Renderer {
         sx: number;
         sy: number;
     }
-    vao: WebGLVertexArrayObject;
+    private vao: WebGLVertexArrayObject;
     time: number;
     textures: Map<string, Texture>;
     sprites: Sprite[];
@@ -58,12 +60,13 @@ class Renderer {
         this.resolution = {x: 426, y: 240};
         this.rendering = false;
 
-        this.shader = {prog: undefined, mat_loc: undefined, tex_loc: undefined}
+        this.shader = {prog: undefined, proj_loc: undefined, mat_loc: undefined, tex_loc: undefined}
         this.shader.prog = GLUtils.programFromSources(this.vert_source, this.frag_source);
         if (!this.shader.prog) {
             console.log("Failed to create shader program");
             return undefined;
         }
+        this.shader.proj_loc = _gl.getUniformLocation(this.shader.prog, "u_projection");
         this.shader.mat_loc = _gl.getUniformLocation(this.shader.prog, "u_matrix");
         this.shader.tex_loc = _gl.getUniformLocation(this.shader.prog, "u_texture");
         
@@ -90,7 +93,7 @@ class Renderer {
         this.rendering = false;
     }
 
-    loadTexture(path: string, alias: string = path): string {
+    loadTexture(path: string, alias: string): string {
         let tex = _gl.createTexture();
         _gl.bindTexture(_gl.TEXTURE_2D, tex);
         _gl.texImage2D(_gl.TEXTURE_2D, 0, _gl.RGBA, 1, 1, 0, _gl.RGBA, _gl.UNSIGNED_BYTE,
@@ -152,7 +155,15 @@ class Renderer {
         _gl.viewport(0, 0, this.resolution.x, this.resolution.y);
         _gl.clearColor(1, 1, 1, 1);
         _gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
-        
+
+        _gl.useProgram(this.shader.prog);
+        _gl.bindVertexArray(this.vao);
+
+        // use orthographic projection to scale coords to -1->1 (calculate once per frame)
+        const proj_matrix = mat4.create();
+        mat4.ortho(proj_matrix, 0, this.resolution.x * this.viewport.sx, this.resolution.y * this.viewport.sy, 0, -1, 1);
+        _gl.uniformMatrix4fv(this.shader.proj_loc, false, proj_matrix);
+
         this.sprites.forEach((sprite) => {
             this.drawImage(sprite.tex, sprite.x, sprite.y);
         })
@@ -161,27 +172,19 @@ class Renderer {
     }
 
     private drawImage(tex: Texture, x: number, y: number) {
-        _gl.useProgram(this.shader.prog);
-        _gl.bindVertexArray(this.vao);
-
         let textureUnit = 0;
         _gl.uniform1i(this.shader.tex_loc, textureUnit);
-
         _gl.activeTexture(_gl.TEXTURE0 + textureUnit);
         _gl.bindTexture(_gl.TEXTURE_2D, tex.texture);
 
-        let matrix = mat4.create();
-        
-        // use orthographic projection to scale coords to -1->1
-        mat4.ortho(matrix, 0, this.resolution.x * this.viewport.sx, this.resolution.y * this.viewport.sy, 0, -1, 1);
-        mat4.translate(matrix, matrix, vec3.fromValues(x, y, 0));
-        mat4.translate(matrix, matrix, vec3.fromValues(-this.viewport.x, -this.viewport.y, 0));
-        mat4.scale(matrix, matrix, vec3.fromValues(tex.width, tex.height, 1));
+        const img_matrix = mat4.create();
+        mat4.translate(img_matrix, img_matrix, vec3.fromValues(x, y, 0));
+        mat4.translate(img_matrix, img_matrix, vec3.fromValues(-this.viewport.x, -this.viewport.y, 0));
+        mat4.scale(img_matrix, img_matrix, vec3.fromValues(tex.width, tex.height, 1));
+        _gl.uniformMatrix4fv(this.shader.mat_loc, false, img_matrix);
 
-        _gl.uniformMatrix4fv(this.shader.mat_loc, false, matrix);
-
-        let offset = 0;
-        let count = 6;
+        const offset = 0;
+        const count = 6;
         _gl.drawArrays(_gl.TRIANGLES, offset, count);
     }
 
