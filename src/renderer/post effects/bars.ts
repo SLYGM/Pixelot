@@ -39,7 +39,7 @@ class BarShader extends PostProcess {
   }
 
   draw() {
-    $gl.uniform1f($gl.getUniformLocation(this.program, "time"), performance.now() / 1000);
-    $gl.drawArrays($gl.TRIANGLES, 0, 6);
+    _gl.uniform1f(_gl.getUniformLocation(this.program, "time"), performance.now() / 1000);
+    _gl.drawArrays(_gl.TRIANGLES, 0, 6);
   }
 }
