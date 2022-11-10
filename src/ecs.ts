@@ -178,8 +178,9 @@ class Scene {
 
     }
 
-    // Get all entities that have all the given component
+    // Get all entities that have the given component.
     getEntitiesWith<T extends Component>(component: ComponentType<T>): GameObjectBase[] {
+        // NOTE: Currently not very efficient. Could be improved by using archetypes to store entities with the same components.
         return this.entities.filter(e => e.has(component));
     }
 
@@ -308,6 +309,17 @@ class MovementSystem extends System {
     }
 }
 
+// System used to test system priority
+class PrintPositionSystem extends System {
+    component = Position;
+
+    update(entities: Set<GameObjectBase>) {
+        for (const entity of entities) {
+            console.log("Entity position:", entity.get(Position));
+        }
+    }
+}
+
 class Player extends GameObjectBase {
     health: number;
     onCreate() {
@@ -329,6 +341,7 @@ class Player extends GameObjectBase {
 let $scene = new Scene();
 let player: any = new Player();
 $scene.addSystem(new MovementSystem(), SystemStage.PositionUpdate);
+$scene.addSystem(new PrintPositionSystem(), SystemStage.PositionUpdate - 1);
 $scene.spawn(player);
 $scene.update();
 
@@ -336,6 +349,5 @@ $scene.update();
 // this is an example of how since player is a proxy we can access the position component directly
 // although TypeScript doesn't play nice with proxies so we have to set the type to any.
 // This shouldn't be a problem since the user is working in JS not TS anyway.
-console.log(player.Position);
 player.takeDamage(10);
 $scene.update();
