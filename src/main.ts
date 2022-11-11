@@ -1,30 +1,45 @@
+const r = new Renderer();
+r.loadTexture('./images/frog.png', 'frog')
+r.loadTexture('./images/tile.png', 'tile')
+
 ComponentManager.loadComponents();
 ScriptManager.loadScripts(["damage.js"]);
 
-
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 let p = {
-    sprite: createSprite(100, 100, './images/BlackHole.png'),
-    dx: 100,
-    dy: 100,
+    sprite: r.createSprite(0,150, 'frog'),
+    dx: 50,
+    dy: 50,
     update: function(dt: number){
         this.sprite.x += this.dx * dt;
         this.sprite.y += this.dy * dt
-        if (this.sprite.x + this.sprite.tex.width > gl.canvas.clientWidth || this.sprite.x < 0){
+        //TODO: replace hardcoded resolution with global constant
+        if (this.sprite.x + this.sprite.tex.width >= 426 * r.viewport.sx || this.sprite.x < 0){
             this.dx *= -1;
         }
-        if (this.sprite.y + this.sprite.tex.height > gl.canvas.clientHeight || this.sprite.y < 0){
+        if (this.sprite.y + this.sprite.tex.height >= 240 * r.viewport.sy || this.sprite.y < 0){
             this.dy *= -1;
         }
     }
 }
 
-let viewport_updater = {
-    update: function(dt: number) {
-        viewport.height += 20 * dt;
-        viewport.width += 20 * dt;
+let q = {
+    sprite: r.createSprite(50,150, 'tile'),
+    dx: 50,
+    dy: 30,
+    update: function(dt: number){
+        this.sprite.x -= this.dx * dt;
+        this.sprite.y += this.dy * dt
+        //TODO: replace hardcoded resolution with global constant
+        if (this.sprite.x + this.sprite.tex.width >= 426 * r.viewport.sx || this.sprite.x < 0){
+            this.dx *= -1;
+        }
+        if (this.sprite.y + this.sprite.tex.height >= 240 * r.viewport.sy || this.sprite.y < 0){
+            this.dy *= -1;
+        }
     }
 }
-addToUpdateQueue(viewport_updater);
-begin_rendering();
 
+PostProcessing.add(new BarShader());
+r.addToUpdateQueue(p);
+r.addToUpdateQueue(q);
+r.start();
