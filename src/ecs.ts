@@ -108,6 +108,16 @@ abstract class GameObjectBase {
     }
 }
 
+/**
+ * A collection of named priorities for pre-defined systems.
+ * For example, if you want your system to run after collision detection,
+ * you can set the priority to `SystemStage.CollisionDetection + 1`.
+ */
+enum SystemStage {
+    PositionUpdate = 1,
+    CollisionDetection = 2,
+}
+
 abstract class System {
     /**
      * The component that this system acts on.
@@ -116,24 +126,34 @@ abstract class System {
 
     /**
      * This function is run once per frame.
-     * @param scene The scene that the system is in.
      * @param entities The list of entities that the system acts on.
      */
     abstract update(entities: Set<GameObjectBase>): void;
 }
 
+type SystemNode = {
+    // The name of the system
+    name: string;
+    // The system itself
+    system: System;
+    // The systems priority. Lower numbers are run first
+    priority: number;
+    // The entities that this system acts on
+    entities: Set<GameObjectBase>;
+};
+
 class Scene {
     // The list of entities in the scene
     private entities: GameObjectBase[];
-    // A map from systems to the entities that they act on
-    private systems: Map<System, Set<GameObjectBase>>;
+    // The systems in a priority queue
+    private systems: SystemNode[];
 
     // The time that has elapsed since the last frame.
     public dt: number;
 
     constructor() {
         this.entities = [];
-        this.systems = new Map<System, Set<GameObjectBase>>();
+        this.systems = [];
     }
 
     // Add an entity to the Scene
@@ -141,9 +161,9 @@ class Scene {
         this.entities.push(entity);
         entity.onCreate();
         // Add the entity to the systems that require it
-        for (const [system, entities] of this.systems) {
-            if (entity.has(system.component)) {
-                entities.add(entity);
+        for (const system_node of this.systems) {
+            if (entity.has(system_node.system.component)) {
+                system_node.entities.add(entity);
             }
         }
     }
@@ -152,28 +172,34 @@ class Scene {
     delete(entity: GameObjectBase) {
         this.entities = this.entities.filter(e => e != entity);
         // Remove the entity from the systems that require it
-        for (const [system, entities] of this.systems) {
-            if (entity.has(system.component)) {
-                entities.delete(entity);
-            }
+        for (const system_node of this.systems) {
+            system_node.entities.delete(entity);
         }
 
     }
 
-    // Get all entities that have all the given component
+    // Get all entities that have the given component.
     getEntitiesWith<T extends Component>(component: ComponentType<T>): GameObjectBase[] {
+        // NOTE: Currently not very efficient. Could be improved by using archetypes to store entities with the same components.
         return this.entities.filter(e => e.has(component));
     }
 
     // Add a system to the Scene
-    addSystem(system: System) {
+    addSystem(system: System, priority: number) {
         let entities = new Set<GameObjectBase>(this.getEntitiesWith(system.component));
-        this.systems.set(system, entities);
+        // add the system to the priority queue
+        this.systems.push({
+            name: system.constructor.name,
+            system: system,
+            priority: priority,
+            entities: entities,
+        });
+        this.systems.sort((a, b) => a.priority - b.priority);
     }
 
     // Remove a system from the scene
     removeSystem(system: System) {
-        this.systems.delete(system);
+        this.systems = this.systems.filter(s => s.system != system);
     }
 
     // Perform all the updates for the current frame
@@ -182,8 +208,8 @@ class Scene {
         this.dt = 1;
 
         // Run all systems
-        for (const [system, entities] of this.systems) {
-            system.update(entities);
+        for (const system_node of this.systems) {
+            system_node.system.update(system_node.entities);
         }
 
         // Run all entity update functions
@@ -283,6 +309,17 @@ class MovementSystem extends System {
     }
 }
 
+// System used to test system priority
+class PrintPositionSystem extends System {
+    component = Position;
+
+    update(entities: Set<GameObjectBase>) {
+        for (const entity of entities) {
+            console.log("Entity position:", entity.get(Position));
+        }
+    }
+}
+
 class Player extends GameObjectBase {
     health: number;
     onCreate() {
@@ -303,7 +340,8 @@ class Player extends GameObjectBase {
 
 let $scene = new Scene();
 let player: any = new Player();
-$scene.addSystem(new MovementSystem());
+$scene.addSystem(new MovementSystem(), SystemStage.PositionUpdate);
+$scene.addSystem(new PrintPositionSystem(), SystemStage.PositionUpdate - 1);
 $scene.spawn(player);
 $scene.update();
 
@@ -311,6 +349,5 @@ $scene.update();
 // this is an example of how since player is a proxy we can access the position component directly
 // although TypeScript doesn't play nice with proxies so we have to set the type to any.
 // This shouldn't be a problem since the user is working in JS not TS anyway.
-console.log(player.Position);
 player.takeDamage(10);
 $scene.update();
