@@ -122,77 +122,6 @@ abstract class System {
     abstract update(entities: Set<GameObjectBase>): void;
 }
 
-class Scene {
-    // The list of entities in the scene
-    private entities: GameObjectBase[];
-    // A map from systems to the entities that they act on
-    private systems: Map<System, Set<GameObjectBase>>;
-
-    // The time that has elapsed since the last frame.
-    public dt: number;
-
-    constructor() {
-        this.entities = [];
-        this.systems = new Map<System, Set<GameObjectBase>>();
-    }
-
-    // Add an entity to the Scene
-    spawn<T extends GameObjectBase>(entity: T) {
-        this.entities.push(entity);
-        entity.onCreate();
-        // Add the entity to the systems that require it
-        for (const [system, entities] of this.systems) {
-            if (entity.has(system.component)) {
-                entities.add(entity);
-            }
-        }
-    }
-
-    // Remove the given entity from the scene
-    delete(entity: GameObjectBase) {
-        this.entities = this.entities.filter(e => e != entity);
-        // Remove the entity from the systems that require it
-        for (const [system, entities] of this.systems) {
-            if (entity.has(system.component)) {
-                entities.delete(entity);
-            }
-        }
-
-    }
-
-    // Get all entities that have all the given component
-    getEntitiesWith<T extends Component>(component: ComponentType<T>): GameObjectBase[] {
-        return this.entities.filter(e => e.has(component));
-    }
-
-    // Add a system to the Scene
-    addSystem(system: System) {
-        let entities = new Set<GameObjectBase>(this.getEntitiesWith(system.component));
-        this.systems.set(system, entities);
-    }
-
-    // Remove a system from the scene
-    removeSystem(system: System) {
-        this.systems.delete(system);
-    }
-
-    // Perform all the updates for the current frame
-    update() {
-        // TODO: Calculate dt properly. For now its just 1.
-        this.dt = 1;
-
-        // Run all systems
-        for (const [system, entities] of this.systems) {
-            system.update(entities);
-        }
-
-        // Run all entity update functions
-        for (const entity of this.entities) {
-            entity.update();
-        }
-    }
-}
-
 
 class ComponentManager {
     private static components = [];
@@ -249,68 +178,68 @@ class ComponentManager {
     }
 }
 
-// example usage
+// // example usage
 
-class Position extends Component {
-    x: number = 0;
-    y: number = 0;
-}
+// class Position extends Component {
+//     x: number = 0;
+//     y: number = 0;
+// }
 
-class Velocity extends Component {
-    dependencies = [Position];
+// class Velocity extends Component {
+//     dependencies = [Position];
 
-    x: number = 0;
-    y: number = 0;
+//     x: number = 0;
+//     y: number = 0;
 
-    constructor(x: number, y: number) {
-        super();
-        this.x = x;
-        this.y = y;
-    }
-}
+//     constructor(x: number, y: number) {
+//         super();
+//         this.x = x;
+//         this.y = y;
+//     }
+// }
 
-class MovementSystem extends System {
-    component = Velocity;
+// class MovementSystem extends System {
+//     component = Velocity;
 
-    update(entities: Set<GameObjectBase>) {
-        for (const entity of entities) {
-            console.log("Updating entity", entity);
-            const position = entity.get(Position);
-            const velocity = entity.get(Velocity);
-            position.x += velocity.x * $scene.dt;
-            position.y += velocity.y * $scene.dt;
-        }
-    }
-}
+//     update(entities: Set<GameObjectBase>) {
+//         for (const entity of entities) {
+//             console.log("Updating entity", entity);
+//             const position = entity.get(Position);
+//             const velocity = entity.get(Velocity);
+//             position.x += velocity.x * $scene.dt;
+//             position.y += velocity.y * $scene.dt;
+//         }
+//     }
+// }
 
-class Player extends GameObjectBase {
-    health: number;
-    onCreate() {
-        this.health = 10;
-        // in practice these components would be added via the editor UI rather than in code like this
-        this.add(new Position).add(new Velocity(1, 1));
-    }
-    update() {
-        if (this.health <= 0) {
-            console.log("Player is dead");
-            $scene.delete(this);
-        }
-    }
-    takeDamage(amount: number) {
-        this.health -= amount;
-    }
-}
+// class Player extends GameObjectBase {
+//     health: number;
+//     onCreate() {
+//         this.health = 10;
+//         // in practice these components would be added via the editor UI rather than in code like this
+//         this.add(new Position).add(new Velocity(1, 1));
+//     }
+//     update() {
+//         if (this.health <= 0) {
+//             console.log("Player is dead");
+//             $scene.deleteEntity(this);
+//         }
+//     }
+//     takeDamage(amount: number) {
+//         this.health -= amount;
+//     }
+// }
 
-let $scene = new Scene();
-let player: any = new Player();
-$scene.addSystem(new MovementSystem());
-$scene.spawn(player);
-$scene.update();
+// let $scene = new Scene();
+// let player: any = new Player();
+// $scene.addSystem(new MovementSystem());
+// $scene.addEntity(player);
+// $scene.update();
 
-// position is now (1, 1)
-// this is an example of how since player is a proxy we can access the position component directly
-// although TypeScript doesn't play nice with proxies so we have to set the type to any.
-// This shouldn't be a problem since the user is working in JS not TS anyway.
-console.log(player.Position);
-player.takeDamage(10);
-$scene.update();
+// // position is now (1, 1)
+// // this is an example of how since player is a proxy we can access the position component directly
+// // although TypeScript doesn't play nice with proxies so we have to set the type to any.
+// // This shouldn't be a problem since the user is working in JS not TS anyway.
+// console.log(player.Position);
+// player.takeDamage(10);
+// $scene.update();
