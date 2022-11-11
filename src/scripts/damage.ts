@@ -18,7 +18,7 @@ class HealthSystem extends System {
             health.hp -= health.hp * $scene.dt;
             if (health.hp <= 0) {
                 console.log("enemy is dead");
-                $scene.delete(entity);
+                $scene.deleteEntity(entity);
             }
         }
     }
@@ -33,7 +33,7 @@ class Enemy extends GameObjectBase {
 
 let enemy: any = new Enemy();
 $scene.addSystem(new HealthSystem());
-$scene.spawn(enemy);
+$scene.addEntity(enemy);
 $scene.update();
 
 // position is now (1, 1)
