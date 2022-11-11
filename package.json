@@ -5,15 +5,21 @@
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "start": "npm run build && nw ."
+    "clean": "rimraf build/",
+    "copy-files": "copyfiles -u 1 src/**/*.json build/",
+    "build": "npm run clean && npm run copy-files && tsc",
+    "start": "npm run build && nw .",
+    "doc": "typedoc --out ./docs ./src/main.ts"
   },
   "author": "Maxi",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^18.8.3",
+    "copyfiles": "^2.4.1",
     "gl-matrix": "^3.4.3",
-    "nw": "^0.69.1",
+    "nw": "^0.70.1",
+    "rimraf": "^3.0.2",
+    "typedoc": "^0.23.19",
     "typescript": "^4.8.4"
   }
 }

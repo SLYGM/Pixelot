@@ -2,6 +2,9 @@ const r = new Renderer();
 r.loadTexture('./images/frog.png', 'frog')
 r.loadTexture('./images/tile.png', 'tile')
 
+ComponentManager.loadComponents();
+ScriptManager.loadScripts(["damage.js"]);
+
 let p = {
     sprite: r.createSprite(0,150, 'frog'),
     dx: 50,
