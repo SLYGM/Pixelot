@@ -12,7 +12,7 @@ class SceneManager {
         if (!this.currentScene) {
             this.currentScene = this.scenes.get(name);
             this.currentSceneName = name;
-            this.currentScene.onCreate();
+            //! this.currentScene.onCreate();
         }
     }
 
@@ -25,9 +25,9 @@ class SceneManager {
     }
 
     switchToScene(name: string) {
-        this.currentScene.onPause();
+        //! this.currentScene.onPause();
         const nextScene = this.scenes.get(name);
-        nextScene.onResume();
+        //! nextScene.onResume();
         this.currentSceneName = name;
         this.currentScene = nextScene;
     }
@@ -52,13 +52,13 @@ class SceneManager {
 
     addSystemToCurrentScene(system: System) {
         if (this.currentScene) {
-            this.currentScene.addSystem(system);
+            //! this.currentScene.addSystem(system);
         }
     }
 
     addSystemToScene(sceneName: string, system: System) {
         if (this.scenes.get(sceneName)) {
-            this.scenes.get(sceneName).addSystem(system);
+            //! this.scenes.get(sceneName).addSystem(system);
         }
     }
 
@@ -66,8 +66,8 @@ class SceneManager {
         // create a JSON object
         const sceneSaveFile = {
             name: this.currentSceneName,
-            entities: this.currentScene.getEntities(),
-            systems: this.currentScene.getSystems()
+            //! entities: this.currentScene.getEntities(),
+            //! systems: this.currentScene.getSystems()
         }
 
         // convert JSON object to a string
@@ -121,70 +121,70 @@ class SceneManager {
 
 //* example usage
 
-class Position extends Component {
-    x: number = 0;
-    y: number = 0;
-}
+// class Position extends Component {
+//     x: number = 0;
+//     y: number = 0;
+// }
 
-class Velocity extends Component {
-    dependencies = [Position];
+// class Velocity extends Component {
+//     dependencies = [Position];
 
-    x: number = 0;
-    y: number = 0;
+//     x: number = 0;
+//     y: number = 0;
 
-    constructor(x: number, y: number) {
-        super();
-        this.x = x;
-        this.y = y;
-    }
-}
+//     constructor(x: number, y: number) {
+//         super();
+//         this.x = x;
+//         this.y = y;
+//     }
+// }
 
-class MovementSystem extends System {
-    component = Velocity;
+// class MovementSystem extends System {
+//     component = Velocity;
 
-    update(entities: Set<GameObjectBase>) {
-        for (const entity of entities) {
-            // console.log("Updating entity", entity);
-            const position = entity.get(Position);
-            const velocity = entity.get(Velocity);
-            position.x += velocity.x * $scene.dt;
-            position.y += velocity.y * $scene.dt;
-        }
-    }
-}
+//     update(entities: Set<GameObjectBase>) {
+//         for (const entity of entities) {
+//             // console.log("Updating entity", entity);
+//             const position = entity.get(Position);
+//             const velocity = entity.get(Velocity);
+//             position.x += velocity.x * $scene.dt;
+//             position.y += velocity.y * $scene.dt;
+//         }
+//     }
+// }
 
-class Player extends GameObjectBase {
-    health: number;
-    onCreate() {
-        this.health = 10;
-        // in practice these components would be added via the editor UI rather than in code like this
-        this.add(new Position).add(new Velocity(1, 1));
-    }
-    update() {
-        if (this.health <= 0) {
-            // console.log("Player is dead");
-            $scene.deleteEntity(this);
-        }
-    }
-    takeDamage(amount: number) {
-        this.health -= amount;
-    }
-}
+// class Player extends GameObjectBase {
+//     health: number;
+//     onCreate() {
+//         this.health = 10;
+//         // in practice these components would be added via the editor UI rather than in code like this
+//         this.add(new Position).add(new Velocity(1, 1));
+//     }
+//     update() {
+//         if (this.health <= 0) {
+//             // console.log("Player is dead");
+//             $scene.deleteEntity(this);
+//         }
+//     }
+//     takeDamage(amount: number) {
+//         this.health -= amount;
+//     }
+// }
 
-let $sceneManager = new SceneManager();
-let $scene = new Scene();
-$sceneManager.addScene('test1', $scene);
-let player: any = new Player();
-$scene.addSystem(new MovementSystem());
-$scene.addEntity(player);
-$sceneManager.update();
+// let $sceneManager = new SceneManager();
+// let $scene = new Scene();
+// $sceneManager.addScene('test1', $scene);
+// let player: any = new Player();
+// $scene.addSystem(new MovementSystem());
+// $scene.addEntity(player);
+// $sceneManager.update();
 
-// Save a scene and reload
-//! Saving Entities saves proxy and cannot save System object in json, check with other guys if they know more
-$sceneManager.saveCurrentScene();
-$sceneManager.removeScene('test1');
-$sceneManager.loadScene('test2');
-setTimeout(() => { console.log($sceneManager); }, 5000);
+// // Save a scene and reload
+// //! Saving Entities saves proxy and cannot save System object in json, check with other guys if they know more
+// $sceneManager.saveCurrentScene();
+// $sceneManager.removeScene('test1');
+// $sceneManager.loadScene('test2');
+// setTimeout(() => { console.log($sceneManager); }, 5000);
 
 
 // position is now (1, 1)

@@ -1,38 +1,53 @@
+// class Scene {
+//     // The list of entities in the scene
+//     private entities: GameObjectBase[];
+//     // A map from systems to the entities that they act on
+//     private systems: Map<System, Set<GameObjectBase>>;
+
+//     // The time that has elapsed since the last frame.
+//     public dt: number;
+
+//     onCreate() {
+//         this.entities = [];
+//         this.systems = new Map<System, Set<GameObjectBase>>();
+//     }
+
+//     onDetroy() {
+//         this.entities = [];
+//         this.systems.clear();
+//     }
+
+//     onPause() { }
+
+//     onResume() { }
+
+//     getEntities() { return this.entities }
+
+//     getSystems() { return [...this.systems.keys()] }
+// }
+
 class Scene {
     // The list of entities in the scene
     private entities: GameObjectBase[];
-    // A map from systems to the entities that they act on
-    private systems: Map<System, Set<GameObjectBase>>;
+    // The systems in a priority queue
+    private systems: SystemNode[];
 
     // The time that has elapsed since the last frame.
     public dt: number;
 
-    onCreate() {
+    constructor() {
         this.entities = [];
-        this.systems = new Map<System, Set<GameObjectBase>>();
+        this.systems = [];
     }
-
-    onDetroy() {
-        this.entities = [];
-        this.systems.clear();
-    }
-
-    onPause() { }
-
-    onResume() { }
-
-    getEntities() { return this.entities }
-
-    getSystems() { return [...this.systems.keys()] }
 
     // Add an entity to the Scene
     addEntity<T extends GameObjectBase>(entity: T) {
         this.entities.push(entity);
         entity.onCreate();
         // Add the entity to the systems that require it
-        for (const [system, entities] of this.systems) {
-            if (entity.has(system.component)) {
-                entities.add(entity);
+        for (const system_node of this.systems) {
+            if (entity.has(system_node.system.component)) {
+                system_node.entities.add(entity);
             }
         }
     }
@@ -41,27 +56,34 @@ class Scene {
     deleteEntity(entity: GameObjectBase) {
         this.entities = this.entities.filter(e => e != entity);
         // Remove the entity from the systems that require it
-        for (const [system, entities] of this.systems) {
-            if (entity.has(system.component)) {
-                entities.delete(entity);
-            }
+        for (const system_node of this.systems) {
+            system_node.entities.delete(entity);
         }
+
     }
 
-    // Get all entities that have all the given component
+    // Get all entities that have the given component.
     getEntitiesWithComponent<T extends Component>(component: ComponentType<T>): GameObjectBase[] {
+        // NOTE: Currently not very efficient. Could be improved by using archetypes to store entities with the same components.
         return this.entities.filter(e => e.has(component));
     }
 
     // Add a system to the Scene
-    addSystem(system: System) {
+    addSystem(system: System, priority: number) {
         let entities = new Set<GameObjectBase>(this.getEntitiesWithComponent(system.component));
-        this.systems.set(system, entities);
+        // add the system to the priority queue
+        this.systems.push({
+            name: system.constructor.name,
+            system: system,
+            priority: priority,
+            entities: entities,
+        });
+        this.systems.sort((a, b) => a.priority - b.priority);
     }
 
     // Remove a system from the scene
     removeSystem(system: System) {
-        this.systems.delete(system);
+        this.systems = this.systems.filter(s => s.system != system);
     }
 
     // Perform all the updates for the current frame
@@ -70,8 +92,8 @@ class Scene {
         this.dt = 1;
 
         // Run all systems
-        for (const [system, entities] of this.systems) {
-            system.update(entities);
+        for (const system_node of this.systems) {
+            system_node.system.update(system_node.entities);
         }
 
         // Run all entity update functions

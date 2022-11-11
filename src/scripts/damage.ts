@@ -32,13 +32,13 @@ class Enemy extends GameObjectBase {
 }
 
 let enemy: any = new Enemy();
-$scene.addSystem(new HealthSystem());
+$scene.addSystem(new HealthSystem(), 0);
 $scene.addEntity(enemy);
 $scene.update();
 
 // position is now (1, 1)
-// this is an example of how since player is a proxy we can access the position component directly
-// although TypeScript doesn't play nice with proxies so we have to set the type to any.
+// this is an example of how since `enemy` is a proxy we can access the health component directly.
+// although TypeScript doesn't play nice with proxies so we have to set the type to `any`.
 // This shouldn't be a problem since the user is working in JS not TS anyway.
 console.log(enemy.Health);
 $scene.update();
