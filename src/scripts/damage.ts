@@ -15,10 +15,10 @@ class HealthSystem extends System {
         for (const entity of entities) {
             console.log("Updating entity", entity);
             const health = entity.get(Health);
-            health.hp -= health.hp * $scene.dt;
+            health.hp -= health.hp * _scene.dt;
             if (health.hp <= 0) {
                 console.log("enemy is dead");
-                $scene.delete(entity);
+                _scene.delete(entity);
             }
         }
     }
@@ -37,14 +37,14 @@ class Enemy extends GameObjectBase {
 // example usage
 function damageExample() {
     let enemy: any = new Enemy();
-    $scene.addSystem(new HealthSystem(), 0);
-    $scene.spawn(enemy);
-    $scene.update();
+    _scene.addSystem(new HealthSystem(), 0);
+    _scene.spawn(enemy);
+    _scene.update();
 
     // position is now (1, 1)
     // this is an example of how since `enemy` is a proxy we can access the health component directly.
     // although TypeScript doesn't play nice with proxies so we have to set the type to `any`.
     // This shouldn't be a problem since the user is working in JS not TS anyway.
     console.log(enemy.Health);
-    $scene.update();
+    _scene.update();
 }

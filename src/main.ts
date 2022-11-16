@@ -14,10 +14,10 @@ class TestEntity extends GameObjectBase {
 
 let t = new TestEntity();
 t.add(new Position).add(new Sprite('frog'));
-$scene.spawn(t);
-$scene.addSystem(new RenderSystem(), 0);
+_scene.spawn(t);
+_scene.addSystem(new RenderSystem(), 0);
 
 PostProcessing.add(new BarShader());
 
-Game.addToUpdateQueue($scene);
+Game.addToUpdateQueue(_scene);
 Game.start();

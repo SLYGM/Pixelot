@@ -281,7 +281,7 @@ class ComponentManager {
     }
 }
 
-let $scene = new Scene();
+let _scene = new Scene();
 ComponentManager.loadComponents();
 ScriptManager.loadScripts(["damage.js"]);
 
@@ -313,8 +313,8 @@ function ecsExample() {
                 console.log("Updating entity", entity);
                 const position = entity.get(Position);
                 const velocity = entity.get(Velocity);
-                position.x += velocity.x * $scene.dt;
-                position.y += velocity.y * $scene.dt;
+                position.x += velocity.x * _scene.dt;
+                position.y += velocity.y * _scene.dt;
             }
         }
     }
@@ -340,7 +340,7 @@ function ecsExample() {
         update() {
             if (this.health <= 0) {
                 console.log("Player is dead");
-                $scene.delete(this);
+                _scene.delete(this);
             }
         }
         takeDamage(amount: number) {
@@ -350,16 +350,16 @@ function ecsExample() {
 
 
     let player: any = new Player();
-    $scene.addSystem(new MovementSystem(), SystemStage.PositionUpdate);
-    $scene.addSystem(new PrintPositionSystem(), SystemStage.PositionUpdate - 1);
-    $scene.spawn(player);
-    $scene.update();
+    _scene.addSystem(new MovementSystem(), SystemStage.PositionUpdate);
+    _scene.addSystem(new PrintPositionSystem(), SystemStage.PositionUpdate - 1);
+    _scene.spawn(player);
+    _scene.update();
 
     // position is now (1, 1)
     // this is an example of how since player is a proxy we can access the position component directly
     // although TypeScript doesn't play nice with proxies so we have to set the type to any.
     // This shouldn't be a problem since the user is working in JS not TS anyway.
     player.takeDamage(10);
-    $scene.update();
+    _scene.update();
 }
 
