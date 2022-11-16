@@ -1,9 +1,15 @@
+import './renderer/gl.js'
+import {Renderer} from './renderer/renderer.js';
+import { PostProcessing } from './renderer/post_process.js';
+import { BarShader } from './renderer/post effects/bars.js';
+import { ComponentManager } from './componentManager.js';
+import { ScriptManager } from './scriptManager.js';
+import * as ecs from './ecs.js';
+
 const r = new Renderer();
 r.loadTexture('./images/frog.png', 'frog')
 r.loadTexture('./images/tile.png', 'tile')
 
-ComponentManager.loadComponents();
-ScriptManager.loadScripts(["damage.js"]);
 
 let p = {
     sprite: r.createSprite(0,150, 'frog'),

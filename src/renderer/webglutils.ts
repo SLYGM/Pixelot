@@ -1,4 +1,7 @@
-class GLUtils {
+import { _gl } from './gl.js';
+
+
+export class GLUtils {
     static createShader(type: number, source: string) {
         let shader = _gl.createShader(type);
         if (!shader) {

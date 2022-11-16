@@ -1,4 +1,7 @@
-class PostProcess {
+import { _gl, _canvas } from './gl.js';
+import {GLUtils} from './webglutils.js'
+
+export class PostProcess {
     program: WebGLProgram;
 
     constructor(v_shader: string, f_shader: string) {
@@ -10,7 +13,7 @@ class PostProcess {
     }
 }
 
-class PostProcessing {
+export class PostProcessing {
     static frame_buffers: WebGLFramebuffer[];
     static curr_buffer = 0;
     static post_queue: PostProcess[] = [];

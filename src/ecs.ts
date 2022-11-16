@@ -1,4 +1,6 @@
-abstract class Component {
+import { StringUtils, ScriptUtils } from "./utils/baseutils.js";
+
+export abstract class Component {
     /**
      * The list of components that this component depends on.
      * E.g. Velocity depends on Position.
@@ -6,7 +8,7 @@ abstract class Component {
     readonly dependencies = [];
 }
 
-type ComponentType<T extends Component> = new (...args: any[]) => T;
+export type ComponentType<T extends Component> = new (...args: any[]) => T;
 
 /** 
  * The base class inherited by all game objects.
@@ -28,7 +30,7 @@ type ComponentType<T extends Component> = new (...args: any[]) => T;
  * }
  * ```
  */
-abstract class GameObjectBase {
+export abstract class GameObjectBase {
     // Mapping from component name to component instance
     private component_map: Map<string, Component> = new Map();
 
@@ -113,12 +115,12 @@ abstract class GameObjectBase {
  * For example, if you want your system to run after collision detection,
  * you can set the priority to `SystemStage.CollisionDetection + 1`.
  */
-enum SystemStage {
+export enum SystemStage {
     PositionUpdate = 1,
     CollisionDetection = 2,
 }
 
-abstract class System {
+export abstract class System {
     /**
      * The component that this system acts on.
      */
@@ -131,7 +133,7 @@ abstract class System {
     abstract update(entities: Set<GameObjectBase>): void;
 }
 
-type SystemNode = {
+export type SystemNode = {
     // The name of the system
     name: string;
     // The system itself
@@ -142,7 +144,7 @@ type SystemNode = {
     entities: Set<GameObjectBase>;
 };
 
-class Scene {
+export class Scene {
     // The list of entities in the scene
     private entities: GameObjectBase[];
     // The systems in a priority queue
@@ -219,65 +221,9 @@ class Scene {
     }
 }
 
-
-class ComponentManager {
-    private static components = [];
-    private static imported = new Map<string, boolean>();
-    private static dependencies = new Map<string, string[]>();
-    private static componentsFolder = "build/components/"
-
-    static loadComponents() {
-        const fs = require('fs');
-        let files = (fs.readdirSync(this.componentsFolder) as string[]);
-        files.forEach(file => {
-            let fileName = file.split(".")[0];
-            if (StringUtils.isPostfix(file, ".settings.json")) {
-                let settings = JSON.parse(fs.readFileSync(this.componentsFolder + file));
-                if (settings["dependencies"] == undefined) return;
-                this.dependencies.set(fileName, settings["dependencies"]);
-            }
-            else if (StringUtils.isPostfix(file, ".js")) {
-                this.components.push(fileName);
-                this.imported.set(fileName, false);
-            }
-        });
-        this.components.forEach(component => {
-            this.loadComponent(component, new Map<string,boolean>())
-        });
-    }
-
-    private static loadComponent(component:string, stack:Map<string,boolean>) : boolean {
-        if (this.imported.get(component)) return true;
-        if (!this.imported.has(component)) {
-            console.trace("Required component '" + component + "' does not have its own script under build/components/.")
-            return false;
-        }
-        if (stack.has(component) && stack.get(component)) {
-            console.trace("Failed to import components. Circular dependency on component '" + component + "'.")
-            return false;
-        }
-        if (this.dependencies.has(component)) {
-            stack.set(component, true);
-            for (let dep of this.dependencies.get(component)) {
-                let res = this.loadComponent(dep, stack);
-                if (!res) return false;
-            }
-            stack.set(component, false)
-        }
-        this.importComponent(component);
-        this.imported.set(component, true);
-        return true;
-    }
-
-    private static importComponent(component:string) {
-        if (this.imported.get(component)) return;
-        ScriptUtils.loadScript(this.componentsFolder + component + ".js");
-    }
-}
-
 // example usage
 
-class Position extends Component {
+export class Position extends Component {
     x: number = 0;
     y: number = 0;
 }
@@ -338,7 +284,7 @@ class Player extends GameObjectBase {
     }
 }
 
-let $scene = new Scene();
+export const $scene = new Scene();
 let player: any = new Player();
 $scene.addSystem(new MovementSystem(), SystemStage.PositionUpdate);
 $scene.addSystem(new PrintPositionSystem(), SystemStage.PositionUpdate - 1);

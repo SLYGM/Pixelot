@@ -1,6 +1,10 @@
 const { glMatrix, mat4, vec3 } = require('gl-matrix');
+import { _gl } from './gl.js';
+import {GLUtils} from './webglutils.js'
+import { PostProcessing } from './post_process.js';
+import { Texture, Sprite, Updatable } from '../types.js';
 
-class Renderer {
+export class Renderer {
     //GLSL Vertex Shader
     private vert_source: string = `#version 300 es
 

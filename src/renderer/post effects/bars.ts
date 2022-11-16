@@ -1,4 +1,10 @@
-class BarShader extends PostProcess {
+import { _gl } from '../gl.js';
+
+import { PostProcess } from "../post_process.js";
+
+
+
+export class BarShader extends PostProcess {
   constructor() {
     let v_shader = `#version 300 es
 

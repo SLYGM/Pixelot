@@ -1,15 +1,15 @@
-type Texture = {
+export type Texture = {
     width: number;
     height: number;
     texture: WebGLTexture | null;
 }
 
-type Sprite = {
+export type Sprite = {
     x: number;
     y: number;
     tex: Texture;
 }
 
-type Updatable = {
+export type Updatable = {
     update: (dt: number) => void;
 }
