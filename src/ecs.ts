@@ -4,6 +4,11 @@ abstract class Component {
      * E.g. Velocity depends on Position.
      */
     readonly dependencies = [];
+    owner: GameObjectBase;
+
+    registerOwner(owner: GameObjectBase) {
+        this.owner = owner;
+    }
 }
 
 type ComponentType<T extends Component> = new (...args: any[]) => T;
@@ -74,6 +79,7 @@ abstract class GameObjectBase {
             }
         }
         this.component_map.set(component.constructor.name, component);
+        component.registerOwner(this);
         return this;
     }
 
