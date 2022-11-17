@@ -22,6 +22,7 @@ class SceneManager {
             this.currentSceneName = undefined
         }
         this.scenes.delete(name);
+        console.log('scene deleted');
     }
 
     switchToScene(name: string) {
@@ -63,14 +64,13 @@ class SceneManager {
     }
 
     saveCurrentScene() {
-        console.log(this.currentScene);
         // create a JSON object
         const proxies = this.currentScene.getEntities();
         const systems = this.currentScene.getSystems();
         const entities = [];
         const systemNames = [];
         for (const proxy of proxies) {
-            entities.push({ name: proxy[0].name, components: [...proxy[0].getAllComponents()] })
+            entities.push({ name: proxy.name, components: [...proxy.getAllComponents()] })
         }
         for (const system of systems) {
             systemNames.push({ name: system.name, priority: system.priority });
@@ -99,7 +99,7 @@ class SceneManager {
     }
 
     loadScene(name: string) {
-        const fs = require('fs')
+        const fs = require('fs');
         // read JSON object from file
         fs.readFile(name + '.json', 'utf-8', (err, data) => {
             if (err) {
@@ -112,21 +112,15 @@ class SceneManager {
             const loadedEntities = loadedSceneJson['entities'];
 
             // construct Scene object from json data and add to sceneManager
-            const scene = new Scene();
+            var scene2 = new Scene();
+            scene2.onCreate();
             for (const system of loadedSystems) {
-                console.log('hel');
-                console.log($systemsMap.get(system['name']))
-                scene.addSystem($systemsMap.get(system['name']), system['priority']);
+                scene2.addSystem($systemsMap.get(system['name']), system['priority']);
             };
-            console.log(scene);
             for (const entity of loadedEntities) {
-                console.log('lo');
-                console.log($component_map.get(entity['name']));
-                scene.addEntity($component_map.get(entity['name']));
+                scene2.addEntity($component_map.get(entity['name']));
             };
-            console.log(scene);
-
-            this.addScene(loadedSceneJson['name'], scene);
+            this.addScene(loadedSceneJson['name'], scene2);
         })
     }
 

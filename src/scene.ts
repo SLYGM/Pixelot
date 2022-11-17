@@ -21,15 +21,13 @@ class Scene {
 
     onResume() { }
 
-    getEntities() { return [this.entities] }
+    getEntities() { return this.entities }
 
     getSystems() { return this.systems }
 
     // Add an entity to the Scene
     addEntity<T extends GameObjectBase>(entity: T) {
-        console.log('add entity pre entities.push');
         this.entities.push(entity);
-        console.log('add entity post entities.push');
         entity.onCreate();
 
         // Add the entity to the systems that require it
@@ -58,9 +56,8 @@ class Scene {
 
     // Add a system to the Scene
     addSystem(system: System, priority: number) {
-        console.log('add system pre let entities');
         let entities = new Set<GameObjectBase>(this.getEntitiesWithComponent(system.component));
-        console.log('add system post let entities');
+        console.log(system);
         // add the system to the priority queue
         this.systems.push({
             name: system.constructor.name,
@@ -69,6 +66,7 @@ class Scene {
             entities: entities,
         });
         this.systems.sort((a, b) => a.priority - b.priority);
+        console.log(this.systems);
     }
 
     // Remove a system from the scene
