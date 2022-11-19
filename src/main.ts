@@ -1,30 +1,23 @@
-ComponentManager.loadComponents();
-ScriptManager.loadScripts(["damage.js"]);
+Renderer.loadTexture('./images/frog.png', 'frog')
+Renderer.loadTexture('./images/tile.png', 'tile')
 
+class TestEntity extends GameObjectBase {
+    onCreate(): void {
+        this.get(Position).x = 50;
+        this.get(Position).y = 50;
+    }
 
-const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-let p = {
-    sprite: createSprite(100, 100, './images/BlackHole.png'),
-    dx: 100,
-    dy: 100,
-    update: function(dt: number){
-        this.sprite.x += this.dx * dt;
-        this.sprite.y += this.dy * dt
-        if (this.sprite.x + this.sprite.tex.width > gl.canvas.clientWidth || this.sprite.x < 0){
-            this.dx *= -1;
-        }
-        if (this.sprite.y + this.sprite.tex.height > gl.canvas.clientHeight || this.sprite.y < 0){
-            this.dy *= -1;
-        }
+    update(): void {
+        this.get(Position).x += 1;
     }
 }
 
-let viewport_updater = {
-    update: function(dt: number) {
-        viewport.height += 20 * dt;
-        viewport.width += 20 * dt;
-    }
-}
-addToUpdateQueue(viewport_updater);
-begin_rendering();
+let t = new TestEntity();
+t.add(new Position).add(new Sprite('frog'));
+$scene.spawn(t);
+$scene.addSystem(new RenderSystem(), 0);
 
+PostProcessing.add(new BarShader());
+
+Game.addToUpdateQueue($scene);
+Game.start();

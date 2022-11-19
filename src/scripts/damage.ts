@@ -31,14 +31,17 @@ class Enemy extends GameObjectBase {
     update() {}
 }
 
-// let enemy: any = new Enemy('enemy');
-// $scene.addSystem(new HealthSystem(), 0);
-// $scene.addEntity(enemy);
-// $scene.update();
+// example usage
+function damageExample() {
+    let enemy: any = new Enemy();
+    $scene.addSystem(new HealthSystem(), 0);
+    $scene.spawn(enemy);
+    $scene.update();
 
-// position is now (1, 1)
-// this is an example of how since `enemy` is a proxy we can access the health component directly.
-// although TypeScript doesn't play nice with proxies so we have to set the type to `any`.
-// This shouldn't be a problem since the user is working in JS not TS anyway.
-// console.log(enemy.Health);
-// $scene.update();
+    // position is now (1, 1)
+    // this is an example of how since `enemy` is a proxy we can access the health component directly.
+    // although TypeScript doesn't play nice with proxies so we have to set the type to `any`.
+    // This shouldn't be a problem since the user is working in JS not TS anyway.
+    console.log(enemy.Health);
+    $scene.update();
+}
