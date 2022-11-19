@@ -1,4 +1,46 @@
 const { glMatrix, mat4, vec3 } = require('gl-matrix');
+const AVLTree = require('avl');
+type AVLTree = InstanceType<typeof AVLTree>;
+
+type AVLKey<T> = {
+    key: number,
+    data: T
+}
+
+abstract class RenderLayer {
+    abstract render();
+}
+
+class SpriteLayer extends RenderLayer {
+    sprites: AVLTree;
+    
+    constructor() {
+        super();
+        this.sprites = new AVLTree((a: AVLKey<Sprite>, b: AVLKey<Sprite>) => {
+            const diff = a.key - b.key
+            if (diff !== 0) return diff;
+            if (a.data === b.data) return 0; else return -1;
+        });
+    }
+
+    addSprite(sprite: Sprite, zindex: number = 0): AVLKey<Sprite> {
+        const node = {key: zindex, data: sprite};
+        this.sprites.insert(node);
+        return node;
+    }
+
+    removeSprite(n: AVLKey<Sprite>) {
+        this.sprites.remove(n);
+    }
+
+    render() {
+        this.sprites.forEach((node) => {
+            const sprite = node.key.data;
+            const pos = sprite.getPos();
+            Renderer.drawImage(sprite.tex, pos.x, pos.y);
+        })
+    }
+}
 
 class Renderer {
     //GLSL Vertex Shader
@@ -51,6 +93,7 @@ class Renderer {
     static vao: WebGLVertexArrayObject;
     static time: number;
     static textures: Map<string, Texture>;
+    static layers: RenderLayer[];
 
     static {
         this.resolution = {x: 426, y: 240};
@@ -74,6 +117,37 @@ class Renderer {
         this.viewport = {x: 0, y: 0, sx: 1.0, sy: 1.0}
 
         this.textures = new Map<string, Texture>();
+
+        this.layers = [];
+    }
+
+    static render() {
+        _gl.viewport(0, 0, Renderer.resolution.x, Renderer.resolution.y);
+        _gl.clearColor(1, 1, 1, 1);
+        _gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
+
+        _gl.useProgram(Renderer.shader.prog);
+        _gl.bindVertexArray(Renderer.vao);
+
+        const proj_matrix = mat4.create();
+        // use orthographic projection to scale coords to -1->1 (calculate once per frame)
+        mat4.ortho(proj_matrix, 0, Renderer.resolution.x * Renderer.viewport.sx, Renderer.resolution.y * Renderer.viewport.sy, 0, -1, 1);
+        _gl.uniformMatrix4fv(Renderer.shader.proj_loc, false, proj_matrix);
+
+        this.layers.forEach((l) => {
+            l.render();
+        })
+
+        PostProcessing.apply();
+    }
+
+    //returns index of added layer
+    static addLayer(layer: RenderLayer): number {
+        return this.layers.push(layer) - 1;
+    }
+
+    static getLayer(index: number) {
+        return this.layers[index];
     }
 
     static loadTexture(path: string, alias: string): string {
@@ -106,7 +180,10 @@ class Renderer {
         return alias;
     }
 
-    static drawImage(tex: Texture, x: number, y: number) {
+    //pass a texture alias and x and y pos, and draw that on the screen
+    static drawImage(alias: string, x: number, y: number) {
+        const tex = this.textures.get(alias);
+        if (tex === undefined) return;
         let textureUnit = 0;
         _gl.uniform1i(this.shader.tex_loc, textureUnit);
         _gl.activeTexture(_gl.TEXTURE0 + textureUnit);
@@ -174,24 +251,6 @@ class RenderSystem extends System {
     component = Sprite;
 
     update(entities: Set<GameObjectBase>): void {
-        _gl.viewport(0, 0, Renderer.resolution.x, Renderer.resolution.y);
-        _gl.clearColor(1, 1, 1, 1);
-        _gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
-
-        _gl.useProgram(Renderer.shader.prog);
-        _gl.bindVertexArray(Renderer.vao);
-
-        const proj_matrix = mat4.create();
-        // use orthographic projection to scale coords to -1->1 (calculate once per frame)
-        mat4.ortho(proj_matrix, 0, Renderer.resolution.x * Renderer.viewport.sx, Renderer.resolution.y * Renderer.viewport.sy, 0, -1, 1);
-        _gl.uniformMatrix4fv(Renderer.shader.proj_loc, false, proj_matrix);
-
-        entities.forEach((entity) => {
-            let sprite = entity.get(Sprite);
-            let pos = entity.get(Position);
-            Renderer.drawImage(sprite.tex, pos.x, pos.y);
-        })
-
-        PostProcessing.apply();
+        Renderer.render();
     }
 }
