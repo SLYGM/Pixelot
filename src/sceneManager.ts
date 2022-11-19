@@ -55,12 +55,6 @@ class SceneManager {
         }
     }
 
-    addSystemToCurrentScene(system: System, priority: number) {
-        if (this.currentScene) {
-            this.currentScene.addSystem(system, priority);
-        }
-    }
-
     addSystemToScene(sceneName: string, system: System, priority: number) {
         if (this.scenes.get(sceneName)) {
             this.scenes.get(sceneName).addSystem(system, priority);
@@ -122,7 +116,7 @@ class SceneManager {
                 scene2.addSystem($systemsMap.get(system['name']), system['priority']);
             };
             for (const entity of loadedEntities) {
-                scene2.addEntity($component_map.get(entity['name']));
+                scene2.addEntity($gameObject_map.get(entity['name']));
             };
             this.addScene(loadedSceneJson['name'], scene2);
         })
@@ -199,8 +193,8 @@ class Player extends GameObjectBase {
 let $systemsMap: Map<string, System> = new Map();
 $systemsMap.set('PrintPositionSystem', new PrintPositionSystem());
 $systemsMap.set('MovementSystem', new MovementSystem());
-let $component_map: Map<string, GameObjectBase> = new Map();
-$component_map.set('player', new Player('player'));
+let $gameObject_map: Map<string, GameObjectBase> = new Map();
+$gameObject_map.set('player', new Player('player'));
 
 let $scene = new Scene();
 let $sceneManager = new SceneManager();
