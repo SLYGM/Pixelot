@@ -18,19 +18,23 @@ class SceneManager {
 
     removeScene(name: string) {
         if (this.currentSceneName == name) {
-            this.currentScene = undefined
-            this.currentSceneName = undefined
+            this.currentScene = null
+            this.currentSceneName = null
         }
         this.scenes.delete(name);
         console.log('scene deleted');
     }
 
     switchToScene(name: string) {
-        this.currentScene.onPause();
-        const nextScene = this.scenes.get(name);
-        nextScene.onResume();
-        this.currentSceneName = name;
-        this.currentScene = nextScene;
+        try {
+            const nextScene = this.scenes.get(name);
+            this.currentScene.onPause();
+            nextScene.onResume();
+            this.currentSceneName = name;
+            this.currentScene = nextScene;
+        } catch (error) {
+            throw new Error("Next scene does not exist");
+        }
     }
 
     update() {
@@ -205,18 +209,12 @@ let player: any = new Player('player');
 $scene.addSystem(new MovementSystem(), SystemStage.PositionUpdate);
 $scene.addSystem(new PrintPositionSystem(), SystemStage.PositionUpdate - 1);
 $scene.addEntity(player);
-$scene.update();
+$sceneManager.update();
 
 // Save a scene and reload
-//! Saving Entities saves proxy and cannot save System object in json, check with other guys if they know more
 $sceneManager.saveCurrentScene();
 $sceneManager.removeScene('test1');
 $sceneManager.loadScene('test2');
-console.log($sceneManager);
 
-//* position is now (1, 1)
-//* this is an example of how since player is a proxy we can access the position component directly
-//* although TypeScript doesn't play nice with proxies so we have to set the type to any.
-//* This shouldn't be a problem since the user is working in JS not TS anyway.
 player.takeDamage(10);
-$scene.update();
+$sceneManager.update();
