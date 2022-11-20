@@ -1,5 +1,3 @@
-import { StringUtils, ScriptUtils } from "./utils/baseutils.js";
-
 export abstract class Component {
     /**
      * The list of components that this component depends on.
