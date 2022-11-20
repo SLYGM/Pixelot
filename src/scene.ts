@@ -1,4 +1,6 @@
-class Scene {
+import { Component, ComponentType, GameObjectBase, System, SystemNode } from "./ecs.js";
+
+export class Scene {
     // The list of entities in the scene
     private entities: GameObjectBase[];
     // The systems in a priority queue

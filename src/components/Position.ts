@@ -1,10 +1,6 @@
-class Position extends Component {
+import { Component } from "../ecs.js";
+
+export default class Position extends Component {
     x: number = 0;
     y: number = 0;
-
-    constructor(x: number = 0.0, y: number = 0.0) {
-        super();
-        this.x = x;
-        this.y = y;
-    }
 }

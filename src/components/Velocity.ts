@@ -1,4 +1,6 @@
-class Velocity2 extends Component {
+import { Component } from "../ecs.js";
+
+export default class Velocity extends Component {
 
     x: number = 0;
     y: number = 0;

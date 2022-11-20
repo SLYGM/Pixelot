@@ -1,6 +1,16 @@
+import Sprite from '../components/Sprite.js'
+
+import { _gl } from './gl.js';
+import {GLUtils} from './webglutils.js'
+import { PostProcessing } from './post_process.js';
+import { Texture, Updatable } from '../types.js';
+import { GameObjectBase, System } from '../ecs.js';
+import Position from '../components/Position.js';
+
+
 const { glMatrix, mat4, vec3 } = require('gl-matrix');
 
-class Renderer {
+export class Renderer {
     //GLSL Vertex Shader
     private static vert_source: string = `#version 300 es
 
@@ -170,7 +180,7 @@ class Renderer {
     }
 }
 
-class RenderSystem extends System {
+export class RenderSystem extends System {
     component = Sprite;
 
     update(entities: Set<GameObjectBase>): void {

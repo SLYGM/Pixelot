@@ -1,3 +1,8 @@
+import { GameObjectBase, System, SystemStage } from "./ecs.js";
+import Position from "./components/Position.js";
+import Velocity from "./components/Velocity.js";
+import { Scene } from "./scene.js";
+
 class SceneManager {
     scenes: Map<string, Scene>;
     currentScene: Scene;
@@ -129,24 +134,6 @@ class SceneManager {
 
 // example usage
 
-class Position extends Component {
-    x: number = 0;
-    y: number = 0;
-}
-
-class Velocity extends Component {
-    dependencies = [Position];
-
-    x: number = 0;
-    y: number = 0;
-
-    constructor(x: number, y: number) {
-        super();
-        this.x = x;
-        this.y = y;
-    }
-}
-
 class MovementSystem extends System {
     component = Velocity;
 
@@ -196,7 +183,7 @@ $systemsMap.set('MovementSystem', new MovementSystem());
 let $gameObject_map: Map<string, GameObjectBase> = new Map();
 $gameObject_map.set('player', new Player('player'));
 
-let $scene = new Scene();
+export let $scene = new Scene();
 let $sceneManager = new SceneManager();
 $sceneManager.addScene('test1', $scene);
 let player: any = new Player('player');

@@ -1,10 +1,9 @@
-type Texture = {
+export type Texture = {
     width: number;
     height: number;
     texture: WebGLTexture | null;
 }
 
-
-type Updatable = {
+export type Updatable = {
     update: (dt: number) => void;
 }
