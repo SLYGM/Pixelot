@@ -1,51 +1,41 @@
-import './renderer/gl.js'
-import {Renderer} from './renderer/renderer.js';
+import {Renderer, RenderSystem} from './renderer/renderer.js';
+
 import { PostProcessing } from './renderer/post_process.js';
 import { BarShader } from './renderer/post effects/bars.js';
+
+
+import { GameObjectBase } from './ecs.js';
+import { $scene } from './sceneManager.js';
+import { Game } from './gameloop.js';
+
 import { ComponentManager } from './componentManager.js';
 import { ScriptManager } from './scriptManager.js';
-import * as ecs from './ecs.js';
 
-const r = new Renderer();
-r.loadTexture('./images/frog.png', 'frog')
-r.loadTexture('./images/tile.png', 'tile')
+import Position from './components/Position.js';
+import Sprite from './components/Sprite.js';
 
 
-let p = {
-    sprite: r.createSprite(0,150, 'frog'),
-    dx: 50,
-    dy: 50,
-    update: function(dt: number){
-        this.sprite.x += this.dx * dt;
-        this.sprite.y += this.dy * dt
-        //TODO: replace hardcoded resolution with global constant
-        if (this.sprite.x + this.sprite.tex.width >= 426 * r.viewport.sx || this.sprite.x < 0){
-            this.dx *= -1;
-        }
-        if (this.sprite.y + this.sprite.tex.height >= 240 * r.viewport.sy || this.sprite.y < 0){
-            this.dy *= -1;
-        }
+
+Renderer.loadTexture('./images/frog.png', 'frog')
+Renderer.loadTexture('./images/tile.png', 'tile')
+
+class TestEntity extends GameObjectBase {
+    onCreate(): void {
+        this.get(Position).x = 50;
+        this.get(Position).y = 50;
+    }
+
+    update(): void {
+        this.get(Position).x += 1;
     }
 }
 
-let q = {
-    sprite: r.createSprite(50,150, 'tile'),
-    dx: 50,
-    dy: 30,
-    update: function(dt: number){
-        this.sprite.x -= this.dx * dt;
-        this.sprite.y += this.dy * dt
-        //TODO: replace hardcoded resolution with global constant
-        if (this.sprite.x + this.sprite.tex.width >= 426 * r.viewport.sx || this.sprite.x < 0){
-            this.dx *= -1;
-        }
-        if (this.sprite.y + this.sprite.tex.height >= 240 * r.viewport.sy || this.sprite.y < 0){
-            this.dy *= -1;
-        }
-    }
-}
+let t = new TestEntity("");
+t.add(new Position).add(new Sprite('frog'));
+$scene.addEntity(t);
+$scene.addSystem(new RenderSystem(), 0);
 
 PostProcessing.add(new BarShader());
-r.addToUpdateQueue(p);
-r.addToUpdateQueue(q);
-r.start();
+
+Game.addToUpdateQueue($scene);
+Game.start();

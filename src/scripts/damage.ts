@@ -1,4 +1,6 @@
-import { Component, System, GameObjectBase, $scene, Position } from "../ecs.js";
+import Position from "../components/Position.js";
+import { Component, System, GameObjectBase } from "../ecs.js";
+import { $scene } from "../sceneManager.js";
 
 class Health extends Component {
     hp: number = 10;
@@ -20,7 +22,7 @@ class HealthSystem extends System {
             health.hp -= health.hp * $scene.dt;
             if (health.hp <= 0) {
                 console.log("enemy is dead");
-                $scene.delete(entity);
+                $scene.deleteEntity(entity);
             }
         }
     }
@@ -33,14 +35,17 @@ class Enemy extends GameObjectBase {
     update() {}
 }
 
-let enemy: any = new Enemy();
-$scene.addSystem(new HealthSystem(), 0);
-$scene.spawn(enemy);
-$scene.update();
+// example usage
+function damageExample() {
+    let enemy: any = new Enemy("");
+    $scene.addSystem(new HealthSystem(), 0);
+    $scene.addEntity(enemy);
+    $scene.update();
 
-// position is now (1, 1)
-// this is an example of how since `enemy` is a proxy we can access the health component directly.
-// although TypeScript doesn't play nice with proxies so we have to set the type to `any`.
-// This shouldn't be a problem since the user is working in JS not TS anyway.
-console.log(enemy.Health);
-$scene.update();
+    // position is now (1, 1)
+    // this is an example of how since `enemy` is a proxy we can access the health component directly.
+    // although TypeScript doesn't play nice with proxies so we have to set the type to `any`.
+    // This shouldn't be a problem since the user is working in JS not TS anyway.
+    console.log(enemy.Health);
+    $scene.update();
+}

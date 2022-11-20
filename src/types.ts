@@ -4,12 +4,6 @@ export type Texture = {
     texture: WebGLTexture | null;
 }
 
-export type Sprite = {
-    x: number;
-    y: number;
-    tex: Texture;
-}
-
 export type Updatable = {
     update: (dt: number) => void;
 }
