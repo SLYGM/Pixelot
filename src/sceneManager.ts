@@ -1,3 +1,10 @@
+import { GameObjectBase, System, SystemStage } from "./ecs.js";
+import Position from "./components/Position.js";
+import Velocity from "./components/Velocity.js";
+import { Scene } from "./scene.js";
+import { Constructor } from "./types.js";
+import { Component } from "./ecs.js";
+
 class SceneManager {
     scenes: Map<string, Scene>;
     currentScene: Scene;
@@ -246,7 +253,7 @@ let $system_map = new Map<number, System>();
 $system_map.set(1, new PrintPositionSystem());
 $system_map.set(2, new MovementSystem());
 
-let $scene = new Scene();
+export let $scene = new Scene();
 let $sceneManager = new SceneManager();
 $sceneManager.addScene('test1', $scene);
 let player: any = new Player('player');

@@ -1,6 +1,8 @@
+import { Updatable } from "./types.js";
+
 const nwjs = require('nw.gui');
 
-class Game{
+export class Game{
     static updateQueue: Updatable[];
     static running = true;
     static time = 0;

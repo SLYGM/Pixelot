@@ -1,30 +1,22 @@
-class ScriptManager {
-    // The list of entities in the scene
-    private static scripts = new Map<string, HTMLScriptElement>();;
+const scriptsList = ["damage.js"];
 
-    static loadScripts(scripts:string[]) {
-        if (this.scripts.size > 0)
-            return;
-        for (let scriptName of scripts) {
-            this.addScript(scriptName);
+export class ScriptManager {
+    // The list of entities in the scene
+
+    static scriptData = new Map<string, any>();
+
+    static async loadScripts() {
+        for (let script of scriptsList) {
+            await this.addScript(script);
         }
     }
 
-    // Add an entity to the Scene
-    static addScript(scriptName:string) {
-        if (this.scripts.has(scriptName))
-            return;
-        let script = document.createElement("script");
-        script.type = "text/javascript";
-        //set script source(content)
-        script.src = "build/scripts/" + scriptName;
-        //Make sure async is off to load script immediately
-        script.async = false;
-        //Add error tracing
-        script.onerror = ((e) => console.trace(e));
-        document.body.appendChild(script);
-
-        this.scripts.set(scriptName, script);
+    static async addScript(script:string) {
+        let a = await import("./scripts/"+script);
+        this.scriptData.set(script, a);
+        return;
     }
 
 }
+
+await ScriptManager.loadScripts();

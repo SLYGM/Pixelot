@@ -1,3 +1,7 @@
+import Position from "../components/Position.js";
+import { Component, System, GameObjectBase } from "../ecs.js";
+import { $scene } from "../sceneManager.js";
+
 class Health extends Component {
     hp: number = 10;
 
