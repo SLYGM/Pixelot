@@ -2,6 +2,8 @@ import { GameObjectBase, System, SystemStage } from "./ecs.js";
 import Position from "./components/Position.js";
 import Velocity from "./components/Velocity.js";
 import { Scene } from "./scene.js";
+import { Constructor } from "./types.js";
+import { Component } from "./ecs.js";
 
 class SceneManager {
     scenes: Map<string, Scene>;
@@ -12,6 +14,12 @@ class SceneManager {
         this.scenes = new Map<string, Scene>();
     }
 
+    /**
+     * Add a scene to the Scene Manager
+     * 
+     * @param name name of scene to be added
+     * @param scene scene object to be added
+     */
     addScene(name: string, scene: Scene) {
         this.scenes.set(name, scene);
         if (!this.currentScene) {
@@ -21,15 +29,29 @@ class SceneManager {
         }
     }
 
+    /**
+     * Remove a scene from the Scene Manager
+     * 
+     * @param name name of scene to be removed
+     */
     removeScene(name: string) {
-        if (this.currentSceneName == name) {
-            this.currentScene = null
-            this.currentSceneName = null
+        try {
+            if (this.currentSceneName == name) {
+                this.currentScene = null
+                this.currentSceneName = null
+            }
+            this.scenes.delete(name);
+            console.log('scene deleted');
+        } catch (error) {
+            throw new Error("Scene does not exist");
         }
-        this.scenes.delete(name);
-        console.log('scene deleted');
     }
 
+    /**
+     * Switch to another scene
+     * 
+     * @param name name of scene to switch to
+     */
     switchToScene(name: string) {
         try {
             const nextScene = this.scenes.get(name);
@@ -42,54 +64,73 @@ class SceneManager {
         }
     }
 
+    /**
+     * Updates the current scene only
+     */
     update() {
         if (this.currentScene) {
             this.currentScene.update()
         }
     }
 
-    addEntityToCurrentScene<T extends GameObjectBase>(entity: T) {
-        if (this.currentScene) {
-            this.currentScene.addEntity(entity);
-        }
-    }
-
+    /**
+     * Add an entity to a specified scene in the scene manager
+     * 
+     * @param sceneName name of scene to which entity is to be added
+     * @param entity entity obect to be added
+     */
     addEntityToScene<T extends GameObjectBase>(sceneName: string, entity: T) {
-        if (this.scenes.get(sceneName)) {
+        try {
             this.scenes.get(sceneName).addEntity(entity);
+        } catch (error) {
+            throw error;
         }
     }
 
+    /**
+     * Add a system to a specified scene in the scene manager
+     * 
+     * @param sceneName name of scene to which system is to be added
+     * @param system system object to be added
+     * @param priority priority of system to be added
+     */
     addSystemToScene(sceneName: string, system: System, priority: number) {
-        if (this.scenes.get(sceneName)) {
+        try {
             this.scenes.get(sceneName).addSystem(system, priority);
+        } catch (error) {
+            throw error;
         }
     }
 
-    saveCurrentScene() {
+    /**
+     * Save current scene to a json file
+     * 
+     * @param fileName name of file to which scene will be saved
+     */
+    saveCurrentScene(fileName: string) {
         // create a JSON object
         const proxies = this.currentScene.getEntities();
-        const systems = this.currentScene.getSystems();
-        const entities = [];
-        const systemNames = [];
+        var entities = [];
+
         for (const proxy of proxies) {
-            entities.push({ name: proxy.name, components: [...proxy.getAllComponents()] })
-        }
-        for (const system of systems) {
-            systemNames.push({ name: system.name, priority: system.priority });
+            var components = []
+            for (const component of [...proxy.getAllComponents()]) {
+                const component_constr = $component_map.get(component)
+                components.push({ component_name: component, value: proxy.get(component_constr) })
+            }
+            entities.push({ name: proxy.name, components: components })
         }
 
         const sceneSaveFile = {
             name: this.currentSceneName,
-            entities: entities,
-            systems: systemNames
+            entities: entities
         }
 
         // convert JSON object to a string
         const data = JSON.stringify(sceneSaveFile)
 
         const fs = require('fs');
-        fs.writeFile("test2.json", data, function (err) {
+        fs.writeFile(fileName + ".json", data, function (err) {
             if (err) {
                 console.log(err);
             }
@@ -101,6 +142,11 @@ class SceneManager {
 
     }
 
+    /**
+     * Load a scene from a json file
+     * 
+     * @param name name of file from which to load scene
+     */
     loadScene(name: string) {
         const fs = require('fs');
         // read JSON object from file
@@ -111,24 +157,43 @@ class SceneManager {
 
             // parse JSON object
             const loadedSceneJson = JSON.parse(data.toString())
-            const loadedSystems = loadedSceneJson['systems'];
             const loadedEntities = loadedSceneJson['entities'];
 
             // construct Scene object from json data and add to sceneManager
-            var scene2 = new Scene();
-            scene2.onCreate();
-            for (const system of loadedSystems) {
-                scene2.addSystem($systemsMap.get(system['name']), system['priority']);
-            };
+            var scene = new Scene();
+            scene.onCreate();
             for (const entity of loadedEntities) {
-                scene2.addEntity($gameObject_map.get(entity['name']));
+                const entity_constr = $entity_map.get(entity['name']);
+                var toAdd = new entity_constr(entity['name']);
+
+                for (const component of entity['components']) {
+                    const component_constr = $component_map.get(component['component_name']);
+                    toAdd.add(new component_constr(component['value']['x'], component['value']['y']));
+
+                    for (let [key, value] of $system_map.entries()) {
+                        if (toAdd.has(value.component) &&
+                            !scene.getSystems().some(elem => elem['system'] == value)) {
+                            scene.addSystem(value, key);
+                        }
+                    }
+                }
+                scene.addEntity(toAdd);
             };
-            this.addScene(loadedSceneJson['name'], scene2);
+            console.log(scene.getEntities());
+
+            this.addScene(loadedSceneJson['name'], scene);
         })
     }
 
-    batchLoadScenes() {
-
+    /**
+     * load multiple scenes from json files
+     * 
+     * @param scenes name of files from which to load scenes
+     */
+    batchLoadScenes(scenes: string[]) {
+        for (const scene of scenes) {
+            this.loadScene(scene);
+        }
     }
 }
 
@@ -154,7 +219,7 @@ class PrintPositionSystem extends System {
 
     update(entities: Set<GameObjectBase>) {
         for (const entity of entities) {
-            console.log("Entity position:", entity.get(Position));
+            // console.log("Entity position:", entity.get(Position));
         }
     }
 }
@@ -177,11 +242,16 @@ class Player extends GameObjectBase {
     }
 }
 
-let $systemsMap: Map<string, System> = new Map();
-$systemsMap.set('PrintPositionSystem', new PrintPositionSystem());
-$systemsMap.set('MovementSystem', new MovementSystem());
-let $gameObject_map: Map<string, GameObjectBase> = new Map();
-$gameObject_map.set('player', new Player('player'));
+let $component_map = new Map<string, Constructor<Component>>();
+$component_map.set('Position', Position);
+$component_map.set('Velocity', Velocity);
+
+let $entity_map = new Map<string, Constructor<GameObjectBase>>();
+$entity_map.set('player', Player);
+
+let $system_map = new Map<number, System>();
+$system_map.set(1, new PrintPositionSystem());
+$system_map.set(2, new MovementSystem());
 
 export let $scene = new Scene();
 let $sceneManager = new SceneManager();
@@ -193,7 +263,7 @@ $scene.addEntity(player);
 $sceneManager.update();
 
 // Save a scene and reload
-$sceneManager.saveCurrentScene();
+$sceneManager.saveCurrentScene('test2');
 $sceneManager.removeScene('test1');
 $sceneManager.loadScene('test2');
 
