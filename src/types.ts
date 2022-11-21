@@ -7,3 +7,5 @@ export type Texture = {
 export type Updatable = {
     update: (dt: number) => void;
 }
+
+export type Constructor<T> = new (...args: any[]) => T;
