@@ -18,7 +18,7 @@ import { KeyStates } from './keyState.js';
 import { MouseState } from './mouseState.js';
 
 
-
+Renderer.setResolution(426, 240);
 Renderer.loadTexture('./images/frog.png', 'frog')
 Renderer.loadTexture('./images/tile.png', 'tile')
 

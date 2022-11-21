@@ -36,9 +36,8 @@ export class MouseState {
 
         let frac_x = x/_canvas.clientWidth;
         let frac_y = y/_canvas.clientHeight;
-        // TODO: stop using hard-coded canvas values
-        this.world_pos.x = Renderer.viewport.x + 428 * Renderer.viewport.sx * frac_x;
-        this.world_pos.y = Renderer.viewport.x + 240 * Renderer.viewport.sx * frac_y;
+        this.world_pos.x = Renderer.viewport.x + Renderer.resolution.x * Renderer.viewport.sx * frac_x;
+        this.world_pos.y = Renderer.viewport.x + Renderer.resolution.y * Renderer.viewport.sx * frac_y;
     }
 
     private static handleMouseUp(event: MouseEvent) {
