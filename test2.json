@@ -1,1 +1,1 @@
-{"name":"test1","entities":[{"name":"player","components":["Position","Velocity"]}],"systems":[{"name":"PrintPositionSystem","priority":0},{"name":"MovementSystem","priority":1}]}
+{"name":"test1","entities":[{"name":"player","components":["Position","Velocity"]}],"systems":[{"name":"MovementSystem","priority":1}]}

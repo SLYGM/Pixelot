@@ -188,7 +188,7 @@ let $sceneManager = new SceneManager();
 $sceneManager.addScene('test1', $scene);
 let player: any = new Player('player');
 $scene.addSystem(new MovementSystem(), SystemStage.PositionUpdate);
-$scene.addSystem(new PrintPositionSystem(), SystemStage.PositionUpdate - 1);
+// $scene.addSystem(new PrintPositionSystem(), SystemStage.PositionUpdate - 1);
 $scene.addEntity(player);
 $sceneManager.update();
 
