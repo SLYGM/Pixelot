@@ -15,8 +15,4 @@ export * from './sceneManager.js';
 export * from './keyState.js';
 export * from './mouseState.js';
 
-
-export * from './main.js';
-
-export * from './scriptManager.js';
 export * from './componentManager.js';
