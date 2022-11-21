@@ -8,8 +8,8 @@ import { GameObjectBase } from './ecs.js';
 import { $scene } from './sceneManager.js';
 import { Game } from './gameloop.js';
 
-import './componentManager.js';
 import './scriptManager.js';
+import './componentManager.js';
 
 import Position from './components/Position.js';
 import Sprite from './components/Sprite.js';
