@@ -15,8 +15,14 @@ export class MouseState {
             this.handleMouseMove(event);
         })
 
+        // handle mouse up
         document.addEventListener('mouseup', event => {
             this.handleMouseUp(event);
+        })
+
+        // handle mouse down
+        document.addEventListener('mousedown', event => {
+            this.handleMouseDown(event);
         })
     }
 
