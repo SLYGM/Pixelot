@@ -117,17 +117,22 @@ class SceneManager {
             var scene = new Scene();
             scene.onCreate();
             for (const entity of loadedEntities) {
-                const entity_constr = $entity_Map.get(entity['name']);
+                const entity_constr = $entity_map.get(entity['name']);
                 var toAdd = new entity_constr(entity['name']);
 
                 for (const component of entity['components']) {
                     const component_constr = $component_map.get(component['component_name']);
                     toAdd.add(new component_constr(component['value']['x'], component['value']['y']));
+
+                    for (let [key, value] of $system_map.entries()) {
+                        if (toAdd.has(value.component) && 
+                        !scene.getSystems().includes(scene.getSystems().find(elem => elem['system'] == value))){
+                            scene.addSystem(value, key);
+                        }
+                    }
                 }
-                console.log(toAdd);
                 scene.addEntity(toAdd);
             };
-            //todo add systems to scene
             console.log(scene.getEntities());
 
             this.addScene(loadedSceneJson['name'], scene);
@@ -189,9 +194,13 @@ class Player extends GameObjectBase {
 let $component_map = new Map<string, Constructor<Component>>();
 $component_map.set('Position', Position);
 $component_map.set('Velocity', Velocity);
-let $entity_Map = new Map<string, Constructor<GameObjectBase>>();
-$entity_Map.set('player', Player);
 
+let $entity_map = new Map<string, Constructor<GameObjectBase>>();
+$entity_map.set('player', Player);
+
+let $system_map = new Map<number, System>();
+$system_map.set(1, new PrintPositionSystem());
+$system_map.set(2, new MovementSystem());
 
 let $scene = new Scene();
 let $sceneManager = new SceneManager();
