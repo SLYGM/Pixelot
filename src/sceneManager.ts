@@ -165,7 +165,7 @@ class SceneManager {
 
                     for (let [key, value] of $system_map.entries()) {
                         if (toAdd.has(value.component) &&
-                            !scene.getSystems().includes(scene.getSystems().find(elem => elem['system'] == value))) {
+                            !scene.getSystems().some(elem => elem['system'] == value)) {
                             scene.addSystem(value, key);
                         }
                     }
