@@ -17,12 +17,17 @@ class SceneManager {
     }
 
     removeScene(name: string) {
-        if (this.currentSceneName == name) {
-            this.currentScene = null
-            this.currentSceneName = null
+        try {
+            if (this.currentSceneName == name) {
+                this.currentScene = null
+                this.currentSceneName = null
+            }
+            this.scenes.delete(name);
+            console.log('scene deleted');
+        } catch (error) {
+            throw new Error("Scene does not exist");
         }
-        this.scenes.delete(name);
-        console.log('scene deleted');
+
     }
 
     switchToScene(name: string) {
@@ -64,20 +69,20 @@ class SceneManager {
     saveCurrentScene() {
         // create a JSON object
         const proxies = this.currentScene.getEntities();
-        const systems = this.currentScene.getSystems();
-        const entities = [];
-        const systemNames = [];
+        var entities = [];
+
         for (const proxy of proxies) {
-            entities.push({ name: proxy.name, components: [...proxy.getAllComponents()] })
-        }
-        for (const system of systems) {
-            systemNames.push({ name: system.name, priority: system.priority });
+            var components = []
+            for (const component of [...proxy.getAllComponents()]) {
+                const component_constr = $component_map.get(component)
+                components.push({ component_name: component, value: proxy.get(component_constr) })
+            }
+            entities.push({ name: proxy.name, components: components })
         }
 
         const sceneSaveFile = {
             name: this.currentSceneName,
-            entities: entities,
-            systems: systemNames
+            entities: entities
         }
 
         // convert JSON object to a string
@@ -106,46 +111,37 @@ class SceneManager {
 
             // parse JSON object
             const loadedSceneJson = JSON.parse(data.toString())
-            const loadedSystems = loadedSceneJson['systems'];
             const loadedEntities = loadedSceneJson['entities'];
 
             // construct Scene object from json data and add to sceneManager
-            var scene2 = new Scene();
-            scene2.onCreate();
-            for (const system of loadedSystems) {
-                scene2.addSystem($systemsMap.get(system['name']), system['priority']);
-            };
+            var scene = new Scene();
+            scene.onCreate();
             for (const entity of loadedEntities) {
-                scene2.addEntity($gameObject_map.get(entity['name']));
+                const entity_constr = $entity_Map.get(entity['name']);
+                var toAdd = new entity_constr(entity['name']);
+
+                for (const component of entity['components']) {
+                    const component_constr = $component_map.get(component['component_name']);
+                    toAdd.add(new component_constr(component['value']['x'], component['value']['y']));
+                }
+                console.log(toAdd);
+                scene.addEntity(toAdd);
             };
-            this.addScene(loadedSceneJson['name'], scene2);
+            //todo add systems to scene
+            console.log(scene.getEntities());
+
+            this.addScene(loadedSceneJson['name'], scene);
         })
     }
 
-    batchLoadScenes() {
-
+    batchLoadScenes(scenes: string[]) {
+        for (const scene of scenes) {
+            this.loadScene(scene);
+        }
     }
 }
 
 // example usage
-
-class Position extends Component {
-    x: number = 0;
-    y: number = 0;
-}
-
-class Velocity extends Component {
-    dependencies = [Position];
-
-    x: number = 0;
-    y: number = 0;
-
-    constructor(x: number, y: number) {
-        super();
-        this.x = x;
-        this.y = y;
-    }
-}
 
 class MovementSystem extends System {
     component = Velocity;
@@ -167,7 +163,7 @@ class PrintPositionSystem extends System {
 
     update(entities: Set<GameObjectBase>) {
         for (const entity of entities) {
-            console.log("Entity position:", entity.get(Position));
+            // console.log("Entity position:", entity.get(Position));
         }
     }
 }
@@ -190,11 +186,12 @@ class Player extends GameObjectBase {
     }
 }
 
-let $systemsMap: Map<string, System> = new Map();
-$systemsMap.set('PrintPositionSystem', new PrintPositionSystem());
-$systemsMap.set('MovementSystem', new MovementSystem());
-let $gameObject_map: Map<string, GameObjectBase> = new Map();
-$gameObject_map.set('player', new Player('player'));
+let $component_map = new Map<string, Constructor<Component>>();
+$component_map.set('Position', Position);
+$component_map.set('Velocity', Velocity);
+let $entity_Map = new Map<string, Constructor<GameObjectBase>>();
+$entity_Map.set('player', Player);
+
 
 let $scene = new Scene();
 let $sceneManager = new SceneManager();

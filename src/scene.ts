@@ -57,7 +57,6 @@ class Scene {
     // Add a system to the Scene
     addSystem(system: System, priority: number) {
         let entities = new Set<GameObjectBase>(this.getEntitiesWithComponent(system.component));
-        console.log(system);
         // add the system to the priority queue
         this.systems.push({
             name: system.constructor.name,
@@ -66,7 +65,6 @@ class Scene {
             entities: entities,
         });
         this.systems.sort((a, b) => a.priority - b.priority);
-        console.log(this.systems);
     }
 
     // Remove a system from the scene

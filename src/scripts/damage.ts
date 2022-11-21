@@ -33,9 +33,9 @@ class Enemy extends GameObjectBase {
 
 // example usage
 function damageExample() {
-    let enemy: any = new Enemy();
+    let enemy: any = new Enemy('enemy');
     $scene.addSystem(new HealthSystem(), 0);
-    $scene.spawn(enemy);
+    $scene.addEntity(enemy);
     $scene.update();
 
     // position is now (1, 1)

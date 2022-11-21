@@ -1,4 +1,4 @@
-class Velocity2 extends Component {
+class Velocity extends Component {
 
     x: number = 0;
     y: number = 0;
