@@ -6,7 +6,7 @@ export abstract class Component {
     readonly dependencies = [];
 }
 
-export type ComponentType<T extends Component> = new (...args: any[]) => T;
+export type ComponentType<T extends Component> = new (...args: unknown[]) => T;
 
 /** 
  * The base class inherited by all game objects.

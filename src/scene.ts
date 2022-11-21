@@ -58,7 +58,7 @@ export class Scene {
 
     // Add a system to the Scene
     addSystem(system: System, priority: number) {
-        let entities = new Set<GameObjectBase>(this.getEntitiesWithComponent(system.component));
+        const entities = new Set<GameObjectBase>(this.getEntitiesWithComponent(system.component));
         console.log(system);
         // add the system to the priority queue
         this.systems.push({

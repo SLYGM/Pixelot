@@ -115,14 +115,14 @@ class SceneManager {
             const loadedEntities = loadedSceneJson['entities'];
 
             // construct Scene object from json data and add to sceneManager
-            var scene2 = new Scene();
+            const scene2 = new Scene();
             scene2.onCreate();
             for (const system of loadedSystems) {
                 scene2.addSystem($systemsMap.get(system['name']), system['priority']);
-            };
+            }
             for (const entity of loadedEntities) {
                 scene2.addEntity($gameObject_map.get(entity['name']));
-            };
+            }
             this.addScene(loadedSceneJson['name'], scene2);
         })
     }
@@ -177,16 +177,16 @@ class Player extends GameObjectBase {
     }
 }
 
-let $systemsMap: Map<string, System> = new Map();
+const $systemsMap: Map<string, System> = new Map();
 $systemsMap.set('PrintPositionSystem', new PrintPositionSystem());
 $systemsMap.set('MovementSystem', new MovementSystem());
-let $gameObject_map: Map<string, GameObjectBase> = new Map();
+const $gameObject_map: Map<string, GameObjectBase> = new Map();
 $gameObject_map.set('player', new Player('player'));
 
-export let $scene = new Scene();
-let $sceneManager = new SceneManager();
+export const $scene = new Scene();
+const $sceneManager = new SceneManager();
 $sceneManager.addScene('test1', $scene);
-let player: any = new Player('player');
+const player = new Player('player');
 $scene.addSystem(new MovementSystem(), SystemStage.PositionUpdate);
 $scene.addSystem(new PrintPositionSystem(), SystemStage.PositionUpdate - 1);
 $scene.addEntity(player);

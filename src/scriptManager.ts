@@ -6,13 +6,13 @@ export class ScriptManager {
     static scriptData = new Map<string, any>();
 
     static async loadScripts() {
-        for (let script of scriptsList) {
+        for (const script of scriptsList) {
             await this.addScript(script);
         }
     }
 
     static async addScript(script:string) {
-        let a = await import("./scripts/"+script);
+        const a = await import("./scripts/"+script);
         this.scriptData.set(script, a);
         return;
     }

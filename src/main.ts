@@ -30,7 +30,7 @@ class TestEntity extends GameObjectBase {
     }
 }
 
-let t = new TestEntity("");
+const t = new TestEntity("");
 t.add(new Position).add(new Sprite('frog'));
 $scene.addEntity(t);
 $scene.addSystem(new RenderSystem(), 0);

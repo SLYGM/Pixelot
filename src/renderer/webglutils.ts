@@ -3,14 +3,14 @@ import { _gl } from './gl.js';
 
 export class GLUtils {
     static createShader(type: number, source: string) {
-        let shader = _gl.createShader(type);
+        const shader = _gl.createShader(type);
         if (!shader) {
             console.log("Failed to create shader");
             return undefined;
         }
         _gl.shaderSource(shader, source);
         _gl.compileShader(shader);
-        let success = _gl.getShaderParameter(shader, _gl.COMPILE_STATUS);
+        const success = _gl.getShaderParameter(shader, _gl.COMPILE_STATUS);
         if (success) {
             return shader;
         }
@@ -20,7 +20,7 @@ export class GLUtils {
     }
 
     static createProgram(vertex_shader: WebGLShader, fragment_shader: WebGLShader) {
-        let program = _gl.createProgram();
+        const program = _gl.createProgram();
         if (!program) {
             console.log("Failed to create program");
             return undefined;
@@ -28,7 +28,7 @@ export class GLUtils {
         _gl.attachShader(program, vertex_shader);
         _gl.attachShader(program, fragment_shader);
         _gl.linkProgram(program);
-        let success = _gl.getProgramParameter(program, _gl.LINK_STATUS);
+        const success = _gl.getProgramParameter(program, _gl.LINK_STATUS);
         if (success) {
             return program;
         }
@@ -38,8 +38,8 @@ export class GLUtils {
     }
 
     static programFromSources(v_shader_source: string, f_shader_source: string) {
-        let v_shader = this.createShader(_gl.VERTEX_SHADER, v_shader_source);
-        let f_shader = this.createShader(_gl.FRAGMENT_SHADER, f_shader_source);
+        const v_shader = this.createShader(_gl.VERTEX_SHADER, v_shader_source);
+        const f_shader = this.createShader(_gl.FRAGMENT_SHADER, f_shader_source);
     
         if (!v_shader || !f_shader){
             return undefined;
@@ -51,7 +51,7 @@ export class GLUtils {
     //use 'img = await loadImage();'
     static loadImage(path: string) {
         return new Promise((resolve, reject) => {
-            let img = new Image();
+            const img = new Image();
             img.onload = () => resolve(img);
             img.src = path;
         })
@@ -60,7 +60,7 @@ export class GLUtils {
     static createTexAndBuffer(width: number, height: number) {
         const targetTextureWidth = width;
         const targetTextureHeight = height;
-        let targetTexture = _gl.createTexture();
+        const targetTexture = _gl.createTexture();
         _gl.bindTexture(_gl.TEXTURE_2D, targetTexture);
         
         // define size and format of level 0
@@ -81,7 +81,7 @@ export class GLUtils {
         _gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_WRAP_T, _gl.CLAMP_TO_EDGE);
     
         // Create and bind the framebuffer
-        let fb = _gl.createFramebuffer();
+        const fb = _gl.createFramebuffer();
         _gl.bindFramebuffer(_gl.FRAMEBUFFER, fb);
         
         // attach the texture as the first color attachment

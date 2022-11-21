@@ -3,12 +3,12 @@ import { Component, ComponentType, GameObjectBase, System } from './ecs.js';
 import { Scene } from './scene.js';
 
 class TestComponent extends Component {
-  counter: number = 0;
+  counter = 0;
 }
 
 class TestEntity extends GameObjectBase {
-  counter: number = 0;
-  onCreateRun: boolean = false;
+  counter = 0;
+  onCreateRun = false;
 
   onCreate(): void {
     this.onCreateRun = !this.onCreateRun;

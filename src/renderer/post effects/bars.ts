@@ -6,7 +6,7 @@ import { PostProcess } from "../post_process.js";
 
 export class BarShader extends PostProcess {
   constructor() {
-    let v_shader = `#version 300 es
+    const v_shader = `#version 300 es
 
     in vec4 a_position;
     in vec2 a_texcoord;
@@ -21,7 +21,7 @@ export class BarShader extends PostProcess {
     `;
 
     //https://clemz.io/article-retro-shaders-webgl.html
-    let f_shader=`#version 300 es
+    const f_shader=`#version 300 es
 
     precision highp float;
 

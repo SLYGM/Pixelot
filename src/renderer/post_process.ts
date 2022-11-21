@@ -24,8 +24,8 @@ export class PostProcessing {
 
     static {
         // initialize the frame buffers and textures for buffer swapping - these are the same size as the screen
-        let {fb: fb1, tex: tex1} = GLUtils.createTexAndBuffer(_canvas.clientWidth, _canvas.clientHeight);
-        let {fb: fb2, tex: tex2} = GLUtils.createTexAndBuffer(_canvas.clientWidth, _canvas.clientHeight);
+        const {fb: fb1, tex: tex1} = GLUtils.createTexAndBuffer(_canvas.clientWidth, _canvas.clientHeight);
+        const {fb: fb2, tex: tex2} = GLUtils.createTexAndBuffer(_canvas.clientWidth, _canvas.clientHeight);
         this.frame_buffers = [fb1, fb2];
         this.textures = [tex1, tex2];
     
@@ -33,7 +33,7 @@ export class PostProcessing {
         ({fb: this.render_buff, tex: this.render_tex} = GLUtils.createTexAndBuffer(_gl.canvas.width, _gl.canvas.height));
     
         // create the basic post process that renders to the screen
-        let v_shader_source = `#version 300 es
+        const v_shader_source = `#version 300 es
     
         in vec4 a_position;
         in vec2 a_texcoord;
@@ -47,7 +47,7 @@ export class PostProcessing {
         }
         `;
     
-        let f_shader_source = `#version 300 es
+        const f_shader_source = `#version 300 es
         precision highp float;
     
         in vec2 v_texcoord;

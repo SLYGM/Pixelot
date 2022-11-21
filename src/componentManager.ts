@@ -18,21 +18,21 @@ export class ComponentManager {
 
   static async loadComponents() {
       const fs = require('fs');
-      let files = (fs.readdirSync(this.componentsFolder) as string[]);
-      let componentsList : string[] = [];
+      const files = (fs.readdirSync(this.componentsFolder) as string[]);
+      const componentsList : string[] = [];
       files.forEach(file => {
-          let fileName = file.split(".")[0];
+          const fileName = file.split(".")[0];
            if (StringUtils.isPostfix(file, ".js")) {
             componentsList.push(fileName);
           }
       });
-      for (let component of componentsList) {
+      for (const component of componentsList) {
         await this.importComponent(component);
       }
   }
 
   private static async importComponent(component:string) {
-      let a = await import('./components/'+component+".js");
+      const a = await import('./components/'+component+".js");
       this.components.set(a.default.name, a.default);
   }
 }

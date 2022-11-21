@@ -3,7 +3,7 @@ import { Component, System, GameObjectBase } from "../ecs.js";
 import { $scene } from "../sceneManager.js";
 
 class Health extends Component {
-    hp: number = 10;
+    hp = 10;
 
     constructor(hp: number) {
         super();
@@ -37,7 +37,7 @@ class Enemy extends GameObjectBase {
 
 // example usage
 function damageExample() {
-    let enemy: any = new Enemy("");
+    const enemy: any = new Enemy("");
     $scene.addSystem(new HealthSystem(), 0);
     $scene.addEntity(enemy);
     $scene.update();

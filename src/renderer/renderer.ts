@@ -12,7 +12,7 @@ const { glMatrix, mat4, vec3 } = require('gl-matrix');
 
 export class Renderer {
     //GLSL Vertex Shader
-    private static vert_source: string = `#version 300 es
+    private static vert_source = `#version 300 es
 
         in vec4 a_position;
         in vec2 a_texcoord;
@@ -28,7 +28,7 @@ export class Renderer {
         }
     `;
     //GLSL Fragment Shader
-    private static frag_source: string = `#version 300 es
+    private static frag_source = `#version 300 es
         precision highp float;
         
         in vec2 v_texcoord;
@@ -87,7 +87,7 @@ export class Renderer {
     }
 
     static loadTexture(path: string, alias: string): string {
-        let tex = _gl.createTexture();
+        const tex = _gl.createTexture();
         _gl.bindTexture(_gl.TEXTURE_2D, tex);
         _gl.texImage2D(_gl.TEXTURE_2D, 0, _gl.RGBA, 1, 1, 0, _gl.RGBA, _gl.UNSIGNED_BYTE,
             new Uint8Array([0, 0, 0, 255]));
@@ -117,7 +117,7 @@ export class Renderer {
     }
 
     static drawImage(tex: Texture, x: number, y: number) {
-        let textureUnit = 0;
+        const textureUnit = 0;
         _gl.uniform1i(this.shader.tex_loc, textureUnit);
         _gl.activeTexture(_gl.TEXTURE0 + textureUnit);
         _gl.bindTexture(_gl.TEXTURE_2D, tex.texture);
@@ -197,8 +197,8 @@ export class RenderSystem extends System {
         _gl.uniformMatrix4fv(Renderer.shader.proj_loc, false, proj_matrix);
 
         entities.forEach((entity) => {
-            let sprite = entity.get(Sprite);
-            let pos = entity.get(Position);
+            const sprite = entity.get(Sprite);
+            const pos = entity.get(Position);
             Renderer.drawImage(sprite.tex, pos.x, pos.y);
         })
 
