@@ -30,14 +30,14 @@ class HealthSystem extends System {
 
 class Enemy extends GameObjectBase {
     onCreate() {
-        this.add(new Position).add(new Health(20));
+        this.add(new Position()).add(new Health(20));
     }
     update() {}
 }
 
 // example usage
 function damageExample() {
-    const enemy: any = new Enemy('enemy');
+    const enemy: any = new Enemy("enemy");
     $scene.addSystem(new HealthSystem(), 0);
     $scene.addEntity(enemy);
     $scene.update();

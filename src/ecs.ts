@@ -8,7 +8,7 @@ export abstract class Component {
 
 export type ComponentType<T extends Component> = new (...args: unknown[]) => T;
 
-/** 
+/**
  * The base class inherited by all game objects.
  *
  * @example
@@ -37,7 +37,7 @@ export abstract class GameObjectBase {
      * Constructor which wraps the object in a proxy.
      * This allows the user to access the components directly.
      */
-    constructor(name:string) {
+    constructor(name: string) {
         this.name = name;
         return new Proxy(this, {
             get: (target, prop: string) => {
@@ -72,7 +72,13 @@ export abstract class GameObjectBase {
         // Check if the component has all its dependencies
         for (const dependency of component.dependencies) {
             if (!this.has(dependency)) {
-                throw new Error("Component '" + component.constructor.name + "' requires '" + dependency.name + "'");
+                throw new Error(
+                    "Component '" +
+                        component.constructor.name +
+                        "' requires '" +
+                        dependency.name +
+                        "'"
+                );
             }
         }
         this.component_map.set(component.constructor.name, component);
@@ -91,7 +97,7 @@ export abstract class GameObjectBase {
 
     /**
      * Get all components linked to this entity
-     * 
+     *
      * @returns All components linked to this entity
      */
     public getAllComponents() {
@@ -110,7 +116,7 @@ export abstract class GameObjectBase {
 
     // Returns true if the entity has all the given components
     public hasAll<T extends Component>(components: ComponentType<T>[]) {
-        return components.every(c => this.has(c));
+        return components.every((c) => this.has(c));
     }
 
     // Remove the component of the given type
@@ -152,4 +158,3 @@ export type SystemNode = {
     // The entities that this system acts on
     entities: Set<GameObjectBase>;
 };
-

@@ -11,12 +11,11 @@ export class ScriptManager {
         }
     }
 
-    static async addScript(script:string) {
-        const a = await import("./scripts/"+script);
+    static async addScript(script: string) {
+        const a = await import("./scripts/" + script);
         this.scriptData.set(script, a);
         return;
     }
-
 }
 
 await ScriptManager.loadScripts();

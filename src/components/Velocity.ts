@@ -1,7 +1,6 @@
 import { Component } from "../ecs.js";
 
 export default class Velocity extends Component {
-
     x = 0;
     y = 0;
 
