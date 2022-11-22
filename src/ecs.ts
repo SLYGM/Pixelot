@@ -89,6 +89,11 @@ export abstract class GameObjectBase {
         return this.component_map.get(c.name) as T;
     }
 
+    /**
+     * Get all components linked to this entity
+     * 
+     * @returns All components linked to this entity
+     */
     public getAllComponents() {
         return this.component_map.keys();
     }

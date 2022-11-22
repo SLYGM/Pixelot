@@ -68,7 +68,6 @@ export class Scene {
             entities: entities,
         });
         this.systems.sort((a, b) => a.priority - b.priority);
-        console.log(this.systems);
     }
 
     // Remove a system from the scene

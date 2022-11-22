@@ -14,6 +14,9 @@ import './scriptManager.js';
 import Position from './components/Position.js';
 import Sprite from './components/Sprite.js';
 
+import { KeyStates } from './keyState.js';
+import { MouseState } from './mouseState.js';
+
 
 
 Renderer.loadTexture('./images/frog.png', 'frog')
@@ -26,11 +29,17 @@ class TestEntity extends GameObjectBase {
     }
 
     update(): void {
-        this.get(Position).x += 1;
+        if (KeyStates.isPressed('a')) {
+            this.get(Position).x = 50;
+            this.get(Position).y = 50;
+        } else {
+            this.get(Position).x = MouseState.world_pos.x;
+            this.get(Position).y = MouseState.world_pos.y;
+        }
     }
 }
 
-const t = new TestEntity("");
+const t = new TestEntity('test');
 t.add(new Position).add(new Sprite('frog'));
 $scene.addEntity(t);
 $scene.addSystem(new RenderSystem(), 0);
