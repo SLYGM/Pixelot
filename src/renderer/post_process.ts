@@ -70,7 +70,7 @@ export class PostProcessing {
         //before applying shaders, scale the rendered scene to screen resolution
         this.#upscaleScene();
         
-        // change the WebGL viwport to be the screen size
+        // change the WebGL viewport to be the screen size
         _gl.viewport(0, 0, _canvas.clientWidth, _canvas.clientHeight);
 
         // use each provided shader
