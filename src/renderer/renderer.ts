@@ -93,6 +93,7 @@ class Renderer {
     static vao: WebGLVertexArrayObject;
     static time: number;
     static textures: Map<string, Texture>;
+    static layerAliases: Map<string, number>;
     static layers: RenderLayer[];
 
     static {
@@ -119,6 +120,7 @@ class Renderer {
         this.textures = new Map<string, Texture>();
 
         this.layers = [];
+        this.layerAliases = new Map<string, number>();
     }
 
     static render() {
@@ -141,13 +143,25 @@ class Renderer {
         PostProcessing.apply();
     }
 
-    //returns index of added layer
-    static addLayer(layer: RenderLayer): number {
-        return this.layers.push(layer) - 1;
+    //layers should be added in a bottom-up fashion i.e. the first one added will be rendered first.
+    static addLayer(layer: RenderLayer, alias: string) {
+        const index = this.layers.push(layer) - 1;
+        this.layerAliases.set(alias, index);
     }
 
-    static getLayer(index: number) {
-        return this.layers[index];
+    static getLayer(alias: string) {
+        return this.layers[this.layerAliases.get(alias)];
+    }
+
+    static removeLayer(alias: string) {
+        const index = this.layerAliases.get(alias); //get index of item to be removed
+        if (!index) return;
+        //update stored indexes of layers that are after this layer in the array (decrease them by 1)
+        for (const [k, v] of this.layerAliases) {
+            if (v > index) this.layerAliases.set(k, v - 1);
+        }
+        this.layers.splice(index, 1); //remove the layer from the array at the index
+        this.layerAliases.delete(alias);
     }
 
     static loadTexture(path: string, alias: string): string {
@@ -250,7 +264,7 @@ class Renderer {
 class RenderSystem extends System {
     component = Sprite;
 
-    update(entities: Set<GameObjectBase>): void {
+    update(): void {
         Renderer.render();
     }
 }
