@@ -1,4 +1,10 @@
-import { Component, ComponentType, GameObjectBase, System, SystemNode } from "./ecs.js";
+import {
+    Component,
+    ComponentType,
+    GameObjectBase,
+    System,
+    SystemNode,
+} from "./ecs.js";
 
 export class Scene {
     // The list of entities in the scene
@@ -19,13 +25,17 @@ export class Scene {
         this.systems = [];
     }
 
-    onPause() { }
+    onPause() {}
 
-    onResume() { }
+    onResume() {}
 
-    getEntities() { return this.entities }
+    getEntities() {
+        return this.entities;
+    }
 
-    getSystems() { return this.systems }
+    getSystems() {
+        return this.systems;
+    }
 
     // Add an entity to the Scene
     addEntity<T extends GameObjectBase>(entity: T) {
@@ -42,23 +52,27 @@ export class Scene {
 
     // Remove the given entity from the scene
     deleteEntity(entity: GameObjectBase) {
-        this.entities = this.entities.filter(e => e != entity);
+        this.entities = this.entities.filter((e) => e != entity);
         // Remove the entity from the systems that require it
         for (const system_node of this.systems) {
             system_node.entities.delete(entity);
         }
-
     }
 
     // Get all entities that have the given component.
-    getEntitiesWithComponent<T extends Component>(component: ComponentType<T>): GameObjectBase[] {
+    getEntitiesWithComponent<T extends Component>(
+        component: ComponentType<T>
+    ): GameObjectBase[] {
         // NOTE: Currently not very efficient. Could be improved by using archetypes to store entities with the same components.
-        return this.entities.filter(e => e.has(component));
+        return this.entities.filter((e) => e.has(component));
     }
 
     // Add a system to the Scene
     addSystem(system: System, priority: number) {
-        let entities = new Set<GameObjectBase>(this.getEntitiesWithComponent(system.component));
+        const entities = new Set<GameObjectBase>(
+            this.getEntitiesWithComponent(system.component)
+        );
+        console.log(system);
         // add the system to the priority queue
         this.systems.push({
             name: system.constructor.name,
@@ -71,7 +85,7 @@ export class Scene {
 
     // Remove a system from the scene
     removeSystem(system: System) {
-        this.systems = this.systems.filter(s => s.system != system);
+        this.systems = this.systems.filter((s) => s.system != system);
     }
 
     // Perform all the updates for the current frame

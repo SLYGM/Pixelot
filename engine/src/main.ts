@@ -1,20 +1,21 @@
-import {Renderer, RenderSystem} from './renderer/renderer.js';
+import { Renderer, RenderSystem } from "./renderer/renderer.js";
 
 import { PostProcessing } from './renderer/post_process.js';
 import { BarShader } from './renderer/post effects/bars.js';
 import BarrelShader from './renderer/post effects/barrel.js';
 
+import { GameObjectBase } from "./ecs.js";
+import { $scene } from "./sceneManager.js";
+import { Game } from "./gameloop.js";
 
-import { GameObjectBase } from './ecs.js';
-import { $scene } from './sceneManager.js';
-import { Game } from './gameloop.js';
+import "./componentManager.js";
+import "./scriptManager.js";
 
+import Position from "./components/Position.js";
+import Sprite from "./components/Sprite.js";
 
-import Position from './components/Position.js';
-import Sprite from './components/Sprite.js';
-
-import { KeyStates } from './keyState.js';
-import { MouseState } from './mouseState.js';
+import { KeyStates } from "./keyState.js";
+import { MouseState } from "./mouseState.js";
 
 import './scriptManager.js';
 import './componentManager.js';
@@ -30,7 +31,7 @@ class TestEntity extends GameObjectBase {
     }
 
     update(): void {
-        if (KeyStates.isPressed('a')) {
+        if (KeyStates.isPressed("a")) {
             this.get(Position).x = 50;
             this.get(Position).y = 50;
         } else {
@@ -40,8 +41,8 @@ class TestEntity extends GameObjectBase {
     }
 }
 
-let t = new TestEntity('test');
-t.add(new Position).add(new Sprite('frog'));
+const t = new TestEntity("test");
+t.add(new Position()).add(new Sprite("frog"));
 $scene.addEntity(t);
 $scene.addSystem(new RenderSystem(), 0);
 

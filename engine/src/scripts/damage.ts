@@ -1,6 +1,6 @@
 console.log("hi")
 // import Position from '../components/Position.js';
-import * as $ from '../EngineExport.js'
+import * as $ from '../engineExport.js'
 console.log("hi")
 
 // // class Health extends $.Component {

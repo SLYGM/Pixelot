@@ -25,13 +25,23 @@ export class PostProcessing {
 
     static {
         // initialize the frame buffers and textures for buffer swapping - these are the same size as the screen
-        let {fb: fb1, tex: tex1} = GLUtils.createTexAndBuffer(_canvas.clientWidth, _canvas.clientHeight);
-        let {fb: fb2, tex: tex2} = GLUtils.createTexAndBuffer(_canvas.clientWidth, _canvas.clientHeight);
+        const { fb: fb1, tex: tex1 } = GLUtils.createTexAndBuffer(
+            _canvas.clientWidth,
+            _canvas.clientHeight
+        );
+        const { fb: fb2, tex: tex2 } = GLUtils.createTexAndBuffer(
+            _canvas.clientWidth,
+            _canvas.clientHeight
+        );
         this.frame_buffers = [fb1, fb2];
         this.textures = [tex1, tex2];
-    
+
+        // create the texture and buffer which the scene will be rendered to
+        ({ fb: this.render_buff, tex: this.render_tex } =
+            GLUtils.createTexAndBuffer(_gl.canvas.width, _gl.canvas.height));
+
         // create the basic post process that renders to the screen
-        let v_shader_source = `#version 300 es
+        const v_shader_source = `#version 300 es
     
         in vec4 a_position;
         in vec2 a_texcoord;
@@ -44,8 +54,8 @@ export class PostProcessing {
             v_texcoord = a_texcoord;
         }
         `;
-    
-        let f_shader_source = `#version 300 es
+
+        const f_shader_source = `#version 300 es
         precision highp float;
     
         in vec2 v_texcoord;
@@ -59,7 +69,7 @@ export class PostProcessing {
         }
         `;
         this.basic_process = new PostProcess(v_shader_source, f_shader_source);
-    
+
         // bind the render buffer so that scene rendering will draw to it
         _gl.bindFramebuffer(_gl.FRAMEBUFFER, this.render_buff);
     }
@@ -81,7 +91,7 @@ export class PostProcessing {
             this.#switchBuffer();
             this.#renderToBuffer(this.#currBuffer(), post_process);
         }
-        
+
         // finally, render the result to the screen
         this.#switchBuffer(); // need to switch buffers, as it uses the previous texture
         _gl.viewport(0, 0, _gl.canvas.width, _gl.canvas.height);
@@ -111,7 +121,10 @@ export class PostProcessing {
         this.#renderToBuffer(null, this.basic_process);
     }
 
-    static #renderToBuffer(buffer: WebGLFramebuffer, post_process: PostProcess){
+    static #renderToBuffer(
+        buffer: WebGLFramebuffer,
+        post_process: PostProcess
+    ) {
         _gl.bindFramebuffer(_gl.FRAMEBUFFER, buffer);
         //clear the buffer
         _gl.clearColor(1, 1, 1, 1);
@@ -121,8 +134,8 @@ export class PostProcessing {
         post_process.draw();
     }
 
-    static #switchBuffer(){
-        this.curr_buffer = (this.curr_buffer+1) % 2;
+    static #switchBuffer() {
+        this.curr_buffer = (this.curr_buffer + 1) % 2;
     }
 
     static #currBuffer() {
@@ -130,7 +143,7 @@ export class PostProcessing {
     }
 
     static #prevTexture() {
-        return this.textures[(this.curr_buffer+1) % 2];
+        return this.textures[(this.curr_buffer + 1) % 2];
     }
 
     static add(post_process: PostProcess) {

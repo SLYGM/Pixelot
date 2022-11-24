@@ -1,29 +1,29 @@
-import { _canvas } from './renderer/gl.js';
-import { Renderer } from './renderer/renderer.js'
+import { _canvas } from "./renderer/gl.js";
+import { Renderer } from "./renderer/renderer.js";
 
 export class MouseState {
     static screen_pos = { x: 0, y: 0 };
     static world_pos = { x: 0, y: 0 };
-    private static btns: Map<MouseEvent['button'], boolean>;
+    private static btns: Map<MouseEvent["button"], boolean>;
 
     static {
         this.btns = new Map();
 
         // track mouse position
         // TODO: the mouse position is unknown until the mouse is moved
-        document.addEventListener('mousemove', event => {
+        document.addEventListener("mousemove", (event) => {
             this.handleMouseMove(event);
-        })
+        });
 
         // handle mouse up
-        document.addEventListener('mouseup', event => {
+        document.addEventListener("mouseup", (event) => {
             this.handleMouseUp(event);
-        })
+        });
 
         // handle mouse down
-        document.addEventListener('mousedown', event => {
+        document.addEventListener("mousedown", (event) => {
             this.handleMouseDown(event);
-        })
+        });
     }
 
     private static handleMouseMove(event: MouseEvent) {
@@ -34,8 +34,8 @@ export class MouseState {
         this.screen_pos.x = x;
         this.screen_pos.y = y;
 
-        let frac_x = x/_canvas.clientWidth;
-        let frac_y = y/_canvas.clientHeight;
+        const frac_x = x/_canvas.clientWidth;
+        const frac_y = y/_canvas.clientHeight;
         this.world_pos.x = Renderer.viewport.x + Renderer.resolution.x * Renderer.viewport.sx * frac_x;
         this.world_pos.y = Renderer.viewport.x + Renderer.resolution.y * Renderer.viewport.sx * frac_y;
     }
@@ -48,7 +48,7 @@ export class MouseState {
         this.btns.set(event.button, true);
     }
 
-    static isPressed(btn: MouseEvent['button']) {
+    static isPressed(btn: MouseEvent["button"]) {
         if (this.btns.has(btn)) {
             return this.btns.get(btn);
         }
