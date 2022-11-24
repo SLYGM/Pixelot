@@ -62,7 +62,6 @@ export class Renderer {
     static textures: Map<string, Texture>;
 
     static {
-        this.resolution = { x: 426, y: 240 };
 
         this.shader = {
             prog: undefined,
@@ -100,6 +99,14 @@ export class Renderer {
         this.viewport = { x: 0, y: 0, sx: 1.0, sy: 1.0 };
 
         this.textures = new Map<string, Texture>();
+    }
+
+    static setResolution(x: number, y: number) {
+        this.resolution = {x: x, y: y};
+        _gl.canvas.width = x;
+        _gl.canvas.height = y;
+        // recreate the main framebuffer after changing resolution
+        PostProcessing.createMainFrameBuffer();
     }
 
     static loadTexture(path: string, alias: string): string {

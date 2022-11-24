@@ -1,5 +1,6 @@
-import { _gl, _canvas } from "./gl.js";
-import { GLUtils } from "./webglutils.js";
+import { _gl, _canvas } from './gl.js';
+import { Renderer } from './renderer.js';
+import { GLUtils } from './webglutils.js'
 
 export class PostProcess {
     program: WebGLProgram;
@@ -73,12 +74,16 @@ export class PostProcessing {
         _gl.bindFramebuffer(_gl.FRAMEBUFFER, this.render_buff);
     }
 
+    static createMainFrameBuffer() {
+        ({fb: this.render_buff, tex: this.render_tex} = GLUtils.createTexAndBuffer(Renderer.resolution.x, Renderer.resolution.y));
+    }
+
     static apply() {
         //before applying shaders, scale the rendered scene to screen resolution
-        this.#upscaleScene();
-
-        // change the WebGL viwport to be the screen size
         _gl.viewport(0, 0, _canvas.clientWidth, _canvas.clientHeight);
+        this.#upscaleScene();
+        
+        // change the WebGL viewport to be the screen size
 
         // use each provided shader
         for (const post_process of this.post_queue) {
@@ -89,6 +94,7 @@ export class PostProcessing {
 
         // finally, render the result to the screen
         this.#switchBuffer(); // need to switch buffers, as it uses the previous texture
+        _gl.viewport(0, 0, _gl.canvas.width, _gl.canvas.height);
         this.#renderToScreen();
         // switch back to the render buffer for scene rendering
         _gl.bindFramebuffer(_gl.FRAMEBUFFER, this.render_buff);
