@@ -16,8 +16,12 @@ import Sprite from "./components/Sprite.js";
 import { KeyStates } from "./keyState.js";
 import { MouseState } from "./mouseState.js";
 
-Renderer.loadTexture("./images/frog.png", "frog");
-Renderer.loadTexture("./images/tile.png", "tile");
+import './scriptManager.js';
+import './componentManager.js';
+
+
+Renderer.loadTexture('./images/frog.png', 'frog')
+Renderer.loadTexture('./images/tile.png', 'tile')
 
 class TestEntity extends GameObjectBase {
     onCreate(): void {

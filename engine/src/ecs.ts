@@ -100,8 +100,8 @@ export abstract class GameObjectBase {
      *
      * @returns All components linked to this entity
      */
-    public getAllComponents(): Component[] {
-        return Array.from(this.component_map.values());
+    public getAllComponents(): string[] {
+        return Array.from(this.component_map.keys());
     }
 
     /**

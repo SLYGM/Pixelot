@@ -59,7 +59,7 @@ test("System Functionality", () => {
 
     expect(testEntity.counter).toBe(2);
     expect(testEntity.get(TestComponent).counter).toBe(2);
-    expect(testEntity.getAllComponents()).toEqual([testEntity.get(TestComponent)]);
+    expect(testEntity.getAllComponents()).toEqual(["TestComponent"]);
 });
 
 test("Component Dependencies", () => {

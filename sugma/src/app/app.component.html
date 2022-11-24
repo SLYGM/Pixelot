@@ -1,0 +1,9 @@
+<header>
+  <h3>Neat little angular trick</h3>
+</header>
+
+<div class="col-lg-12 control-section">
+  <div *ngFor="let item of data">
+    <button>{{ item["text"] }}</button>
+  </div>
+</div>
