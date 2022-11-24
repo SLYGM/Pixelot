@@ -4,6 +4,11 @@ export abstract class Component {
      * E.g. Velocity depends on Position.
      */
     dependencies: any[] = [];
+    owner: GameObjectBase;
+
+    registerOwner(owner: GameObjectBase) {
+        this.owner = owner;
+    }
 }
 
 export type ComponentType<T extends Component> = new (...args: unknown[]) => T;
@@ -82,6 +87,7 @@ export abstract class GameObjectBase {
             }
         }
         this.component_map.set(component.constructor.name, component);
+        component.registerOwner(this);
         return this;
     }
 

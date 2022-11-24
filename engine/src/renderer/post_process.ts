@@ -1,4 +1,4 @@
-import { _gl, _canvas } from './gl.js';
+import { $gl, $canvas } from './gl.js';
 import { Renderer } from './renderer.js';
 import { GLUtils } from './webglutils.js'
 
@@ -10,7 +10,7 @@ export class PostProcess {
     }
 
     draw() {
-        _gl.drawArrays(_gl.TRIANGLES, 0, 6);
+        $gl.drawArrays($gl.TRIANGLES, 0, 6);
     }
 }
 
@@ -26,19 +26,19 @@ export class PostProcessing {
     static {
         // initialize the frame buffers and textures for buffer swapping - these are the same size as the screen
         const { fb: fb1, tex: tex1 } = GLUtils.createTexAndBuffer(
-            _canvas.clientWidth,
-            _canvas.clientHeight
+            $canvas.clientWidth,
+            $canvas.clientHeight
         );
         const { fb: fb2, tex: tex2 } = GLUtils.createTexAndBuffer(
-            _canvas.clientWidth,
-            _canvas.clientHeight
+            $canvas.clientWidth,
+            $canvas.clientHeight
         );
         this.frame_buffers = [fb1, fb2];
         this.textures = [tex1, tex2];
 
         // create the texture and buffer which the scene will be rendered to
         ({ fb: this.render_buff, tex: this.render_tex } =
-            GLUtils.createTexAndBuffer(_gl.canvas.width, _gl.canvas.height));
+            GLUtils.createTexAndBuffer($gl.canvas.width, $gl.canvas.height));
 
         // create the basic post process that renders to the screen
         const v_shader_source = `#version 300 es
@@ -71,7 +71,7 @@ export class PostProcessing {
         this.basic_process = new PostProcess(v_shader_source, f_shader_source);
 
         // bind the render buffer so that scene rendering will draw to it
-        _gl.bindFramebuffer(_gl.FRAMEBUFFER, this.render_buff);
+        $gl.bindFramebuffer($gl.FRAMEBUFFER, this.render_buff);
     }
 
     static createMainFrameBuffer() {
@@ -80,43 +80,43 @@ export class PostProcessing {
 
     static apply() {
         //before applying shaders, scale the rendered scene to screen resolution
-        _gl.viewport(0, 0, _canvas.clientWidth, _canvas.clientHeight);
+        $gl.viewport(0, 0, $canvas.clientWidth, $canvas.clientHeight);
         this.#upscaleScene();
         
         // change the WebGL viewport to be the screen size
 
         // use each provided shader
         for (const post_process of this.post_queue) {
-            _gl.useProgram(post_process.program);
+            $gl.useProgram(post_process.program);
             this.#switchBuffer();
             this.#renderToBuffer(this.#currBuffer(), post_process);
         }
 
         // finally, render the result to the screen
         this.#switchBuffer(); // need to switch buffers, as it uses the previous texture
-        _gl.viewport(0, 0, _gl.canvas.width, _gl.canvas.height);
+        $gl.viewport(0, 0, $gl.canvas.width, $gl.canvas.height);
         this.#renderToScreen();
         // switch back to the render buffer for scene rendering
-        _gl.bindFramebuffer(_gl.FRAMEBUFFER, this.render_buff);
+        $gl.bindFramebuffer($gl.FRAMEBUFFER, this.render_buff);
     }
 
     static #upscaleScene() {
         // use the render buffer and texture
-        _gl.bindFramebuffer(_gl.FRAMEBUFFER, this.#currBuffer());
-        _gl.bindTexture(_gl.TEXTURE_2D, this.render_tex);
+        $gl.bindFramebuffer($gl.FRAMEBUFFER, this.#currBuffer());
+        $gl.bindTexture($gl.TEXTURE_2D, this.render_tex);
 
         // use the basic program
-        _gl.useProgram(this.basic_process.program);
+        $gl.useProgram(this.basic_process.program);
 
         // clear the buffer before drawing
-        _gl.clearColor(1, 1, 1, 1);
-        _gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
+        $gl.clearColor(1, 1, 1, 1);
+        $gl.clear($gl.COLOR_BUFFER_BIT | $gl.DEPTH_BUFFER_BIT);
 
         this.basic_process.draw();
     }
 
     static #renderToScreen() {
-        _gl.useProgram(this.basic_process.program);
+        $gl.useProgram(this.basic_process.program);
         // providing null for the framebuffer will render to the screen
         this.#renderToBuffer(null, this.basic_process);
     }
@@ -125,12 +125,12 @@ export class PostProcessing {
         buffer: WebGLFramebuffer,
         post_process: PostProcess
     ) {
-        _gl.bindFramebuffer(_gl.FRAMEBUFFER, buffer);
+        $gl.bindFramebuffer($gl.FRAMEBUFFER, buffer);
         //clear the buffer
-        _gl.clearColor(1, 1, 1, 1);
-        _gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
+        $gl.clearColor(1, 1, 1, 1);
+        $gl.clear($gl.COLOR_BUFFER_BIT | $gl.DEPTH_BUFFER_BIT);
         // use the previously rendered texture as the input
-        _gl.bindTexture(_gl.TEXTURE_2D, this.#prevTexture());
+        $gl.bindTexture($gl.TEXTURE_2D, this.#prevTexture());
         post_process.draw();
     }
 
