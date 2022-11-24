@@ -34,8 +34,8 @@ export class MouseState {
         this.screen_pos.x = x;
         this.screen_pos.y = y;
 
-        let frac_x = x / _canvas.clientWidth;
-        let frac_y = y / _canvas.clientHeight;
+        const frac_x = x / _canvas.clientWidth;
+        const frac_y = y / _canvas.clientHeight;
         // TODO: stop using hard-coded canvas values
         this.world_pos.x =
             Renderer.viewport.x + 428 * Renderer.viewport.sx * frac_x;

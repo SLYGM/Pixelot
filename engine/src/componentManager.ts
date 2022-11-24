@@ -14,9 +14,7 @@ export class ImportManager {
     private static shadersFolder = "renderer/post effects/";
 
     static async importScripts(
-        scriptTypeMap: Map<string, Constructor<Object>>,
-        src: string
-    ) {
+{ scriptTypeMap, src }: { scriptTypeMap: Map<string, Constructor<Object>>; src: string; }    ) {
         const fs = require("fs");
         let files;
         try {
@@ -25,15 +23,15 @@ export class ImportManager {
             console.trace(e);
             return;
         }
-        let scriptsList: string[] = [];
+        const scriptsList: string[] = [];
         files.forEach((file) => {
-            let fileName = file.split(".")[0];
+            const fileName = file.split(".")[0];
             if (StringUtils.isPostfix(file, ".js")) {
                 scriptsList.push(fileName);
             }
         });
-        for (let script of scriptsList) {
-            let a = await import("./" + src + script + ".js");
+        for (const script of scriptsList) {
+            const a = await import("./" + src + script + ".js");
             scriptTypeMap.set(script, a.default);
         }
     }
@@ -76,19 +74,19 @@ export class ImportManager {
     }
 
     static async importComponents() {
-        await this.importScripts(this.components, this.componentsFolder);
+        await this.importScripts({ scriptTypeMap: this.components, src: this.componentsFolder });
     }
 
     static async importSystems() {
-        await this.importScripts(this.systems, this.systemsFolder);
+        await this.importScripts({ scriptTypeMap: this.systems, src: this.systemsFolder });
     }
 
     static async importEntities() {
-        await this.importScripts(this.entities, this.entitiesFolder);
+        await this.importScripts({ scriptTypeMap: this.entities, src: this.entitiesFolder });
     }
 
     static async importShaders() {
-        await this.importScripts(this.shaders, this.shadersFolder);
+        await this.importScripts({ scriptTypeMap: this.shaders, src: this.shadersFolder });
     }
 }
 

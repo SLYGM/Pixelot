@@ -80,11 +80,7 @@ class SceneManager {
      * @param entity entity obect to be added
      */
     addEntityToScene<T extends GameObjectBase>(sceneName: string, entity: T) {
-        try {
-            this.scenes.get(sceneName).addEntity(entity);
-        } catch (error) {
-            throw error;
-        }
+        this.scenes.get(sceneName).addEntity(entity);
     }
 
     /**
@@ -95,11 +91,7 @@ class SceneManager {
      * @param priority priority of system to be added
      */
     addSystemToScene(sceneName: string, system: System, priority: number) {
-        try {
-            this.scenes.get(sceneName).addSystem(system, priority);
-        } catch (error) {
-            throw error;
-        }
+        this.scenes.get(sceneName).addSystem(system, priority);
     }
 
     /**
