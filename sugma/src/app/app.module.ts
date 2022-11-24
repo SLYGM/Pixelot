@@ -8,6 +8,7 @@ import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
 import { RightSidebarComponent } from './right-sidebar/right-sidebar.component';
 import { FileManagerComponent } from './file-manager/file-manager.component';
 import { NavbarComponent } from './navbar/navbar.component';
+import { Tab1Component } from './tab1/tab1.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { NavbarComponent } from './navbar/navbar.component';
     LeftSidebarComponent,
     RightSidebarComponent,
     FileManagerComponent,
-    NavbarComponent
+    NavbarComponent,
+    Tab1Component
   ],
   imports: [
     BrowserModule,

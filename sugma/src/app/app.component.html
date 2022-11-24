@@ -1,8 +1,5 @@
 <body>
+  <!-- Toolbar is shown on all pages, router outlet shows each routed page-->
   <app-toolbar></app-toolbar>
-  <div class="col-lg-12 control-section">
-    <div *ngFor="let item of data">
-      <button>{{ item["text"] }}</button>
-    </div>
-  </div>
+  <router-outlet></router-outlet>
 </body>
