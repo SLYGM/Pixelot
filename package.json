@@ -4,7 +4,8 @@
   "description": "testing webgl in nw",
   "main": "index.html",
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
+    "check": "eslint ./src",
     "clean": "rimraf build/",
     "copy-files": "copyfiles -u 1 src/**/*.json build/",
     "build": "npm run clean && npm run copy-files && tsc",

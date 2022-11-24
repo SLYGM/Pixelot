@@ -3,7 +3,7 @@ export abstract class Component {
      * The list of components that this component depends on.
      * E.g. Velocity depends on Position.
      */
-    readonly dependencies = [];
+    dependencies: any[] = [];
 }
 
 export type ComponentType<T extends Component> = new (...args: unknown[]) => T;
@@ -100,8 +100,8 @@ export abstract class GameObjectBase {
      *
      * @returns All components linked to this entity
      */
-    public getAllComponents() {
-        return this.component_map.keys();
+    public getAllComponents(): Component[] {
+        return Array.from(this.component_map.values());
     }
 
     /**
@@ -115,11 +115,12 @@ export abstract class GameObjectBase {
     }
 
     // Returns true if the entity has all the given components
-    public hasAll<T extends Component>(components: ComponentType<T>[]) {
+    public hasAll(components: any[]): boolean {
         return components.every((c) => this.has(c));
     }
 
     // Remove the component of the given type
+    // TODO: Check if dependencies are still met
     public remove<T extends Component>(c: ComponentType<T>) {
         this.component_map.delete(c.name);
     }

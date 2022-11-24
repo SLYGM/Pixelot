@@ -1,9 +1,13 @@
 import { expect, test } from "@jest/globals";
-import { Component, ComponentType, GameObjectBase, System } from "./ecs.js";
-import { Scene } from "./scene.js";
+import { Component, ComponentType, GameObjectBase, System } from "../ecs.js";
+import { Scene } from "../scene.js";
 
 class TestComponent extends Component {
     counter = 0;
+}
+
+class TestComponent2 extends Component {
+    dependencies = [TestComponent];
 }
 
 class TestEntity extends GameObjectBase {
@@ -53,6 +57,25 @@ test("System Functionality", () => {
     scene.update();
     scene.update();
 
+    expect(testEntity.counter).toBe(2);
+    expect(testEntity.get(TestComponent).counter).toBe(2);
+    expect(testEntity.getAllComponents()).toEqual([testEntity.get(TestComponent)]);
+});
+
+test("Component Dependencies", () => {
+    const scene = new Scene();
+    scene.onCreate();
+
+    const testEntity = new TestEntity("test");
+    expect(() => testEntity.add(new TestComponent2)).toThrowError('Component \'TestComponent2\' requires \'TestComponent\'');
+    testEntity.add(new TestComponent());
+    testEntity.add(new TestComponent2());
+    scene.addEntity(testEntity);
+    scene.addSystem(new TestSystem(), 0);
+    scene.update();
+    scene.update();
+
+    expect(testEntity.hasAll([TestComponent, TestComponent2])).toBe(true);
     expect(testEntity.counter).toBe(2);
     expect(testEntity.get(TestComponent).counter).toBe(2);
 });
