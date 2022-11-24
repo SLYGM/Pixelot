@@ -36,10 +36,6 @@ export class PostProcessing {
         this.frame_buffers = [fb1, fb2];
         this.textures = [tex1, tex2];
 
-        // create the texture and buffer which the scene will be rendered to
-        ({ fb: this.render_buff, tex: this.render_tex } =
-            GLUtils.createTexAndBuffer(_gl.canvas.width, _gl.canvas.height));
-
         // create the basic post process that renders to the screen
         const v_shader_source = `#version 300 es
     
@@ -69,13 +65,15 @@ export class PostProcessing {
         }
         `;
         this.basic_process = new PostProcess(v_shader_source, f_shader_source);
+    }
+
+    static initRenderBuffer() {
+        // create the texture and buffer which the scene will be rendered to
+        ({ fb: this.render_buff, tex: this.render_tex } =
+            GLUtils.createTexAndBuffer(Renderer.resolution.x, Renderer.resolution.y));
 
         // bind the render buffer so that scene rendering will draw to it
         _gl.bindFramebuffer(_gl.FRAMEBUFFER, this.render_buff);
-    }
-
-    static createMainFrameBuffer() {
-        ({fb: this.render_buff, tex: this.render_tex} = GLUtils.createTexAndBuffer(Renderer.resolution.x, Renderer.resolution.y));
     }
 
     static apply() {
@@ -94,7 +92,6 @@ export class PostProcessing {
 
         // finally, render the result to the screen
         this.#switchBuffer(); // need to switch buffers, as it uses the previous texture
-        _gl.viewport(0, 0, _gl.canvas.width, _gl.canvas.height);
         this.#renderToScreen();
         // switch back to the render buffer for scene rendering
         _gl.bindFramebuffer(_gl.FRAMEBUFFER, this.render_buff);

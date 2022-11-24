@@ -1,6 +1,6 @@
 import Sprite from "../components/Sprite.js";
 
-import { _gl } from "./gl.js";
+import { _gl, _canvas } from "./gl.js";
 import { GLUtils } from "./webglutils.js";
 import { PostProcessing } from "./post_process.js";
 import { Texture, Updatable } from "../types.js";
@@ -88,6 +88,10 @@ export class Renderer {
             this.shader.prog,
             "u_texture"
         );
+        
+        // set the webgl canvas resolution to the size of the window
+        _canvas.width = _canvas.clientWidth;
+        _canvas.height = _canvas.clientHeight;
 
         this.vao = _gl.createVertexArray();
         _gl.bindVertexArray(this.vao);
@@ -103,10 +107,8 @@ export class Renderer {
 
     static setResolution(x: number, y: number) {
         this.resolution = {x: x, y: y};
-        _gl.canvas.width = x;
-        _gl.canvas.height = y;
         // recreate the main framebuffer after changing resolution
-        PostProcessing.createMainFrameBuffer();
+        PostProcessing.initRenderBuffer();
     }
 
     static loadTexture(path: string, alias: string): string {
