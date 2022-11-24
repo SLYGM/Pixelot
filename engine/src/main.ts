@@ -19,7 +19,7 @@ import { MouseState } from './mouseState.js';
 import './scriptManager.js';
 import './componentManager.js';
 
-
+Renderer.setResolution(426, 240);
 Renderer.loadTexture('./images/frog.png', 'frog')
 Renderer.loadTexture('./images/tile.png', 'tile')
 
