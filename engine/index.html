@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+  <title>Sugma</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <!--TODO: replace hardcoded resolution with global constant-->
+  <canvas id="canvas" width="426" height="240"></canvas>
+  <script>
+    let win = nw.Window.get();
+    win.resizeTo(426*3, 240*3); // 2x internal res
+    win.setResizable(false);    // disable resizing
+  </script>
+  <script src="build/renderer/gl.js" type="module"></script>
+  <script src="build/main.js" type="module"></script>
+</body>
+
+
+</html>
