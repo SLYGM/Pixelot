@@ -45,7 +45,7 @@ t.add(new Position).add(new Sprite('frog'));
 $scene.addEntity(t);
 $scene.addSystem(new RenderSystem(), 0);
 
-// PostProcessing.add(new BarShader());
+PostProcessing.add(new BarShader());
 PostProcessing.add(new BarrelShader());
 
 Game.addToUpdateQueue($scene);
