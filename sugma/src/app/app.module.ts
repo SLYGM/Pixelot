@@ -7,6 +7,7 @@ import { ToolbarComponent } from './toolbar/toolbar.component';
 import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
 import { RightSidebarComponent } from './right-sidebar/right-sidebar.component';
 import { FileManagerComponent } from './file-manager/file-manager.component';
+import { NavbarComponent } from './navbar/navbar.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { FileManagerComponent } from './file-manager/file-manager.component';
     ToolbarComponent,
     LeftSidebarComponent,
     RightSidebarComponent,
-    FileManagerComponent
+    FileManagerComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
