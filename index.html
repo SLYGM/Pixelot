@@ -11,7 +11,8 @@
   <canvas id="canvas" width="426" height="240"></canvas>
   <script>
     let win = nw.Window.get();
-    win.resizeTo(426*2, 240*2); //2x internal res
+    win.resizeTo(426*3, 240*3); // 2x internal res
+    win.setResizable(false);    // disable resizing
   </script>
   <script src="build/renderer/gl.js" type="module"></script>
   <script src="build/main.js" type="module"></script>
