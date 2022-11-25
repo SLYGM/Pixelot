@@ -1,4 +1,4 @@
-import { _gl } from '../gl.js';
+import { $gl } from '../gl.js';
 
 import { PostProcess } from "../post_process.js";
 

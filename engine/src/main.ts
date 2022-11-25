@@ -19,6 +19,7 @@ import { MouseState } from "./mouseState.js";
 
 import './scriptManager.js';
 import './componentManager.js';
+import CRTShader from "./renderer/post effects/crt.js";
 
 Renderer.setResolution(426, 240);
 Renderer.loadTexture('./images/frog.png', 'frog')
@@ -46,8 +47,8 @@ t.add(new Position()).add(new Sprite("frog"));
 $scene.addEntity(t);
 $scene.addSystem(new RenderSystem(), 0);
 
-PostProcessing.add(new BarShader());
 PostProcessing.add(new BarrelShader());
+PostProcessing.add(new CRTShader());
 
 Game.addToUpdateQueue($scene);
 Game.start();

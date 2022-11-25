@@ -1,6 +1,6 @@
 import Sprite from "../components/Sprite.js";
 
-import { _gl } from "./gl.js";
+import { $gl, _canvas } from "./gl.js";
 import { GLUtils } from "./webglutils.js";
 import { PostProcessing } from "./post_process.js";
 import { Texture, Updatable } from "../types.js";
@@ -76,21 +76,25 @@ export class Renderer {
         if (!this.shader.prog) {
             console.log("Failed to create shader program");
         }
-        this.shader.proj_loc = _gl.getUniformLocation(
+        this.shader.proj_loc = $gl.getUniformLocation(
             this.shader.prog,
             "u_projection"
         );
-        this.shader.mat_loc = _gl.getUniformLocation(
+        this.shader.mat_loc = $gl.getUniformLocation(
             this.shader.prog,
             "u_matrix"
         );
-        this.shader.tex_loc = _gl.getUniformLocation(
+        this.shader.tex_loc = $gl.getUniformLocation(
             this.shader.prog,
             "u_texture"
         );
+        
+        // set the webgl canvas resolution to the size of the window
+        _canvas.width = _canvas.clientWidth;
+        _canvas.height = _canvas.clientHeight;
 
-        this.vao = _gl.createVertexArray();
-        _gl.bindVertexArray(this.vao);
+        this.vao = $gl.createVertexArray();
+        $gl.bindVertexArray(this.vao);
 
         this.createUnitQuad();
 
@@ -103,40 +107,38 @@ export class Renderer {
 
     static setResolution(x: number, y: number) {
         this.resolution = {x: x, y: y};
-        _gl.canvas.width = x;
-        _gl.canvas.height = y;
         // recreate the main framebuffer after changing resolution
-        PostProcessing.createMainFrameBuffer();
+        PostProcessing.initRenderBuffer();
     }
 
     static loadTexture(path: string, alias: string): string {
-        const tex = _gl.createTexture();
-        _gl.bindTexture(_gl.TEXTURE_2D, tex);
-        _gl.texImage2D(
-            _gl.TEXTURE_2D,
+        const tex = $gl.createTexture();
+        $gl.bindTexture($gl.TEXTURE_2D, tex);
+        $gl.texImage2D(
+            $gl.TEXTURE_2D,
             0,
-            _gl.RGBA,
+            $gl.RGBA,
             1,
             1,
             0,
-            _gl.RGBA,
-            _gl.UNSIGNED_BYTE,
+            $gl.RGBA,
+            $gl.UNSIGNED_BYTE,
             new Uint8Array([0, 0, 0, 255])
         );
 
-        _gl.texParameteri(
-            _gl.TEXTURE_2D,
-            _gl.TEXTURE_WRAP_S,
-            _gl.CLAMP_TO_EDGE
+        $gl.texParameteri(
+            $gl.TEXTURE_2D,
+            $gl.TEXTURE_WRAP_S,
+            $gl.CLAMP_TO_EDGE
         );
-        _gl.texParameteri(
-            _gl.TEXTURE_2D,
-            _gl.TEXTURE_WRAP_T,
-            _gl.CLAMP_TO_EDGE
+        $gl.texParameteri(
+            $gl.TEXTURE_2D,
+            $gl.TEXTURE_WRAP_T,
+            $gl.CLAMP_TO_EDGE
         );
         //use nearest neighbour filtering for texture by default
-        _gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_MIN_FILTER, _gl.NEAREST);
-        _gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_MAG_FILTER, _gl.NEAREST);
+        $gl.texParameteri($gl.TEXTURE_2D, $gl.TEXTURE_MIN_FILTER, $gl.NEAREST);
+        $gl.texParameteri($gl.TEXTURE_2D, $gl.TEXTURE_MAG_FILTER, $gl.NEAREST);
 
         const tex_info = {
             width: 1, // we don't know the size until it loads
@@ -148,13 +150,13 @@ export class Renderer {
             tex_info.width = img.width;
             tex_info.height = img.height;
 
-            _gl.bindTexture(_gl.TEXTURE_2D, tex_info.texture);
-            _gl.texImage2D(
-                _gl.TEXTURE_2D,
+            $gl.bindTexture($gl.TEXTURE_2D, tex_info.texture);
+            $gl.texImage2D(
+                $gl.TEXTURE_2D,
                 0,
-                _gl.RGBA,
-                _gl.RGBA,
-                _gl.UNSIGNED_BYTE,
+                $gl.RGBA,
+                $gl.RGBA,
+                $gl.UNSIGNED_BYTE,
                 img
             );
         });
@@ -165,9 +167,9 @@ export class Renderer {
 
     static drawImage(tex: Texture, x: number, y: number) {
         const textureUnit = 0;
-        _gl.uniform1i(this.shader.tex_loc, textureUnit);
-        _gl.activeTexture(_gl.TEXTURE0 + textureUnit);
-        _gl.bindTexture(_gl.TEXTURE_2D, tex.texture);
+        $gl.uniform1i(this.shader.tex_loc, textureUnit);
+        $gl.activeTexture($gl.TEXTURE0 + textureUnit);
+        $gl.bindTexture($gl.TEXTURE_2D, tex.texture);
 
         const img_matrix = mat4.create();
         mat4.translate(img_matrix, img_matrix, vec3.fromValues(x, y, 0));
@@ -181,55 +183,55 @@ export class Renderer {
             img_matrix,
             vec3.fromValues(tex.width, tex.height, 1)
         );
-        _gl.uniformMatrix4fv(this.shader.mat_loc, false, img_matrix);
+        $gl.uniformMatrix4fv(this.shader.mat_loc, false, img_matrix);
 
         const offset = 0;
         const count = 6;
-        _gl.drawArrays(_gl.TRIANGLES, offset, count);
+        $gl.drawArrays($gl.TRIANGLES, offset, count);
     }
 
     static createUnitQuad() {
-        const pos_attr_loc = _gl.getAttribLocation(
+        const pos_attr_loc = $gl.getAttribLocation(
             this.shader.prog,
             "a_position"
         );
-        const texcoord_attr_loc = _gl.getAttribLocation(
+        const texcoord_attr_loc = $gl.getAttribLocation(
             this.shader.prog,
             "a_texcoord"
         );
 
-        const pos_buffer = _gl.createBuffer();
-        _gl.bindBuffer(_gl.ARRAY_BUFFER, pos_buffer);
+        const pos_buffer = $gl.createBuffer();
+        $gl.bindBuffer($gl.ARRAY_BUFFER, pos_buffer);
 
         const positions = [0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1];
-        _gl.bufferData(
-            _gl.ARRAY_BUFFER,
+        $gl.bufferData(
+            $gl.ARRAY_BUFFER,
             new Float32Array(positions),
-            _gl.STATIC_DRAW
+            $gl.STATIC_DRAW
         );
-        _gl.enableVertexAttribArray(pos_attr_loc);
-        _gl.vertexAttribPointer(
+        $gl.enableVertexAttribArray(pos_attr_loc);
+        $gl.vertexAttribPointer(
             pos_attr_loc,
             2, // size
-            _gl.FLOAT, // type
+            $gl.FLOAT, // type
             false, // normalise
             0, // stride
             0 // offset
         );
 
-        const tex_coord_buffer = _gl.createBuffer();
-        _gl.bindBuffer(_gl.ARRAY_BUFFER, tex_coord_buffer);
+        const tex_coord_buffer = $gl.createBuffer();
+        $gl.bindBuffer($gl.ARRAY_BUFFER, tex_coord_buffer);
         const texcoords = [0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1];
-        _gl.bufferData(
-            _gl.ARRAY_BUFFER,
+        $gl.bufferData(
+            $gl.ARRAY_BUFFER,
             new Float32Array(texcoords),
-            _gl.STATIC_DRAW
+            $gl.STATIC_DRAW
         );
-        _gl.enableVertexAttribArray(texcoord_attr_loc);
-        _gl.vertexAttribPointer(
+        $gl.enableVertexAttribArray(texcoord_attr_loc);
+        $gl.vertexAttribPointer(
             texcoord_attr_loc,
             2, // size
-            _gl.FLOAT, // type
+            $gl.FLOAT, // type
             false, // normalise
             0, // stride
             0 // offset
@@ -241,12 +243,12 @@ export class RenderSystem extends System {
     component = Sprite;
 
     update(entities: Set<GameObjectBase>): void {
-        _gl.viewport(0, 0, Renderer.resolution.x, Renderer.resolution.y);
-        _gl.clearColor(1, 1, 1, 1);
-        _gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
+        $gl.viewport(0, 0, Renderer.resolution.x, Renderer.resolution.y);
+        $gl.clearColor(1, 1, 1, 1);
+        $gl.clear($gl.COLOR_BUFFER_BIT | $gl.DEPTH_BUFFER_BIT);
 
-        _gl.useProgram(Renderer.shader.prog);
-        _gl.bindVertexArray(Renderer.vao);
+        $gl.useProgram(Renderer.shader.prog);
+        $gl.bindVertexArray(Renderer.vao);
 
         const proj_matrix = mat4.create();
         // use orthographic projection to scale coords to -1->1 (calculate once per frame)
@@ -259,7 +261,7 @@ export class RenderSystem extends System {
             -1,
             1
         );
-        _gl.uniformMatrix4fv(Renderer.shader.proj_loc, false, proj_matrix);
+        $gl.uniformMatrix4fv(Renderer.shader.proj_loc, false, proj_matrix);
 
         entities.forEach((entity) => {
             const sprite = entity.get(Sprite);

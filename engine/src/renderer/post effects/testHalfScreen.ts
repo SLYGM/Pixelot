@@ -1,4 +1,4 @@
-import { _gl } from '../gl.js';
+import { $gl } from '../gl.js';
 
 import { PostProcess } from "../post_process.js";
 
@@ -43,6 +43,6 @@ export class TestHalfScreenShader extends PostProcess {
   }
 
   draw() {
-    _gl.drawArrays(_gl.TRIANGLES, 0, 6);
+    $gl.drawArrays($gl.TRIANGLES, 0, 6);
   }
 }
