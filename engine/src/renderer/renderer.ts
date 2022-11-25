@@ -11,13 +11,9 @@ const { glMatrix, mat4, vec3 } = require("gl-matrix");
 const AVLTree = require('avl');
 type AVLTree = InstanceType<typeof AVLTree>;
 
-type AVLKey<T> = {
-    key: number,
-    data: T
-}
 
 export abstract class RenderLayer {
-    abstract render();
+    abstract render(): void;
 }
 
 export class SpriteLayer extends RenderLayer {
@@ -25,26 +21,24 @@ export class SpriteLayer extends RenderLayer {
     
     constructor() {
         super();
-        this.sprites = new AVLTree((a: AVLKey<Sprite>, b: AVLKey<Sprite>) => {
-            const diff = a.key - b.key
+        this.sprites = new AVLTree((a: Sprite, b: Sprite) => {
+            const diff = a.zindex - b.zindex
             if (diff !== 0) return diff;
-            if (a.data === b.data) return 0; else return -1;
+            if (a === b) return 0; else return -1;
         });
     }
 
-    addSprite(sprite: Sprite, zindex: number = 0): AVLKey<Sprite> {
-        const node = {key: zindex, data: sprite};
-        this.sprites.insert(node);
-        return node;
+    addSprite(sprite: Sprite) {
+        this.sprites.insert(sprite);
     }
 
-    removeSprite(n: AVLKey<Sprite>) {
+    removeSprite(n: Sprite) {
         this.sprites.remove(n);
     }
 
     render() {
         this.sprites.forEach((node) => {
-            const sprite = node.key.data;
+            const sprite = node.key;
             const pos = sprite.getPos();
             Renderer.drawImage(sprite.tex, pos.x, pos.y);
         })
