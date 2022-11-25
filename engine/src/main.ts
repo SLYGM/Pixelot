@@ -1,4 +1,4 @@
-import { Renderer, RenderSystem, RenderLayer, SpriteLayer } from "./renderer/renderer.js";
+import { Renderer, RenderLayer, SpriteLayer } from "./renderer/renderer.js";
 
 import { PostProcessing } from './renderer/post_process.js';
 import { BarShader } from './renderer/post effects/bars.js';
@@ -45,7 +45,6 @@ class TestEntity extends GameObjectBase {
 const t = new TestEntity("test");
 t.add(new Position()).add(new Sprite("frog", "sprites", 1));
 $scene.addEntity(t);
-$scene.addSystem(new RenderSystem(), 0);
 
 PostProcessing.add(new BarShader());
 PostProcessing.add(new BarrelShader());

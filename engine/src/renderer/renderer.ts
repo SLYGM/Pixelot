@@ -326,11 +326,3 @@ export class Renderer {
         );
     }
 }
-
-export class RenderSystem extends System {
-    component = Sprite;
-
-    update(entities: Set<GameObjectBase>): void {
-        Renderer.render();
-    }
-}
