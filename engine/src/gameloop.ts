@@ -1,8 +1,8 @@
 import { Updatable } from "./types.js";
 
-const nwjs = require('nw.gui');
+const nwjs = require("nw.gui");
 
-export class Game{
+export class Game {
     static updateQueue: Updatable[];
     static running = true;
     static time = 0;
@@ -14,7 +14,7 @@ export class Game{
     static start() {
         requestAnimationFrame(this.gameloop.bind(this));
     }
-    
+
     static addToUpdateQueue(object: Updatable) {
         this.updateQueue.push(object);
     }
@@ -25,8 +25,8 @@ export class Game{
         this.time = now;
 
         this.updateQueue.forEach((u) => u.update(dt));
-        
-        if(this.running) {
+
+        if (this.running) {
             requestAnimationFrame(this.gameloop.bind(this));
         }
     }

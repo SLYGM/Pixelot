@@ -3,12 +3,12 @@ export abstract class Component {
      * The list of components that this component depends on.
      * E.g. Velocity depends on Position.
      */
-    readonly dependencies = [];
+    dependencies: any[] = [];
 }
 
-export type ComponentType<T extends Component> = new (...args: any[]) => T;
+export type ComponentType<T extends Component> = new (...args: unknown[]) => T;
 
-/** 
+/**
  * The base class inherited by all game objects.
  *
  * @example
@@ -37,7 +37,7 @@ export abstract class GameObjectBase {
      * Constructor which wraps the object in a proxy.
      * This allows the user to access the components directly.
      */
-    constructor(name:string) {
+    constructor(name: string) {
         this.name = name;
         return new Proxy(this, {
             get: (target, prop: string) => {
@@ -72,7 +72,13 @@ export abstract class GameObjectBase {
         // Check if the component has all its dependencies
         for (const dependency of component.dependencies) {
             if (!this.has(dependency)) {
-                throw new Error("Component '" + component.constructor.name + "' requires '" + dependency.name + "'");
+                throw new Error(
+                    "Component '" +
+                        component.constructor.name +
+                        "' requires '" +
+                        dependency.name +
+                        "'"
+                );
             }
         }
         this.component_map.set(component.constructor.name, component);
@@ -91,11 +97,11 @@ export abstract class GameObjectBase {
 
     /**
      * Get all components linked to this entity
-     * 
+     *
      * @returns All components linked to this entity
      */
-    public getAllComponents() {
-        return this.component_map.keys();
+    public getAllComponents(): string[] {
+        return Array.from(this.component_map.keys());
     }
 
     /**
@@ -109,11 +115,12 @@ export abstract class GameObjectBase {
     }
 
     // Returns true if the entity has all the given components
-    public hasAll<T extends Component>(components: ComponentType<T>[]) {
-        return components.every(c => this.has(c));
+    public hasAll(components: any[]): boolean {
+        return components.every((c) => this.has(c));
     }
 
     // Remove the component of the given type
+    // TODO: Check if dependencies are still met
     public remove<T extends Component>(c: ComponentType<T>) {
         this.component_map.delete(c.name);
     }
@@ -152,4 +159,3 @@ export type SystemNode = {
     // The entities that this system acts on
     entities: Set<GameObjectBase>;
 };
-

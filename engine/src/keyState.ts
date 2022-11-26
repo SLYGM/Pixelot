@@ -1,17 +1,17 @@
 export class KeyStates {
-    private static states: Map<KeyboardEvent["key"], boolean>
+    private static states: Map<KeyboardEvent["key"], boolean>;
     static {
         this.states = new Map();
 
         // attach keydown handler
-        document.addEventListener('keydown', event => {
-                this.keyDownHandler(event)
-        })
+        document.addEventListener("keydown", (event) => {
+            this.keyDownHandler(event);
+        });
 
         // attach keyup handler
-        document.addEventListener('keyup', event => {
-            this.keyUpHandler(event)
-        })
+        document.addEventListener("keyup", (event) => {
+            this.keyUpHandler(event);
+        });
     }
 
     static keyDownHandler(event: KeyboardEvent) {

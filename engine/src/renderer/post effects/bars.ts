@@ -1,12 +1,10 @@
-import { _gl } from '../gl.js';
+import { $gl } from "../gl.js";
 
 import { PostProcess } from "../post_process.js";
 
-
-
 export class BarShader extends PostProcess {
-  constructor() {
-    let v_shader = `#version 300 es
+    constructor() {
+        const v_shader = `#version 300 es
 
     in vec4 a_position;
     in vec2 a_texcoord;
@@ -20,8 +18,8 @@ export class BarShader extends PostProcess {
     }
     `;
 
-    //https://clemz.io/article-retro-shaders-webgl.html
-    let f_shader=`#version 300 es
+        //https://clemz.io/article-retro-shaders-webgl.html
+        const f_shader = `#version 300 es
 
     precision highp float;
 
@@ -41,11 +39,14 @@ export class BarShader extends PostProcess {
       outColor = vec4(color, 1.0).rgba;
     }
     `;
-    super(v_shader, f_shader);
-  }
+        super(v_shader, f_shader);
+    }
 
-  draw() {
-    _gl.uniform1f(_gl.getUniformLocation(this.program, "time"), performance.now() / 1000);
-    _gl.drawArrays(_gl.TRIANGLES, 0, 6);
-  }
+    draw() {
+        $gl.uniform1f(
+            $gl.getUniformLocation(this.program, "time"),
+            performance.now() / 1000
+        );
+        $gl.drawArrays($gl.TRIANGLES, 0, 6);
+    }
 }
