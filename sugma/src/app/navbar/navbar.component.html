@@ -1,1 +1,8 @@
 <p>navbar works!</p>
+<label class="load-scene-btn">
+  <input type="file" (change)="handleFileSelect($event)" style="display: none" />
+  <span>Click here to load a scene</span>
+</label>
+<div *ngFor="let scene of sceneManager.getScenes()">
+  <button routerLink="/scene/{{scene}}">{{scene}}</button>
+</div>

@@ -1,1 +1,9 @@
-<p>right-sidebar works!</p>
+<div *ngIf="entity">
+  <h2>{{entity.name}}</h2>
+  <ul *ngFor="let component of entity.components">
+    <li>{{component.component_name}}</li>
+  </ul>
+</div>
+<div *ngIf="!entity">
+  <h2>No entity selected</h2>
+</div>

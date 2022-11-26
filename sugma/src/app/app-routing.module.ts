@@ -3,10 +3,10 @@ import { RouterModule, Routes } from '@angular/router';
 import { SceneTabComponent } from './scene-tab/scene-tab.component';
 
 const routes: Routes = [
-  {path: 'first-tab', component: SceneTabComponent},
+  {path: 'scene/:sceneName', component: SceneTabComponent},
   //  This is what path for tab2 would look like
   // {path: 'first-tab', component: Tab1Component},
-  {path: '', redirectTo: '/first-tab', pathMatch: 'full'}
+  {path: '', component: SceneTabComponent}
 ];
 
 @NgModule({
