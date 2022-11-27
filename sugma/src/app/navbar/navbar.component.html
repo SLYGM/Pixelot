@@ -1,4 +1,4 @@
-<p>navbar works!</p>
+<!-- 
 <label class="load-scene-btn">
   <input type="file" (change)="handleFileSelect($event)" style="display: none" />
   <span>Click here to load a scene</span>
@@ -6,3 +6,17 @@
 <div *ngFor="let scene of sceneManager.getScenes()">
   <button routerLink="/scene/{{scene}}">{{scene}}</button>
 </div>
+ -->
+
+<div>
+  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms">
+    <ng-container *ngFor="let scene of sceneManager.getScenes()">
+      <mat-tab label="{{scene}}"> {{scene}} Content </mat-tab>
+    </ng-container>
+    <mat-tab label="Visual Scripting Editor"> Content 1 </mat-tab>
+    <mat-tab label="State Graph"> Content 2 </mat-tab>
+    <mat-tab label="Sprite Editor"> Content 3 </mat-tab>
+  </mat-tab-group>
+</div>
+
+

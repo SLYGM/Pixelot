@@ -5,7 +5,7 @@ import { Scene } from 'types';
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss']
+  styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent {
   @Output() loadedScene = new EventEmitter<Scene>();
