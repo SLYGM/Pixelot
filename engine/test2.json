@@ -1,1 +1,1 @@
-{"name":"test1","entities":[{"name":"player","components":[{"component_name":"Position","value":{"dependencies":[],"x":1,"y":1}},{"component_name":"Velocity","value":{"dependencies":[],"x":1,"y":1}}]}]}
+{"name":"test1","entities":[{"name":"player","components":[{"component_name":"Position","value":{"dependencies":[],"owner":{"component_map":{},"name":"player","health":10},"x":1,"y":1}},{"component_name":"Velocity","value":{"dependencies":[],"owner":{"component_map":{},"name":"player","health":10},"x":1,"y":1}}]}]}

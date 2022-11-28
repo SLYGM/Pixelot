@@ -1,6 +1,6 @@
 import Sprite from "../components/Sprite.js";
 
-import { $gl, _canvas } from "./gl.js";
+import { $gl, $canvas } from "./gl.js";
 import { GLUtils } from "./webglutils.js";
 import { PostProcessing } from "./post_process.js";
 import { Texture, Updatable } from "../types.js";
@@ -8,6 +8,42 @@ import { GameObjectBase, System } from "../ecs.js";
 import Position from "../components/Position.js";
 
 const { glMatrix, mat4, vec3 } = require("gl-matrix");
+const AVLTree = require('avl');
+type AVLTree = InstanceType<typeof AVLTree>;
+
+
+export abstract class RenderLayer {
+    abstract render(): void;
+}
+
+export class SpriteLayer extends RenderLayer {
+    sprites: AVLTree;
+    
+    constructor() {
+        super();
+        this.sprites = new AVLTree((a: Sprite, b: Sprite) => {
+            const diff = a.zindex - b.zindex
+            if (diff !== 0) return diff;
+            if (a === b) return 0; else return -1;
+        });
+    }
+
+    addSprite(sprite: Sprite) {
+        this.sprites.insert(sprite);
+    }
+
+    removeSprite(n: Sprite) {
+        this.sprites.remove(n);
+    }
+
+    render() {
+        this.sprites.forEach((node) => {
+            const sprite = node.key;
+            const pos = sprite.getPos();
+            Renderer.drawImage(sprite.tex, pos.x, pos.y);
+        })
+    }
+}
 
 export class Renderer {
     //GLSL Vertex Shader
@@ -60,9 +96,10 @@ export class Renderer {
     static vao: WebGLVertexArrayObject;
     static time: number;
     static textures: Map<string, Texture>;
+    static layerAliases: Map<string, number>;
+    static layers: RenderLayer[];
 
     static {
-
         this.shader = {
             prog: undefined,
             proj_loc: undefined,
@@ -103,12 +140,63 @@ export class Renderer {
         this.viewport = { x: 0, y: 0, sx: 1.0, sy: 1.0 };
 
         this.textures = new Map<string, Texture>();
+
+        this.layers = [];
+        this.layerAliases = new Map<string, number>();
     }
 
     static setResolution(x: number, y: number) {
         this.resolution = {x: x, y: y};
         // recreate the main framebuffer after changing resolution
         PostProcessing.initRenderBuffer();
+    }
+
+    static render() {
+        $gl.viewport(0, 0, this.resolution.x, this.resolution.y);
+        $gl.clearColor(1, 1, 1, 1);
+        $gl.clear($gl.COLOR_BUFFER_BIT | $gl.DEPTH_BUFFER_BIT);
+
+        $gl.useProgram(this.shader.prog);
+        $gl.bindVertexArray(this.vao);
+
+        const proj_matrix = mat4.create();
+        // use orthographic projection to scale coords to -1->1 (calculate once per frame)
+        mat4.ortho(
+            proj_matrix,
+            0,
+            this.resolution.x * this.viewport.sx,
+            this.resolution.y * this.viewport.sy,
+            0,
+            -1,
+            1
+        );
+        $gl.uniformMatrix4fv(this.shader.proj_loc, false, proj_matrix);
+
+        this.layers.forEach((l) => {
+            l.render();
+        })
+        PostProcessing.apply();
+    }
+
+    //layers should be added in a bottom-up fashion i.e. the first one added will be rendered first.
+    static addLayer(layer: RenderLayer, alias: string) {
+        const index = this.layers.push(layer) - 1;
+        this.layerAliases.set(alias, index);
+    }
+
+    static getLayer(alias: string) {
+        return this.layers[this.layerAliases.get(alias)];
+    }
+
+    static removeLayer(alias: string) {
+        const index = this.layerAliases.get(alias); //get index of item to be removed
+        if (!index) return;
+        //update stored indexes of layers that are after this layer in the array (decrease them by 1)
+        for (const [k, v] of this.layerAliases) {
+            if (v > index) this.layerAliases.set(k, v - 1);
+        }
+        this.layers.splice(index, 1); //remove the layer from the array at the index
+        this.layerAliases.delete(alias);
     }
 
     static loadTexture(path: string, alias: string): string {
@@ -165,7 +253,9 @@ export class Renderer {
         return alias;
     }
 
-    static drawImage(tex: Texture, x: number, y: number) {
+    static drawImage(alias: string, x: number, y: number) {
+        const tex = this.textures.get(alias);
+        if (tex === undefined) return;
         const textureUnit = 0;
         $gl.uniform1i(this.shader.tex_loc, textureUnit);
         $gl.activeTexture($gl.TEXTURE0 + textureUnit);
@@ -236,39 +326,5 @@ export class Renderer {
             0, // stride
             0 // offset
         );
-    }
-}
-
-export class RenderSystem extends System {
-    component = Sprite;
-
-    update(entities: Set<GameObjectBase>): void {
-        $gl.viewport(0, 0, Renderer.resolution.x, Renderer.resolution.y);
-        $gl.clearColor(1, 1, 1, 1);
-        $gl.clear($gl.COLOR_BUFFER_BIT | $gl.DEPTH_BUFFER_BIT);
-
-        $gl.useProgram(Renderer.shader.prog);
-        $gl.bindVertexArray(Renderer.vao);
-
-        const proj_matrix = mat4.create();
-        // use orthographic projection to scale coords to -1->1 (calculate once per frame)
-        mat4.ortho(
-            proj_matrix,
-            0,
-            Renderer.resolution.x * Renderer.viewport.sx,
-            Renderer.resolution.y * Renderer.viewport.sy,
-            0,
-            -1,
-            1
-        );
-        $gl.uniformMatrix4fv(Renderer.shader.proj_loc, false, proj_matrix);
-
-        entities.forEach((entity) => {
-            const sprite = entity.get(Sprite);
-            const pos = entity.get(Position);
-            Renderer.drawImage(sprite.tex, pos.x, pos.y);
-        });
-
-        PostProcessing.apply();
     }
 }

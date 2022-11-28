@@ -1,4 +1,4 @@
-import { Renderer, RenderSystem } from "./renderer/renderer.js";
+import { Renderer, RenderLayer, SpriteLayer } from "./renderer/renderer.js";
 
 import { PostProcessing } from './renderer/post_process.js';
 import { BarShader } from './renderer/post effects/bars.js';
@@ -22,6 +22,7 @@ import './componentManager.js';
 import CRTShader from "./renderer/post effects/crt.js";
 
 Renderer.setResolution(426, 240);
+Renderer.addLayer(new SpriteLayer(), 'sprites');
 Renderer.loadTexture('./images/frog.png', 'frog')
 Renderer.loadTexture('./images/tile.png', 'tile')
 
@@ -43,9 +44,8 @@ class TestEntity extends GameObjectBase {
 }
 
 const t = new TestEntity("test");
-t.add(new Position()).add(new Sprite("frog"));
+t.add(new Position()).add(new Sprite("frog", "sprites", 1));
 $scene.addEntity(t);
-$scene.addSystem(new RenderSystem(), 0);
 
 PostProcessing.add(new BarrelShader());
 PostProcessing.add(new CRTShader());
