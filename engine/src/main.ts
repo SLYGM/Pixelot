@@ -1,53 +1,42 @@
-import { Renderer, RenderLayer, SpriteLayer } from "./renderer/renderer.js";
+import "./importManager";
+import "./scriptManager";
+import { Renderer, SpriteLayer } from "./renderer/renderer.js";
 
-import { PostProcessing } from './renderer/post_process.js';
-import { BarShader } from './renderer/post effects/bars.js';
-import BarrelShader from './renderer/post effects/barrel.js';
-
-import { GameObjectBase } from "./ecs.js";
-import { $scene } from "./sceneManager.js";
+import { SceneManager } from "./sceneManager.js";
 import { Game } from "./gameloop.js";
 
-import "./importManager.js";
-import "./scriptManager.js";
-
-import Position from "./components/Position.js";
-import Sprite from "./components/Sprite.js";
-
-import { KeyStates } from "./keyState.js";
-import { MouseState } from "./mouseState.js";
-
-import './scriptManager.js';
-import './importManager.js';
 
 Renderer.setResolution(426, 240);
 Renderer.addLayer(new SpriteLayer(), 'sprites');
 Renderer.loadTexture('./images/frog.png', 'frog')
 Renderer.loadTexture('./images/tile.png', 'tile')
 
-class TestEntity extends GameObjectBase {
-    onCreate(): void {
-        this.get(Position).x = 50;
-        this.get(Position).y = 50;
-    }
+// class TestEntity extends GameObjectBase {
+//     onCreate(): void {
+//         this.get(Position).x = 50;
+//         this.get(Position).y = 50;
+//     }
 
-    update(): void {
-        if (KeyStates.isPressed("a")) {
-            this.get(Position).x = 50;
-            this.get(Position).y = 50;
-        } else {
-            this.get(Position).x = MouseState.world_pos.x;
-            this.get(Position).y = MouseState.world_pos.y;
-        }
-    }
-}
+//     update(): void {
+//         if (KeyStates.isPressed("a")) {
+//             this.get(Position).x = 50;
+//             this.get(Position).y = 50;
+//         } else {
+//             this.get(Position).x = MouseState.world_pos.x;
+//             this.get(Position).y = MouseState.world_pos.y;
+//         }
+//     }
+// }
 
-const t = new TestEntity("test");
-t.add(new Position()).add(new Sprite("frog", "sprites", 1));
-$scene.addEntity(t);
+// const t = new TestEntity("test");
+// t.add(new Position()).add(new Sprite("frog", "sprites", 1));
+// $scene.addEntity(t);
 
-PostProcessing.add(new BarShader());
-PostProcessing.add(new BarrelShader());
+// PostProcessing.add(new BarShader());
+// PostProcessing.add(new BarrelShader());
 
-Game.addToUpdateQueue($scene);
-Game.start();
+// Game.addToUpdateQueue($scene);
+// Game.start();
+
+Game.addToUpdateQueue(SceneManager);
+SceneManager.loadScene('test2');

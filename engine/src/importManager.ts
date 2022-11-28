@@ -1,20 +1,20 @@
 import { Component, GameObjectBase, System } from "./ecs.js";
 import { PostProcess } from "./renderer/post_process.js";
-import { Constructor } from "./types.js";
+import { TypedConstructor } from "./typedConstructor.js";
 import { StringUtils } from "./utils/baseutils.js";
 
 export class ImportManager {
-    private static components = new Map<string, Constructor<Component>>();
-    private static systems = new Map<string, Constructor<System>>();
-    private static entities = new Map<string, Constructor<GameObjectBase>>();
-    private static shaders = new Map<string, Constructor<PostProcess>>();
+    private static components = new Map<string, TypedConstructor<Component>>();
+    private static systems = new Map<string, TypedConstructor<System>>();
+    private static entities = new Map<string, TypedConstructor<GameObjectBase>>();
+    private static shaders = new Map<string, TypedConstructor<PostProcess>>();
     private static componentsFolder = "components/";
     private static systemsFolder = "systems/";
     private static entitiesFolder = "entities/";
     private static shadersFolder = "renderer/post effects/";
 
     static async importScripts(
-{ scriptTypeMap, src }: { scriptTypeMap: Map<string, Constructor<Object>>; src: string; }    ) {
+{ scriptTypeMap, src }: { scriptTypeMap: Map<string, TypedConstructor<Object>>; src: string; }    ) {
         const fs = require("fs");
         let files;
         try {
@@ -32,11 +32,12 @@ export class ImportManager {
         });
         for (const script of scriptsList) {
             const a = await import("./" + src + script + ".js");
-            scriptTypeMap.set(script, a.default);
+            const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
+            scriptTypeMap.set(script, typed_constr);
         }
     }
 
-    static getComponent(component: string): Constructor<Component> {
+    static getComponent(component: string): TypedConstructor<Component> {
         if (this.components.has(component))
             return this.components.get(component);
         console.trace("Cannot find component '" + component + "'.");
@@ -46,7 +47,7 @@ export class ImportManager {
         return this.components.has(component);
     }
 
-    static getSystem(system: string): Constructor<System> {
+    static getSystem(system: string): TypedConstructor<System> {
         if (this.systems.has(system)) return this.systems.get(system);
         console.trace("Cannot find system '" + system + "'.");
         return null;
@@ -55,7 +56,7 @@ export class ImportManager {
         return this.systems.has(system);
     }
 
-    static getEntity(entity: string): Constructor<GameObjectBase> {
+    static getEntity(entity: string): TypedConstructor<GameObjectBase> {
         if (this.entities.has(entity)) return this.entities.get(entity);
         console.trace("Cannot find entity '" + entity + "'.");
         return null;
@@ -64,7 +65,7 @@ export class ImportManager {
         return this.entities.has(entity);
     }
 
-    static getShader(shader: string): Constructor<PostProcess> {
+    static getShader(shader: string): TypedConstructor<PostProcess> {
         if (this.shaders.has(shader)) return this.shaders.get(shader);
         console.trace("Cannot find shader '" + shader + "'.");
         return null;

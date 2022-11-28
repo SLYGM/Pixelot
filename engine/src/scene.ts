@@ -38,9 +38,9 @@ export class Scene {
     }
 
     // Add an entity to the Scene
-    addEntity<T extends GameObjectBase>(entity: T) {
+    addEntity<T extends GameObjectBase>(entity: T, args: any[] = []) {
         this.entities.push(entity);
-        entity.onCreate();
+        entity.onCreate(...args);
 
         // Add the entity to the systems that require it
         for (const system_node of this.systems) {

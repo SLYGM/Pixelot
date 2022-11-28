@@ -4,15 +4,15 @@
         {
             "name": "player",
             "class": "Player",
-            "args": [10],
+            "args": ["10"],
             "components": [
                 {
                     "component_name": "Position",
-                    "args": [1, 1]
+                    "args": ["1", "1"]
                 },
                 {
                     "component_name": "Velocity",
-                    "args": [1, 1]
+                    "args": ["1", "1"]
                 }
             ]
         }
