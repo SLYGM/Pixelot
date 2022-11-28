@@ -257,6 +257,7 @@ class Player extends GameObjectBase {
 
 ImportManager.addEntity(Player.name, Player);
 
+// TODO: add global system manager based on systems imported in ImportManager
 const $system_map = new Map<number, System>();
 $system_map.set(1, new PrintPositionSystem());
 $system_map.set(2, new MovementSystem());
