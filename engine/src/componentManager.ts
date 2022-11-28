@@ -45,6 +45,13 @@ export class ImportManager {
     static hasComponent(component: string): boolean {
         return this.components.has(component);
     }
+    static addComponent(componentName: string, component: Constructor<Component>, force=false) : boolean {
+        if (!force && this.components.has(componentName)) {
+            console.error("Component already exists, cannot add it. Consider using force.")
+            return false;
+        }
+        this.components.set(componentName, component);
+    }
 
     static getSystem(system: string): Constructor<System> {
         if (this.systems.has(system)) return this.systems.get(system);
@@ -53,6 +60,13 @@ export class ImportManager {
     }
     static hasSystem(system: string): boolean {
         return this.systems.has(system);
+    }
+    static addSystem(systemName: string, system: Constructor<System>, force=false) : boolean {
+        if (!force && this.systems.has(systemName)) {
+            console.error("Component already exists, cannot add it. Consider using force.")
+            return false;
+        }
+        this.systems.set(systemName, system);
     }
 
     static getEntity(entity: string): Constructor<GameObjectBase> {
@@ -63,6 +77,14 @@ export class ImportManager {
     static hasEntity(entity: string): boolean {
         return this.entities.has(entity);
     }
+    static addEntity(entityName: string, entity: Constructor<GameObjectBase>, force=false) : boolean {
+        if (!force && this.entities.has(entityName)) {
+            console.error("Component already exists, cannot add it. Consider using force.")
+            return false;
+        }
+        this.entities.set(entityName, entity);
+    }
+
 
     static getShader(shader: string): Constructor<PostProcess> {
         if (this.shaders.has(shader)) return this.shaders.get(shader);
@@ -72,6 +94,14 @@ export class ImportManager {
     static hasShader(shader: string): boolean {
         return this.shaders.has(shader);
     }
+    static addShader(shaderName: string, shader: Constructor<PostProcess>, force=false) : boolean {
+        if (!force && this.shaders.has(shaderName)) {
+            console.error("Component already exists, cannot add it. Consider using force.")
+            return false;
+        }
+        this.shaders.set(shaderName, shader);
+    }
+
 
     static async importComponents() {
         await this.importScripts({ scriptTypeMap: this.components, src: this.componentsFolder });
