@@ -5,7 +5,6 @@ import { BarShader } from './renderer/post effects/bars.js';
 import BarrelShader from './renderer/post effects/barrel.js';
 
 import { GameObjectBase } from "./ecs.js";
-import { $scene } from "./sceneManager.js";
 import { Game } from "./gameloop.js";
 
 import "./componentManager.js";
@@ -20,6 +19,9 @@ import { MouseState } from "./mouseState.js";
 import './scriptManager.js';
 import './componentManager.js';
 import CRTShader from "./renderer/post effects/crt.js";
+
+import { $scene, $sceneManager } from "./sceneManager.js";
+import { ImportManager } from "./componentManager.js";
 
 Renderer.setResolution(426, 240);
 Renderer.loadTexture('./images/frog.png', 'frog')
@@ -41,6 +43,8 @@ class TestEntity extends GameObjectBase {
         }
     }
 }
+
+ImportManager.addEntity(TestEntity.name, TestEntity);
 
 const t = new TestEntity("test");
 t.add(new Position()).add(new Sprite("frog"));

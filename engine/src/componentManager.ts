@@ -58,6 +58,9 @@ export class ImportManager {
         console.trace("Cannot find system '" + system + "'.");
         return null;
     }
+    static getSystems() : Constructor<System>[] {
+        return [...this.systems.values()];
+    }
     static hasSystem(system: string): boolean {
         return this.systems.has(system);
     }
