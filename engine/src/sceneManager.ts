@@ -4,6 +4,7 @@ import Velocity from "./components/Velocity.js";
 import { Scene } from "./scene.js";
 import { Constructor } from "./types.js";
 import { Component } from "./ecs.js";
+import { ImportManager } from './componentManager.js';
 
 class SceneManager {
     scenes: Map<string, Scene>;
@@ -107,13 +108,14 @@ class SceneManager {
         for (const proxy of proxies) {
             const components = [];
             for (const component of [...proxy.getAllComponents()]) {
-                const component_constr = $component_map.get(component);
+                const component_constr = ImportManager.getComponent(component);
+                console.log(component_constr, component);
                 components.push({
                     component_name: component,
                     value: proxy.get(component_constr).toJSONCompatible(),
                 });
             }
-            entities.push({ name: proxy.name, components: components });
+            entities.push({ name: proxy.constructor.name, components: components });
         }
 
         const sceneSaveFile = {
@@ -125,12 +127,13 @@ class SceneManager {
         const data = JSON.stringify(sceneSaveFile);
 
         const fs = require("fs");
-        fs.writeFile(fileName + ".json", data, function (err) {
-            if (err) {
-                console.log(err);
-            }
-            console.log("saving json");
-        });
+        try {
+            fs.writeFileSync(fileName + ".json", data);
+        }
+        catch (e) {
+            console.trace(e);
+            return;
+        }
     }
 
     saveAllScenes() {}
@@ -143,49 +146,55 @@ class SceneManager {
     loadScene(name: string) {
         const fs = require("fs");
         // read JSON object from file
-        fs.readFile(name + ".json", "utf-8", (err, data) => {
-            if (err) {
-                throw err;
-            }
+        let data;
+        try {
+            data = fs.readFileSync(`${name}.json`, {encoding: "utf-8"});
+        }
+        catch (e) {
+            console.trace(e);
+            return;
+        }
+        console.log(data);
+        
+        // parse JSON object
+        const loadedSceneJson = JSON.parse(data.toString());
+        const loadedEntities = loadedSceneJson["entities"];
 
-            // parse JSON object
-            const loadedSceneJson = JSON.parse(data.toString());
-            const loadedEntities = loadedSceneJson["entities"];
+        // construct Scene object from json data and add to sceneManager
+        const scene = new Scene();
+        scene.onCreate();
+        for (const entity of loadedEntities) {
+            const entity_constr = ImportManager.getEntity(entity["name"]);
+            console.log(entity["name"], entity_constr);
+            const toAdd = new entity_constr(entity["name"]);
+            console.log(entity["name"], entity_constr, toAdd);
 
-            // construct Scene object from json data and add to sceneManager
-            const scene = new Scene();
-            scene.onCreate();
-            for (const entity of loadedEntities) {
-                const entity_constr = $entity_map.get(entity["name"]);
-                const toAdd = new entity_constr(entity["name"]);
+            for (const component of entity["components"]) {
+                const component_constr = ImportManager.getComponent(
+                    component["component_name"]
+                );
+                toAdd.add(
+                    new component_constr(
+                        ...component["value"]
+                    )
+                );
 
-                for (const component of entity["components"]) {
-                    const component_constr = $component_map.get(
-                        component["component_name"]
-                    );
-                    toAdd.add(
-                        new component_constr(
-                            ...component["value"]
-                        )
-                    );
-
-                    for (const [key, value] of $system_map.entries()) {
-                        if (
-                            toAdd.has(value.component) &&
-                            !scene
-                                .getSystems()
-                                .some((elem) => elem["system"] == value)
-                        ) {
-                            scene.addSystem(value, key);
-                        }
+                for (const [key, value] of $system_map.entries()) {
+                    if (
+                        toAdd.has(value.component) &&
+                        !scene
+                            .getSystems()
+                            .some((elem) => elem["system"] == value)
+                    ) {
+                        scene.addSystem(value, key);
                     }
                 }
-                scene.addEntity(toAdd);
             }
-            console.log(scene.getEntities());
+            scene.addEntity(toAdd);
+        }
+        console.log(scene.getEntities());
 
-            this.addScene(loadedSceneJson["name"], scene);
-        });
+        this.addScene(loadedSceneJson["name"], scene);
     }
 
     /**
@@ -245,19 +254,15 @@ class Player extends GameObjectBase {
     }
 }
 
-const $component_map = new Map<string, Constructor<Component>>();
-$component_map.set("Position", Position);
-$component_map.set("Velocity", Velocity);
 
-const $entity_map = new Map<string, Constructor<GameObjectBase>>();
-$entity_map.set("player", Player);
+ImportManager.addEntity(Player.name, Player);
 
 const $system_map = new Map<number, System>();
 $system_map.set(1, new PrintPositionSystem());
 $system_map.set(2, new MovementSystem());
 
 export const $scene = new Scene();
-const $sceneManager = new SceneManager();
+export const $sceneManager = new SceneManager();
 $sceneManager.addScene("test1", $scene);
 const player = new Player("player");
 $scene.addSystem(new MovementSystem(), SystemStage.PositionUpdate);
