@@ -8,7 +8,7 @@ import { GameObjectBase } from "./ecs.js";
 import { $scene } from "./sceneManager.js";
 import { Game } from "./gameloop.js";
 
-import "./componentManager.js";
+import "./importManager.js";
 import "./scriptManager.js";
 
 import Position from "./components/Position.js";
@@ -18,7 +18,7 @@ import { KeyStates } from "./keyState.js";
 import { MouseState } from "./mouseState.js";
 
 import './scriptManager.js';
-import './componentManager.js';
+import './importManager.js';
 
 Renderer.setResolution(426, 240);
 Renderer.addLayer(new SpriteLayer(), 'sprites');
