@@ -9,4 +9,8 @@ export default class Velocity extends Component {
         this.x = x;
         this.y = y;
     }
+
+    toJSONCompatible() : any[] {
+        return [this.x,this.y];
+    }
 }

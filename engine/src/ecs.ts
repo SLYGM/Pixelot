@@ -4,6 +4,8 @@ export abstract class Component {
      * E.g. Velocity depends on Position.
      */
     dependencies: any[] = [];
+
+    abstract toJSONCompatible() : any[];
 }
 
 export type ComponentType<T extends Component> = new (...args: unknown[]) => T;

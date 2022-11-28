@@ -110,7 +110,7 @@ class SceneManager {
                 const component_constr = $component_map.get(component);
                 components.push({
                     component_name: component,
-                    value: proxy.get(component_constr),
+                    value: proxy.get(component_constr).toJSONCompatible(),
                 });
             }
             entities.push({ name: proxy.name, components: components });
@@ -165,8 +165,7 @@ class SceneManager {
                     );
                     toAdd.add(
                         new component_constr(
-                            component["value"]["x"],
-                            component["value"]["y"]
+                            ...component["value"]
                         )
                     );
 

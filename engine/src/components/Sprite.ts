@@ -7,10 +7,16 @@ import Position from "./Position.js";
 
 export default class Sprite extends Component {
     dependencies = [Position];
+    texAlias: string;
     tex: Texture;
 
     constructor(texAlias: string) {
         super();
+        this.texAlias = texAlias;
         this.tex = Renderer.textures.get(texAlias);
+    }
+
+    toJSONCompatible() : any[] {
+        return [this.texAlias];
     }
 }
