@@ -1,9 +1,28 @@
 <div *ngIf="entity">
-  <h2>{{entity.name}}</h2>
-  <ul *ngFor="let component of entity.components">
-    <li>{{component.component_name}}</li>
-  </ul>
+  <mat-form-field>
+    <mat-label>Entity name</mat-label>
+    <input matInput type="text" value={{entity.name}}>
+  </mat-form-field>
+
+  <h2 class="mat-h2">Components</h2>
+  <mat-accordion multi>
+    <mat-expansion-panel *ngFor="let component of entity.components">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{component.component_name}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <ng-container *ngFor="let property of component.value | keyvalue">
+        <mat-form-field *ngIf="property.key !== 'dependencies'">
+          <mat-label>{{property.key}}</mat-label>
+          <input matInput value={{property.value}}>
+        </mat-form-field>
+      </ng-container>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <button mat-raised-button id="add-component-button">Add Component</button>
 </div>
+
 <div *ngIf="!entity">
-  <h2>No entity selected</h2>
+  <h2 class="mat-h2">No entity selected</h2>
 </div>

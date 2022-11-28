@@ -1,5 +1,12 @@
 :host {
-    min-width: 200px;
-    border-left: 1px solid #ccc;
-    resize: horizontal;
+  min-width: 200px;
+  border-left: 1px solid #ccc;
+  background-color: #fafafa;
+  padding: 10px;
+  resize: horizontal;
+}
+
+#add-component-button {
+  margin: 20px auto 0 auto;
+  display: block;
 }
