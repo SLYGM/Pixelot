@@ -1,6 +1,6 @@
 import Sprite from "../components/Sprite.js";
 
-import { $gl } from "./gl.js";
+import { $gl, $canvas } from "./gl.js";
 import { GLUtils } from "./webglutils.js";
 import { PostProcessing } from "./post_process.js";
 import { Texture, Updatable } from "../types.js";
@@ -125,6 +125,10 @@ export class Renderer {
             this.shader.prog,
             "u_texture"
         );
+        
+        // set the webgl canvas resolution to the size of the window
+        _canvas.width = _canvas.clientWidth;
+        _canvas.height = _canvas.clientHeight;
 
         this.vao = $gl.createVertexArray();
         $gl.bindVertexArray(this.vao);
@@ -143,32 +147,30 @@ export class Renderer {
 
     static setResolution(x: number, y: number) {
         this.resolution = {x: x, y: y};
-        $gl.canvas.width = x;
-        $gl.canvas.height = y;
         // recreate the main framebuffer after changing resolution
-        PostProcessing.createMainFrameBuffer();
+        PostProcessing.initRenderBuffer();
     }
 
     static render() {
-        $gl.viewport(0, 0, Renderer.resolution.x, Renderer.resolution.y);
+        $gl.viewport(0, 0, this.resolution.x, this.resolution.y);
         $gl.clearColor(1, 1, 1, 1);
         $gl.clear($gl.COLOR_BUFFER_BIT | $gl.DEPTH_BUFFER_BIT);
 
-        $gl.useProgram(Renderer.shader.prog);
-        $gl.bindVertexArray(Renderer.vao);
+        $gl.useProgram(this.shader.prog);
+        $gl.bindVertexArray(this.vao);
 
         const proj_matrix = mat4.create();
         // use orthographic projection to scale coords to -1->1 (calculate once per frame)
         mat4.ortho(
             proj_matrix,
             0,
-            Renderer.resolution.x * Renderer.viewport.sx,
-            Renderer.resolution.y * Renderer.viewport.sy,
+            this.resolution.x * this.viewport.sx,
+            this.resolution.y * this.viewport.sy,
             0,
             -1,
             1
         );
-        $gl.uniformMatrix4fv(Renderer.shader.proj_loc, false, proj_matrix);
+        $gl.uniformMatrix4fv(this.shader.proj_loc, false, proj_matrix);
 
         this.layers.forEach((l) => {
             l.render();

@@ -41,8 +41,8 @@ export default class CRTShader extends PostProcess {
 
         vec4 scanLineIntensity(float uv, float resolution, float opacity)
         {
-            float intensity = sin(uv * resolution * PI * 2.0);
-            intensity = ((0.5 * intensity) + 0.5) * 0.9 + 0.1;
+            float intensity = sin(uv * resolution * PI * 2.5);
+            intensity = ((0.5 * intensity) + 0.5) * 0.9 + 0.2;
             return vec4(vec3(pow(intensity, opacity)), 1.0);
         }
 
