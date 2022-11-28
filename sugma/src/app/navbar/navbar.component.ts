@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { ThemePalette } from '@angular/material/core';
 import { SceneManagerService } from 'app/scene-manager.service';
 import { Scene } from 'types';
 
@@ -9,10 +10,14 @@ import { Scene } from 'types';
 })
 export class NavbarComponent {
   @Output() loadedScene = new EventEmitter<Scene>();
+  activeLink = 'Visual Scripting Editor';
+  background: ThemePalette = undefined;
 
   constructor(public sceneManager: SceneManagerService) { }
 
   handleFileSelect(e: any) {
+    console.log(e);
+    
     let files = e.target.files;
     let file = files[0];
     let reader = new FileReader();
@@ -24,5 +29,9 @@ export class NavbarComponent {
       }
     }
     reader.readAsText(file);
+  }
+
+  toggleBackground() {
+    this.background = this.background ? undefined : 'primary';
   }
 }

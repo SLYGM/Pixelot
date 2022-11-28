@@ -1,20 +1,28 @@
-<label class="load-scene-btn">
-  <input type="file" (change)="handleFileSelect($event)" style="display: none" />
-  <span>Click here to load a scene</span>
-</label>
-<div *ngFor="let scene of sceneManager.getScenes()">
-  <button routerLink="/scene/{{scene}}">{{scene}}</button>
+<div class="navbar">
+  <nav mat-tab-nav-bar fitInkBarToContent [backgroundColor]="background" [tabPanel]="tabPanel" mat-stretch-tabs="false" mat-align-tabs="start">
+    <a mat-tab-link
+      *ngFor="let scene of sceneManager.getScenes()"
+      (click)="activeLink = scene" [active]="activeLink == scene"
+      routerLink="/scene/{{ scene }}"> {{ scene }} 
+    </a>
+    <a mat-tab-link
+      (click)="activeLink = 'Visual Scripting Editor'" [active]="activeLink == 'Visual Scripting Editor'"
+      routerLink=""> Visual Scripting Editor 
+    </a>
+    <a mat-tab-link
+      (click)="activeLink = 'State Graph'" [active]="activeLink == 'State Graph'"
+      routerLink=""> State Graph
+    </a>
+    <a mat-tab-link
+      (click)="activeLink = 'Sprite Editor '" [active]="activeLink == 'Sprite Editor '"
+      routerLink=""> Sprite Editor 
+    </a>
+    <label mat-tab-link>
+      <input type="file" (change)="handleFileSelect($event)" style="display: none"/>
+      <span>Load Scene</span>
+    </label>
+    <a mat-tab-link> + 
+    </a>
+  </nav>
+  <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 </div>
-
-<div>
-  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms">
-    <ng-container *ngFor="let scene of sceneManager.getScenes()">
-      <mat-tab label="{{scene}}"> {{scene}} Content </mat-tab>
-    </ng-container>
-    <mat-tab label="Visual Scripting Editor"> Content 1 </mat-tab>
-    <mat-tab label="State Graph"> Content 2 </mat-tab>
-    <mat-tab label="Sprite Editor"> Content 3 </mat-tab>
-  </mat-tab-group>
-</div>
-
-
