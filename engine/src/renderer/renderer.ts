@@ -127,8 +127,8 @@ export class Renderer {
         );
         
         // set the webgl canvas resolution to the size of the window
-        _canvas.width = _canvas.clientWidth;
-        _canvas.height = _canvas.clientHeight;
+        $canvas.width = $canvas.clientWidth;
+        $canvas.height = $canvas.clientHeight;
 
         this.vao = $gl.createVertexArray();
         $gl.bindVertexArray(this.vao);
