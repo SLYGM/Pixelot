@@ -52,6 +52,7 @@ export class Scene {
 
     // Remove the given entity from the scene
     deleteEntity(entity: GameObjectBase) {
+        entity.onDelete();
         this.entities = this.entities.filter((e) => e != entity);
         // Remove the entity from the systems that require it
         for (const system_node of this.systems) {
