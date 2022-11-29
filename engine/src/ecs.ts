@@ -9,6 +9,8 @@ export abstract class Component {
     registerOwner(owner: GameObjectBase) {
         this.owner = owner;
     }
+
+    onDelete() {}
 }
 
 export type ComponentType<T extends Component> = new (...args: unknown[]) => T;
@@ -64,6 +66,10 @@ export abstract class GameObjectBase {
      */
     abstract update(): void;
 
+    onDelete() {
+        this.component_map.forEach((component, _) => {component.onDelete()});
+    };
+
     /**
      * Add a new component to the entity.
      * Returns itself allowing calls to be chained.
@@ -87,6 +93,12 @@ export abstract class GameObjectBase {
             }
         }
         this.component_map.set(component.constructor.name, component);
+        let constr = component.constructor.prototype.__proto__.constructor;
+        while (constr !== Component) {
+            if (!this.component_map.has(constr.name))
+                this.component_map.set(constr.name, component);
+            constr = constr.prototype.__proto__.constructor;
+        }
         component.registerOwner(this);
         return this;
     }
