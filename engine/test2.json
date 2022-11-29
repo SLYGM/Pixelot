@@ -13,6 +13,10 @@
                 {
                     "component_name": "Velocity",
                     "args": ["1", "1"]
+                },
+                {
+                    "component_name": "Sprite",
+                    "args": ["frog", "sprites", 0]
                 }
             ]
         }
