@@ -22,6 +22,21 @@ export default class Sprite extends Component {
         this.layer = layer;
     }
 
+    onDelete(): void {
+        let t;
+        if (this.layer && this.layer instanceof SpriteLayer) 
+            t = this.layer.removeSprite(this);
+        console.log(this, t, t == this)
+    }
+
+    getDimensions() : {width: number, height: number} {
+        const texInfo = Renderer.textures.get(this.tex);
+        if (texInfo !== undefined) {
+            return {width: texInfo.width, height: texInfo.height};
+        }
+        return {width: 0, height: 0};
+    }
+
     getPos(): {x: number, y: number} {
         const pos = this.owner.get(Position);
         return {x: pos.x, y: pos.y};
