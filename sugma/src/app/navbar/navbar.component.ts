@@ -11,7 +11,8 @@ import { Scene } from 'types';
 export class NavbarComponent {
   @Output() loadedScene = new EventEmitter<Scene>();
   activeLink = 'Visual Scripting Editor';
-  background: ThemePalette = undefined;
+  background: ThemePalette = 'primary';
+  accent: ThemePalette = 'accent'
 
   constructor(public sceneManager: SceneManagerService) { }
 
@@ -31,7 +32,4 @@ export class NavbarComponent {
     reader.readAsText(file);
   }
 
-  toggleBackground() {
-    this.background = this.background ? undefined : 'primary';
-  }
 }

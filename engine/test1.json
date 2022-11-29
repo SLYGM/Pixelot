@@ -1,0 +1,1 @@
+{"name":"test1","entities":[{"name":"enemy","components":[{"component_name":"Position","value":{"dependencies":[],"x":3,"y":1}},{"component_name":"Velocity","value":{"dependencies":[],"x":1,"y":2}}]}]}

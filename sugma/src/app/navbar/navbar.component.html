@@ -1,5 +1,5 @@
 <div class="navbar">
-  <nav mat-tab-nav-bar fitInkBarToContent [backgroundColor]="background" [tabPanel]="tabPanel" mat-stretch-tabs="false" mat-align-tabs="start">
+  <nav mat-tab-nav-bar fitInkBarToContent [color]="accent" [backgroundColor]="background" [tabPanel]="tabPanel" mat-stretch-tabs="false" mat-align-tabs="start">
     <a mat-tab-link
       *ngFor="let scene of sceneManager.getScenes()"
       (click)="activeLink = scene" [active]="activeLink == scene"
