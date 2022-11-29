@@ -26,7 +26,6 @@ export default class Sprite extends Component {
         let t;
         if (this.layer && this.layer instanceof SpriteLayer) 
             t = this.layer.removeSprite(this);
-        console.log(this, t, t == this)
     }
 
     getDimensions() : {width: number, height: number} {

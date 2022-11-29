@@ -73,7 +73,6 @@ export class Scene {
         const entities = new Set<GameObjectBase>(
             this.getEntitiesWithComponent(system.component)
         );
-        console.log(system);
         // add the system to the priority queue
         this.systems.push({
             name: system.constructor.name,

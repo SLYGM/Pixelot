@@ -11,10 +11,8 @@ export default class SpriteAnimationSystem extends System {
             let dt = Game.dt;
             let t = sprite.t;
             let t2 = (sprite.t + dt) % (1 / sprite.fps) ;
-            console.log(sprite.t, dt, sprite.fps, t2)
             sprite.t = t2;
             if (t2 > t) return;
-            console.log(sprite.t)
             sprite.updateFrame();
         });
     }
