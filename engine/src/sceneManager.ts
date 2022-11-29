@@ -1,4 +1,4 @@
-import { GameObjectBase, System, SystemStage } from "./ecs.js";
+import { GameObjectBase, System } from "./ecs.js";
 import { Scene } from "./scene.js";
 import { ImportManager } from "./importManager.js";
 
