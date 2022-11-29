@@ -5,12 +5,14 @@ import {
     System,
     SystemNode,
 } from "./ecs.js";
+import { ImportManager } from "./importManager.js";
 
 export class Scene {
     // The list of entities in the scene
     private entities: GameObjectBase[];
     // The systems in a priority queue
     private systems: SystemNode[];
+    private added_systems: Map<string, boolean>;
 
     // The time that has elapsed since the last frame.
     public dt: number;
@@ -18,6 +20,7 @@ export class Scene {
     onCreate() {
         this.entities = [];
         this.systems = [];
+        this.added_systems = new Map<string, boolean>();
     }
 
     onDestroy() {
@@ -37,10 +40,26 @@ export class Scene {
         return this.systems;
     }
 
+    hasSystem(system_name: string) {
+        return this.added_systems.has(system_name);
+    }
+
     // Add an entity to the Scene
-    addEntity<T extends GameObjectBase>(entity: T) {
+    addEntity<T extends GameObjectBase>(entity: T, args: any[] = []) {
+        //check that the system for this component is in the scene
+        for (const comp_name of entity.getAllComponents()){
+            if (ImportManager.hasSystem(comp_name)) {
+                if (!this.hasSystem(comp_name)) {
+                    //TODO: system args aren't stored anywhere in json currently
+                    const system_constr = ImportManager.getSystem(comp_name).constr;
+                    this.addSystem(new system_constr(), 1);
+                }
+            }
+        }
+        
+
         this.entities.push(entity);
-        entity.onCreate();
+        entity.onCreate(...args);
 
         // Add the entity to the systems that require it
         for (const system_node of this.systems) {
@@ -69,10 +88,10 @@ export class Scene {
 
     // Add a system to the Scene
     addSystem(system: System, priority: number) {
+        this.added_systems.set(system.constructor.name, true);
         const entities = new Set<GameObjectBase>(
             this.getEntitiesWithComponent(system.component)
         );
-        console.log(system);
         // add the system to the priority queue
         this.systems.push({
             name: system.constructor.name,

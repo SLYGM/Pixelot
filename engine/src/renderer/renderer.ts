@@ -4,8 +4,6 @@ import { $gl, $canvas } from "./gl.js";
 import { GLUtils } from "./webglutils.js";
 import { PostProcessing } from "./post_process.js";
 import { Texture, Updatable } from "../types.js";
-import { GameObjectBase, System } from "../ecs.js";
-import Position from "../components/Position.js";
 
 const { glMatrix, mat4, vec3 } = require("gl-matrix");
 const AVLTree = require('avl');

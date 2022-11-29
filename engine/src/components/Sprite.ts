@@ -5,7 +5,12 @@ import { Component } from "../ecs.js";
 import { Texture } from "../types.js";
 import Position from "./Position.js";
 
+import { Types } from "../argTypes.js";
+
 export default class Sprite extends Component {
+    static arg_names = ["texAlias", "lr", "zi"];
+    static arg_types = [Types.String, Types.String, Types.Number];
+
     dependencies = [Position];
     tex: string;
     layer: RenderLayer;

@@ -57,7 +57,7 @@ export abstract class GameObjectBase {
     /**
      * User-defined function that is called when the entity is spawned.
      */
-    abstract onCreate(): void;
+    abstract onCreate(...args: any[]): void;
 
     /**
      * User-defined function that is called every frame.
