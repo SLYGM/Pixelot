@@ -7,6 +7,7 @@ export class Game {
     static updateQueue: Updatable[];
     static running = true;
     static time = 0;
+    static dt = 0;
 
     static {
         Game.updateQueue = new Array<Updatable>();
@@ -23,6 +24,7 @@ export class Game {
     static gameloop(t: number) {
         const now = t * 0.001;
         const dt = Math.min(0.1, now - this.time);
+        this.dt = dt;
         this.time = now;
 
         this.updateQueue.forEach((u) => u.update(dt));
