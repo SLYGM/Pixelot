@@ -91,7 +91,9 @@ export class ImportManager {
     }
 }
 
-await ImportManager.importComponents();
-await ImportManager.importSystems();
-await ImportManager.importEntities();
-await ImportManager.importShaders();
+export async function doImports() {
+    await ImportManager.importComponents();
+    await ImportManager.importSystems();
+    await ImportManager.importEntities();
+    await ImportManager.importShaders();
+}

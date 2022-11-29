@@ -1,6 +1,6 @@
 import { GameObjectBase, System, SystemStage } from "./ecs.js";
 import { Scene } from "./scene.js";
-import { ImportManager } from "./importManager";
+import { ImportManager } from "./importManager.js";
 
 export class SceneManager {
     static scenes: Map<string, Scene>;
@@ -139,36 +139,31 @@ export class SceneManager {
     static loadScene(name: string) {
         const fs = require("fs");
         // read JSON object from file
-        fs.readFile(name + ".json", "utf-8", (err, data) => {
-            if (err) {
-                throw err;
+        const data = fs.readFileSync(name + ".json", {encoding: "utf-8"});
+
+        // parse JSON object
+        const loadedSceneJson = JSON.parse(data.toString());
+        const loadedEntities = loadedSceneJson["entities"];
+
+        // construct Scene object from json data and add to sceneManager
+        const scene = new Scene();
+        scene.onCreate();
+
+        for (const entity of loadedEntities) {
+            const entity_constr = ImportManager.getEntity(entity["class"]);
+            const toAdd = new entity_constr.constr(entity["name"]);
+            const ent_args = entity_constr.parseArgs(entity["args"]);
+
+            for (const component of entity["components"]) {
+                const component_constr = ImportManager.getComponent(component["component_name"]);
+                const comp_args = component_constr.parseArgs(component["args"]);
+                toAdd.add(new component_constr.constr(...comp_args));
             }
 
-            // parse JSON object
-            const loadedSceneJson = JSON.parse(data.toString());
-            const loadedEntities = loadedSceneJson["entities"];
+            scene.addEntity(toAdd, ent_args);
+        }
 
-            // construct Scene object from json data and add to sceneManager
-            const scene = new Scene();
-            scene.onCreate();
-
-            for (const entity of loadedEntities) {
-                const entity_constr = ImportManager.getEntity(entity["class"]);
-                const toAdd = new entity_constr.constr(entity["name"]);
-                const ent_args = entity_constr.parseArgs(entity["args"]);
-
-                for (const component of entity["components"]) {
-                    const component_constr = ImportManager.getComponent(component["component_name"]);
-                    const comp_args = component_constr.parseArgs(component["args"]);
-                    toAdd.add(new component_constr.constr(...comp_args));
-                }
-
-                scene.addEntity(toAdd, ent_args);
-            }
-            console.log(scene.getEntities());
-
-            this.addScene(loadedSceneJson["name"], scene);
-        });
+        this.addScene(loadedSceneJson["name"], scene);
     }
 
     /**

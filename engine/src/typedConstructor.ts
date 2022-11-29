@@ -1,5 +1,5 @@
-import { Type } from "./argTypes";
-import { Constructor } from "./types";
+import { Type } from "./argTypes.js";
+import { Constructor } from "./types.js";
 
 export class TypedConstructor<T> {
     arg_names: string[];

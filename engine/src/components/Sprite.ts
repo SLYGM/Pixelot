@@ -8,8 +8,8 @@ import Position from "./Position.js";
 import { Types } from "../argTypes.js";
 
 export default class Sprite extends Component {
-    arg_names = ["texAlias", "lr", "zi"];
-    arg_types = [Types.String, Types.String, Types.Number];
+    static arg_names = ["texAlias", "lr", "zi"];
+    static arg_types = [Types.String, Types.String, Types.Number];
 
     dependencies = [Position];
     tex: string;
