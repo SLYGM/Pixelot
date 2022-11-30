@@ -8,7 +8,12 @@ export type Entity = {
   components: EntityComponent[];
 };
 
-export type Scene = {
+export class Scene {
   name: string;
   entities: Entity[];
+
+  constructor(name: string) {
+    this.name = name;
+    this.entities = [];
+  }
 };

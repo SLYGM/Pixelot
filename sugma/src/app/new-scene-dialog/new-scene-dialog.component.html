@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>New Scene</h1>
+<div mat-dialog-content>
+    <form >
+        <mat-form-field appearance="fill" [style.width.px]=300>
+            <mat-label>Please provide a Scene Name</mat-label>
+            <input matInput [(ngModel)]="sceneName" [formControl]="sceneNameFormControl" [errorStateMatcher]="matcher" required>
+            <mat-error *ngIf="sceneNameFormControl.hasError('required')">
+                Scene Name is required
+            </mat-error>
+        </mat-form-field><br/>
+    </form>
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close>Cancel</button>
+    <button type="submit" mat-raised-button (click)="createScene()" color="accent">Create Scene</button>
+</div>

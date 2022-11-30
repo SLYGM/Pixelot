@@ -1,7 +1,10 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { ThemePalette } from '@angular/material/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { ErrorStateMatcher, ThemePalette } from '@angular/material/core';
 import { SceneManagerService } from 'app/scene-manager.service';
 import { Scene } from 'types';
+import { NewSceneDialogComponent } from 'app/new-scene-dialog/new-scene-dialog.component';
+import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-navbar',
@@ -14,11 +17,9 @@ export class NavbarComponent {
   background: ThemePalette = 'primary';
   accent: ThemePalette = 'accent'
 
-  constructor(public sceneManager: SceneManagerService) { }
+  constructor(public sceneManager: SceneManagerService, public dialog: MatDialog) { }
 
   handleFileSelect(e: any) {
-    console.log(e);
-    
     let files = e.target.files;
     let file = files[0];
     let reader = new FileReader();
@@ -32,4 +33,31 @@ export class NavbarComponent {
     reader.readAsText(file);
   }
 
+  openDialog(): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.autoFocus = true;
+    dialogConfig.position = { 'top': '48px' };
+    dialogConfig.ariaModal = true;
+
+    const dialogRef = this.dialog.open(NewSceneDialogComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) this.createScene(result);
+    });
+  }
+
+  createScene(sceneName:string){
+    let scene = new Scene(sceneName);
+    this.sceneManager.addScene(scene);
+    console.log(scene);
+  }
+}
+
+export class MyErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    //condition true
+    const isSubmitted = form && form.submitted;
+    //false
+    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
+  }
 }

@@ -21,7 +21,7 @@
       <input type="file" (change)="handleFileSelect($event)" style="display: none"/>
       <span>Load Scene</span>
     </label>
-    <a mat-tab-link> + 
+    <a mat-tab-link (click)="openDialog()"> + 
     </a>
   </nav>
   <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
