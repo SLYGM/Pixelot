@@ -10,6 +10,7 @@ import { MyErrorStateMatcher } from 'app/navbar/navbar.component';
 })
 export class NewSceneDialogComponent {
   sceneName: string | undefined;
+  validation = false;
   constructor(public dialogRef: MatDialogRef<NewSceneDialogComponent>) { }
 
   sceneNameFormControl = new FormControl('', [Validators.required]);
@@ -19,5 +20,6 @@ export class NewSceneDialogComponent {
     if (this.sceneName) {
       this.dialogRef.close(this.sceneName);
     }
+    this.validation = true;
   }
 }

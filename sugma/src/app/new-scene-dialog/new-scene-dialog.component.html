@@ -4,7 +4,7 @@
         <mat-form-field appearance="fill" [style.width.px]=300>
             <mat-label>Please provide a Scene Name</mat-label>
             <input matInput [(ngModel)]="sceneName" [formControl]="sceneNameFormControl" [errorStateMatcher]="matcher" required>
-            <mat-error *ngIf="sceneNameFormControl.hasError('required')">
+            <mat-error *ngIf="validation">
                 Scene Name is required
             </mat-error>
         </mat-form-field><br/>
