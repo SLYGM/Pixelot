@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
-import { RightSidebarComponent } from './right-sidebar/right-sidebar.component';
+import { AddComponentDialog, RightSidebarComponent } from './right-sidebar/right-sidebar.component';
 import { FileManagerComponent } from './file-manager/file-manager.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SceneTabComponent } from './scene-tab/scene-tab.component';
@@ -19,6 +19,8 @@ import { NewSceneDialogComponent } from './new-scene-dialog/new-scene-dialog.com
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -26,6 +28,7 @@ import { MatIconModule } from '@angular/material/icon';
     ToolbarComponent,
     LeftSidebarComponent,
     RightSidebarComponent,
+    AddComponentDialog,
     FileManagerComponent,
     NavbarComponent,
     SceneTabComponent,
@@ -35,6 +38,7 @@ import { MatIconModule } from '@angular/material/icon';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    ReactiveFormsModule,
     MatTabsModule,
     MatExpansionModule,
     MatButtonModule,
@@ -43,7 +47,9 @@ import { MatIconModule } from '@angular/material/icon';
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
-    MatIconModule
+    MatIconModule,
+    MatAutocompleteModule,
+    MatSnackBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

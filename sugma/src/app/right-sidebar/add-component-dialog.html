@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>Adding component to {{entity.name}}</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Component name</mat-label>
+    <input type="text" matInput [formControl]="formControl" [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete">
+      <!-- TODO: get list of valid components -->
+      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+        {{option}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancelClick()">Cancel</button>
+  <button mat-button (click)="onAddClick()" cdkFocusInitial>Add</button>
+</div>

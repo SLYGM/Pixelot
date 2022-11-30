@@ -20,7 +20,7 @@
       </ng-container>
     </mat-expansion-panel>
   </mat-accordion>
-  <button mat-raised-button id="add-component-button">Add Component</button>
+  <button mat-raised-button id="add-component-button" (click)="openDialog()" >Add Component</button>
 </div>
 
 <div *ngIf="!entity">
