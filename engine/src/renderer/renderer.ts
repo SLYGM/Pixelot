@@ -103,6 +103,7 @@ export class Renderer {
     static textures: Map<string, Texture>;
     static layerAliases: Map<string, number>;
     static layers: RenderLayer[];
+    static backgroundColor: [r:number, g:number, b:number, a:number];
 
     static {
         this.shader = {
@@ -148,6 +149,7 @@ export class Renderer {
 
         this.layers = [];
         this.layerAliases = new Map<string, number>();
+        this.backgroundColor = [1, 1, 1, 1];
     }
 
     static setResolution(x: number, y: number) {
@@ -156,9 +158,13 @@ export class Renderer {
         PostProcessing.initRenderBuffer();
     }
 
+    static setBackgroundColor(r: number, g: number, b: number, a: number) {
+        this.backgroundColor = [r, g, b, a];
+    }
+
     static render() {
         $gl.viewport(0, 0, this.resolution.x, this.resolution.y);
-        $gl.clearColor(1, 1, 1, 1);
+        $gl.clearColor(...this.backgroundColor);
         $gl.clear($gl.COLOR_BUFFER_BIT | $gl.DEPTH_BUFFER_BIT);
 
         $gl.useProgram(this.shader.prog);
@@ -260,7 +266,10 @@ export class Renderer {
 
     static drawImage(alias: string, x: number, y: number) {
         const tex = this.textures.get(alias);
-        if (tex === undefined) return;
+        if (tex === undefined) {
+            console.warn("Texture not found: " + alias);
+            return;
+        }
         const textureUnit = 0;
         $gl.uniform1i(this.shader.tex_loc, textureUnit);
         $gl.activeTexture($gl.TEXTURE0 + textureUnit);
