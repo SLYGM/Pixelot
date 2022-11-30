@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ConstructionComponent } from './construction/construction.component';
 import { SceneTabComponent } from './scene-tab/scene-tab.component';
 
 const routes: Routes = [
   {path: 'scene/:sceneName', component: SceneTabComponent},
-  //  This is what path for tab2 would look like
-  // {path: 'first-tab', component: Tab1Component},
-  {path: '', component: SceneTabComponent}
+  {path: 'construction', component: ConstructionComponent},
+  { path: '',   redirectTo: '/construction', pathMatch: 'full' },
+  { path: '**', component: ConstructionComponent }
 ];
 
 @NgModule({

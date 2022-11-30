@@ -21,6 +21,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { ConstructionComponent } from './construction/construction.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     FileManagerComponent,
     NavbarComponent,
     SceneTabComponent,
-    NewSceneDialogComponent
+    NewSceneDialogComponent,
+    ConstructionComponent
   ],
   imports: [
     BrowserModule,
