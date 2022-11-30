@@ -5,6 +5,7 @@ import {
     System,
     SystemNode,
 } from "./ecs.js";
+import { Constructor } from "./types.js";
 
 export class Scene {
     // The list of entities in the scene
@@ -66,6 +67,10 @@ export class Scene {
     ): GameObjectBase[] {
         // NOTE: Currently not very efficient. Could be improved by using archetypes to store entities with the same components.
         return this.entities.filter((e) => e.has(component));
+    }
+
+    getEntitiesOfType<T extends GameObjectBase>(type: Constructor<T>) {
+        return this.entities.filter((e) => e instanceof type);
     }
 
     // Add a system to the Scene
