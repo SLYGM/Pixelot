@@ -1,5 +1,3 @@
-import { $gl } from '../gl.js';
-
 import { PostProcess } from "../post_process.js";
 
 

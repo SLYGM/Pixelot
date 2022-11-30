@@ -16,7 +16,7 @@
                 },
                 {
                     "component_name": "Sprite",
-                    "args": ["frog", "sprites", 0]
+                    "args": ["frog", "foreground", 0]
                 }
             ]
         }

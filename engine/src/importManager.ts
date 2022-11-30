@@ -33,7 +33,7 @@ export class ImportManager {
         for (const script of scriptsList) {
             const a = await import("./" + src + script + ".js");
             const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
-            scriptTypeMap.set(script, typed_constr);
+            scriptTypeMap.set(a.default.name, typed_constr);
         }
     }
 
