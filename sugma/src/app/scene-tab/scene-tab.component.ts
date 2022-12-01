@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { SceneManagerService } from 'app/scene-manager.service';
+import { SceneManagerService } from 'app/services/scene-manager.service';
 import { Entity, Scene } from 'types';
 import { filter } from 'rxjs/operators';
 

@@ -6,7 +6,6 @@ import { AppComponent } from './app.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
 import { AddComponentDialog, RightSidebarComponent } from './right-sidebar/right-sidebar.component';
-import { FileManagerComponent } from './file-manager/file-manager.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SceneTabComponent } from './scene-tab/scene-tab.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -22,6 +21,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ConstructionComponent } from './construction/construction.component';
+import { FileExplorerComponent } from './file-explorer/file-explorer.component';
+import { NewFolderDialogComponent } from './file-explorer/modals/new-folder-dialog/new-folder-dialog.component';
+import { RenameDialogComponent } from './file-explorer/modals/rename-dialog/rename-dialog.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatMenuModule } from '@angular/material/menu';
+import { FileManagerComponent } from './file-manager/file-manager.component';
+import { MatCardModule } from '@angular/material/card';
+import { NewFileDialogComponent } from './file-explorer/modals/new-file-dialog/new-file-dialog.component';
 
 @NgModule({
   declarations: [
@@ -30,11 +38,16 @@ import { ConstructionComponent } from './construction/construction.component';
     LeftSidebarComponent,
     RightSidebarComponent,
     AddComponentDialog,
-    FileManagerComponent,
     NavbarComponent,
     SceneTabComponent,
     NewSceneDialogComponent,
-    ConstructionComponent
+    ConstructionComponent,
+    FileExplorerComponent,
+    NewFolderDialogComponent,
+    RenameDialogComponent,
+    FileManagerComponent,
+    FileExplorerComponent,
+    NewFileDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -52,6 +65,10 @@ import { ConstructionComponent } from './construction/construction.component';
     MatIconModule,
     MatAutocompleteModule,
     MatSnackBarModule,
+    MatToolbarModule,
+    MatGridListModule,
+    MatMenuModule,
+    MatCardModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
