@@ -4,7 +4,11 @@ import { PostProcess } from "../post_process.js";
 
 
 
-export class TestHalfScreenShader extends PostProcess {
+export default class TestHalfScreenShader extends PostProcess {
+  static arg_names = []
+  static arg_types = []
+    
+
   constructor() {
     const v_shader = `#version 300 es
 

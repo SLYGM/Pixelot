@@ -1,3 +1,4 @@
+import { Renderer } from "./renderer/renderer.js";
 import { Updatable } from "./types.js";
 
 const nwjs = require("nw.gui");
@@ -25,6 +26,8 @@ export class Game {
         this.time = now;
 
         this.updateQueue.forEach((u) => u.update(dt));
+        //call the renderer to update - should always be done last
+        Renderer.render();
 
         if (this.running) {
             requestAnimationFrame(this.gameloop.bind(this));

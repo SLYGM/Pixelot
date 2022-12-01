@@ -1,54 +1,48 @@
-import { Renderer, RenderSystem } from "./renderer/renderer.js";
+import { Renderer, SpriteLayer } from "./renderer/renderer.js";
 
-import { PostProcessing } from './renderer/post_process.js';
-import { BarShader } from './renderer/post effects/bars.js';
-import BarrelShader from './renderer/post effects/barrel.js';
-
-import { GameObjectBase } from "./ecs.js";
-import { $scene } from "./sceneManager.js";
+import { SceneManager } from "./sceneManager.js";
 import { Game } from "./gameloop.js";
 
-import "./componentManager.js";
-import "./scriptManager.js";
+import { doImports, ImportManager } from "./importManager.js";
+import { PostProcessing } from "./engineExport.js";
 
-import Position from "./components/Position.js";
-import Sprite from "./components/Sprite.js";
+const fs = require("fs");
 
-import { KeyStates } from "./keyState.js";
-import { MouseState } from "./mouseState.js";
+function loadGame() {
+    // load the project.json which contains all info needed to initialise the game
+    const data = fs.readFileSync('./project.json', {encoding: "utf-8"});
+    const game_data = JSON.parse(data.toString());
 
-import './scriptManager.js';
-import './componentManager.js';
-import CRTShader from "./renderer/post effects/crt.js";
+    Renderer.setResolution(game_data["resolution"][0], game_data["resolution"][1]);
+    loadLayers(game_data["layers"]);
+    loadTextures(game_data["textures"]);
+    loadShaders(game_data["shaders"]);
 
-Renderer.setResolution(426, 240);
-Renderer.loadTexture('./images/frog.png', 'frog')
-Renderer.loadTexture('./images/tile.png', 'tile')
+    Game.addToUpdateQueue(SceneManager);
+    SceneManager.loadScene(game_data["start_scene"]);
+    Game.start();
+}
 
-class TestEntity extends GameObjectBase {
-    onCreate(): void {
-        this.get(Position).x = 50;
-        this.get(Position).y = 50;
-    }
-
-    update(): void {
-        if (KeyStates.isPressed("a")) {
-            this.get(Position).x = 50;
-            this.get(Position).y = 50;
-        } else {
-            this.get(Position).x = MouseState.world_pos.x;
-            this.get(Position).y = MouseState.world_pos.y;
-        }
+function loadLayers(layers: string[]) {
+    for (const layer of layers) {
+        Renderer.addLayer(new SpriteLayer(), layer);
     }
 }
 
-const t = new TestEntity("test");
-t.add(new Position()).add(new Sprite("frog"));
-$scene.addEntity(t);
-$scene.addSystem(new RenderSystem(), 0);
+function loadTextures(textures: {name: string, path: string}[]) {
+    for (const texture of textures) {
+        Renderer.loadTexture(texture["path"], texture["name"]);
+    }
+}
 
-PostProcessing.add(new BarrelShader());
-PostProcessing.add(new CRTShader());
+function loadShaders(shaders: {name: string, args: any[]}[]) {
+    for (const shader of shaders) {
+        const typed_constr = ImportManager.getShader(shader["name"]);
+        const args = typed_constr.parseArgs(shader["args"]);
+        PostProcessing.add(new typed_constr.constr(...args));
+    }
+}
 
-Game.addToUpdateQueue($scene);
-Game.start();
+
+await doImports();
+loadGame();

@@ -1,9 +1,10 @@
-import { $gl } from '../gl.js';
-
 import { PostProcess } from "../post_process.js";
 
 
 export default class BarrelShader extends PostProcess {
+    static arg_names = []
+    static arg_types = []
+    
     constructor() {
         const v_shader = `#version 300 es
 

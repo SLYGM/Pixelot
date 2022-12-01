@@ -1,5 +1,5 @@
-export const _canvas = <HTMLCanvasElement>document.getElementById("canvas");
-export const $gl = _canvas.getContext("webgl2");
+export const $canvas = <HTMLCanvasElement>document.getElementById("canvas");
+export const $gl = $canvas.getContext("webgl2");
 
 if ($gl) {
     $gl.blendFunc($gl.SRC_ALPHA, $gl.ONE_MINUS_SRC_ALPHA);
