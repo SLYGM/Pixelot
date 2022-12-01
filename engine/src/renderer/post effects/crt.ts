@@ -5,6 +5,9 @@ import { PostProcess } from "../post_process.js";
 
 //TODO: this looks terrible
 export default class CRTShader extends PostProcess {
+    static arg_names = []
+    static arg_types = []
+    
     constructor() {
         const v_shader = `#version 300 es
 
