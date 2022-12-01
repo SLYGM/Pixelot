@@ -6,13 +6,15 @@ const nwjs = require("nw.gui");
 export class Game {
     static updateQueue: Updatable[];
     static running = true;
+    static render_only = false;
     static time = 0;
 
     static {
         Game.updateQueue = new Array<Updatable>();
     }
 
-    static start() {
+    static start(render_only: boolean = false) {
+        this.render_only = render_only;
         requestAnimationFrame(this.gameloop.bind(this));
     }
 
@@ -25,7 +27,7 @@ export class Game {
         const dt = Math.min(0.1, now - this.time);
         this.time = now;
 
-        this.updateQueue.forEach((u) => u.update(dt));
+        if (!this.render_only) this.updateQueue.forEach((u) => u.update(dt));
         //call the renderer to update - should always be done last
         Renderer.render();
 
