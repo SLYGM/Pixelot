@@ -1,7 +1,9 @@
 :host {
-  min-width: 200px;
+  width : 23%;
+  min-width: 150px;
+  max-width: 300px;
   border-left: 1px solid #ccc;
-  background-color: #fafafa;
+  background-color: #90A4AE;
   padding: 10px;
   resize: horizontal;
 }

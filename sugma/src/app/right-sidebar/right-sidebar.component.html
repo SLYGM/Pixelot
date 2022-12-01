@@ -1,5 +1,5 @@
 <div *ngIf="entity">
-  <mat-form-field>
+  <mat-form-field appearance="fill">
     <mat-label>Entity name</mat-label>
     <input matInput type="text" value={{entity.name}}>
   </mat-form-field>
@@ -12,8 +12,8 @@
           {{component.component_name}}
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <ng-container *ngFor="let property of component.value | keyvalue">
-        <mat-form-field *ngIf="property.key !== 'dependencies'">
+      <ng-container *ngFor="let property of component.args | keyvalue">
+        <mat-form-field [style.width.%]="100" *ngIf="property.key !== 'dependencies'">
           <mat-label>{{property.key}}</mat-label>
           <input matInput value={{property.value}}>
         </mat-form-field>

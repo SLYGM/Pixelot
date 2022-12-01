@@ -1,6 +1,6 @@
 export type EntityComponent = {
   component_name: string;
-  value: object;
+  args: object;
 };
 
 export type Entity = {
