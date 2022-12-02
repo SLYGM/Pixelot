@@ -2,6 +2,8 @@ import { GameObjectBase, System } from "./ecs.js";
 import { Scene } from "./scene.js";
 import { ImportManager } from "./importManager.js";
 
+const nw = (window as any).nw;
+
 export class SceneManager {
     static scenes: Map<string, Scene>;
     static currentScene: Scene;
@@ -137,9 +139,9 @@ export class SceneManager {
      * @param name name of file from which to load scene
      */
     static loadScene(name: string) {
-        const fs = require("fs");
+        const fs = nw.require("fs");
         // read JSON object from file
-        const data = fs.readFileSync(name + ".json", {encoding: "utf-8"});
+        const data = fs.readFileSync("./src/assets/" + name + ".json", {encoding: "utf-8"});
 
         // parse JSON object
         const loadedSceneJson = JSON.parse(data.toString());

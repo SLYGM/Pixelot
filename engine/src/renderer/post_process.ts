@@ -23,7 +23,7 @@ export class PostProcessing {
     static render_buff: WebGLFramebuffer;
     static basic_process: PostProcess;
 
-    static {
+    static init() {
         // initialize the frame buffers and textures for buffer swapping - these are the same size as the screen
         const { fb: fb1, tex: tex1 } = GLUtils.createTexAndBuffer(
             $canvas.clientWidth,

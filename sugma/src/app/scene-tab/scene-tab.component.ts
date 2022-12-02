@@ -4,6 +4,8 @@ import { SceneManagerService } from 'app/services/scene-manager.service';
 import { Entity, Scene } from 'types';
 import { filter } from 'rxjs/operators';
 
+import * as engine from 'retro-engine';
+
 @Component({
   selector: 'scene-tab',
   templateUrl: './scene-tab.component.html',
@@ -22,10 +24,22 @@ export class SceneTabComponent {
   {
     this.sub = router.events.pipe(
       filter(e => e instanceof NavigationEnd)
-    ).subscribe(() => {
+    ).subscribe(async () => {
       this.route.params.subscribe(params => {
         this.sceneName = params['sceneName'];
       });
+
+      // loading the engine here because it needs to be loaded after the canvas is created
+      engine.loadGL();
+      engine.Renderer.init();
+      engine.PostProcessing.init();
+      engine.Renderer.setResolution(426, 240);
+
+      await engine.doImports();
+
+      engine.Game.loadGame("./src/assets/");
+      engine.Game.start(true);
+
       if (this.sceneName) {
         this.scene = this.sceneManager.getScene(this.sceneName);
       } 

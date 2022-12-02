@@ -4,7 +4,7 @@ import { SceneManager } from "./sceneManager.js";
 import { ImportManager } from "./importManager.js";
 import { PostProcessing } from "./engineExport.js";
 
-const nwjs = require("nw.gui");
+const nw = (window as any).nw;
 
 export class Game {
     static updateQueue: Updatable[];
@@ -45,7 +45,7 @@ export class Game {
      * @param src the path to the folder containing `project.json`
      */
     static loadGame(src: string = "./") {
-        const fs = require("fs");
+        const fs = nw.require("fs");
 
         // load the project.json which contains all info needed to initialise the game
         const data = fs.readFileSync(src + 'project.json', {encoding: "utf-8"});
@@ -82,6 +82,6 @@ export class Game {
 
     static stop() {
         this.running = false;
-        nwjs.App.closeAllWindows();
+        nw.App.closeAllWindows();
     }
 }

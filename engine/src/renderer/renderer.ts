@@ -6,7 +6,9 @@ import { PostProcessing } from "./post_process.js";
 import { Texture, Updatable } from "../types.js";
 
 const { glMatrix, mat4, vec3 } = require("gl-matrix");
-const AVLTree = require('avl');
+
+const nw = (window as any).nw;
+const AVLTree = nw.require('avl');
 type AVLTree = InstanceType<typeof AVLTree>;
 
 
@@ -97,7 +99,7 @@ export class Renderer {
     static layerAliases: Map<string, number>;
     static layers: RenderLayer[];
 
-    static {
+    static init () {
         this.shader = {
             prog: undefined,
             proj_loc: undefined,
