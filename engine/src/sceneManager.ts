@@ -141,7 +141,7 @@ export class SceneManager {
     static loadScene(name: string) {
         const fs = nw.require("fs");
         // read JSON object from file
-        const data = fs.readFileSync("./src/assets/" + name + ".json", {encoding: "utf-8"});
+        const data = fs.readFileSync("../engine/" + name + ".json", {encoding: "utf-8"});
 
         // parse JSON object
         const loadedSceneJson = JSON.parse(data.toString());

@@ -11,7 +11,7 @@ export default class Sprite extends Component {
     static arg_names = ["texAlias", "lr", "zi"];
     static arg_types = [Types.String, Types.String, Types.Number];
 
-    dependencies = [Position];
+    override dependencies = [Position];
     tex: string;
     layer: RenderLayer;
     zindex: number;

@@ -37,7 +37,7 @@ export class SceneTabComponent {
 
       await engine.doImports();
 
-      engine.Game.loadGame("./src/assets/");
+      engine.Game.loadGame("../engine/");
       engine.Game.start(true);
 
       if (this.sceneName) {

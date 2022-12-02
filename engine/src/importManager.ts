@@ -18,9 +18,13 @@ export class ImportManager {
     static async importScripts(
 { scriptTypeMap, src }: { scriptTypeMap: Map<string, TypedConstructor<Object>>; src: string; }    ) {
         const fs = nw.require("fs");
-        let files;
+        const path = nw.require("path");
+        let files: any[];
         try {
-            files = fs.readdirSync("./src/assets/" + src) as string[];
+            let current_path = path.resolve("./");
+            console.log("Current path: " + current_path);
+            files = fs.readdirSync("../engine/build/" + src) as string[];
+            console.log(files);
         } catch (e) {
             console.trace(e);
             return;
@@ -47,6 +51,9 @@ export class ImportManager {
     }
     static hasComponent(component: string): boolean {
         return this.components.has(component);
+    }
+    static getAllComponents(): string[] {
+        return Array.from(this.components.keys());
     }
 
     static getSystem(system: string): TypedConstructor<System> {

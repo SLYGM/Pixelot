@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { Entity } from 'types';
+import { ImportManager } from 'retro-engine';
 
 @Component({
   selector: 'app-right-sidebar',
@@ -44,7 +45,7 @@ export class RightSidebarComponent {
 export class AddComponentDialog {
   formControl = new FormControl('');
   // TODO: Get available components
-  options: string[] = ['Position', 'Velocity', 'Sprite'];
+  options: string[] = ImportManager.getAllComponents();
   filteredOptions: Observable<string[]>;
 
   constructor(

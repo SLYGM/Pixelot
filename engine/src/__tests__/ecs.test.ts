@@ -7,7 +7,7 @@ class TestComponent extends Component {
 }
 
 class TestComponent2 extends Component {
-    dependencies = [TestComponent];
+    override dependencies = [TestComponent];
 }
 
 class TestEntity extends GameObjectBase {

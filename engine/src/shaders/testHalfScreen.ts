@@ -46,7 +46,7 @@ export default class TestHalfScreenShader extends PostProcess {
     super(v_shader, f_shader);
   }
 
-  draw() {
+  override draw() {
     $gl.drawArrays($gl.TRIANGLES, 0, 6);
   }
 }

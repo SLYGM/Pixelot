@@ -5,11 +5,11 @@
     "textures": [
         {
             "name": "frog",
-            "path": "./images/frog.png"
+            "path": "./assets/images/frog.png"
         },
         {
             "name": "tile",
-            "path": "./images/tile.png"
+            "path": "./assets/images/tile.png"
         }
     ],
     "shaders": [
