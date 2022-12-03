@@ -18,11 +18,8 @@ export class ImportManager {
     static async importScripts(
 { scriptTypeMap, src }: { scriptTypeMap: Map<string, TypedConstructor<Object>>; src: string; }    ) {
         const fs = nw.require("fs");
-        const path = nw.require("path");
         let files: any[];
         try {
-            let current_path = path.resolve("./");
-            console.log("Current path: " + current_path);
             files = fs.readdirSync("../engine/build/" + src) as string[];
             console.log(files);
         } catch (e) {

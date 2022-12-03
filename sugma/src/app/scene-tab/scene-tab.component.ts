@@ -5,6 +5,7 @@ import { Entity, Scene } from 'types';
 import { filter } from 'rxjs/operators';
 
 import * as engine from 'retro-engine';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'scene-tab',
@@ -16,7 +17,7 @@ export class SceneTabComponent {
   scenes?: Map<string, Scene>;
   scene?: Scene;
   selectedEntity?: Entity;
-  private sub;
+  private sub: Subscription;
 
   constructor(private router: Router, 
               private route: ActivatedRoute, 
@@ -25,9 +26,6 @@ export class SceneTabComponent {
     this.sub = router.events.pipe(
       filter(e => e instanceof NavigationEnd)
     ).subscribe(async () => {
-      this.route.params.subscribe(params => {
-        this.sceneName = params['sceneName'];
-      });
 
       // loading the engine here because it needs to be loaded after the canvas is created
       engine.loadGL();
@@ -40,8 +38,14 @@ export class SceneTabComponent {
       engine.Game.loadGame("../engine/");
       engine.Game.start(true);
 
+      this.route.params.subscribe(params => {
+        this.sceneName = params['sceneName'];
+      });
+
       if (this.sceneName) {
         this.scene = this.sceneManager.getScene(this.sceneName);
+        this.sceneManager.setCurrentScene(this.sceneName);
+
       } 
       if (!this.scene) {
         // The scene doesn't exist, so redirect home
@@ -51,6 +55,7 @@ export class SceneTabComponent {
       } else if (this.scene.entities.length > 0) {
         this.selectedEntity = this.scene.entities[0];
       }
+      engine.SceneManager.loadScene(this.sceneName);
     });
   }
 

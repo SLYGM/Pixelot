@@ -4,8 +4,9 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import { Entity } from 'types';
-import { ImportManager } from 'retro-engine';
+import { Entity, EntityComponent } from 'types';
+import * as engine from 'retro-engine';
+import { SceneManagerService } from 'app/services/scene-manager.service';
 
 @Component({
   selector: 'app-right-sidebar',
@@ -15,7 +16,7 @@ import { ImportManager } from 'retro-engine';
 export class RightSidebarComponent {
   @Input() entity?: Entity;
 
-  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar) {}
+  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, private sceneManager: SceneManagerService) {}
 
   openDialog(): void {
     const dialogRef = this.dialog.open(AddComponentDialog, {
@@ -36,6 +37,11 @@ export class RightSidebarComponent {
       }
     });
   }
+
+  handleChange(event: any, component: EntityComponent, property: any) {
+    component.args[property.key] = event.target.value;
+    this.sceneManager.saveScene(this.sceneManager.currentSceneName);
+  }
 }
 
 @Component({
@@ -45,7 +51,7 @@ export class RightSidebarComponent {
 export class AddComponentDialog {
   formControl = new FormControl('');
   // TODO: Get available components
-  options: string[] = ImportManager.getAllComponents();
+  options: string[] = engine.ImportManager.getAllComponents();
   filteredOptions: Observable<string[]>;
 
   constructor(

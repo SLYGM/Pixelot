@@ -34,10 +34,12 @@ export class MouseState {
         this.screen_pos.x = x;
         this.screen_pos.y = y;
 
-        const frac_x = x/$canvas.clientWidth;
-        const frac_y = y/$canvas.clientHeight;
-        this.world_pos.x = Renderer.viewport.x + Renderer.resolution.x * Renderer.viewport.sx * frac_x;
-        this.world_pos.y = Renderer.viewport.x + Renderer.resolution.y * Renderer.viewport.sx * frac_y;
+        if ($canvas) {
+            const frac_x = x/$canvas.clientWidth;
+            const frac_y = y/$canvas.clientHeight;
+            this.world_pos.x = Renderer.viewport.x + Renderer.resolution.x * Renderer.viewport.sx * frac_x;
+            this.world_pos.y = Renderer.viewport.x + Renderer.resolution.y * Renderer.viewport.sx * frac_y;
+        }
     }
 
     private static handleMouseUp(event: MouseEvent) {

@@ -1,10 +1,12 @@
 export type EntityComponent = {
   component_name: string;
-  args: object;
+  args: string[];
 };
 
 export type Entity = {
   name: string;
+  class: string;
+  args: string[]
   components: EntityComponent[];
 };
 

@@ -40,39 +40,16 @@ export class SceneManagerService {
   //   this.currentScene?.addEntity(entity);
   // }
 
-  // saveScene(fileName: string){
-  //   // create a JSON object
-  //   const proxies = this.currentScene?.getEntities();
-  //   const entities = [];
-  //   if(proxies){
-  //     for (const proxy of proxies) {
-  //         const components = [];
-  //         for (const component of [...proxy.getAllComponents()]) {
-  //             const component_constr = ImportManager.getComponent(component);
-  //             components.push({
-  //                 component_name: component,
-  //                 value: proxy.get(component_constr),
-  //             });
-  //         }
-  //         entities.push({ name: proxy.name, components: components });
-  //     }
-  //   }
-
-  //   const sceneSaveFile = {
-  //       name: this.currentSceneName,
-  //       entities: entities,
-  //   };
-
-  //   // convert JSON object to a string
-  //   const data = JSON.stringify(sceneSaveFile);
-
-  //   const fs = require("fs");
-  //   fs.writeFile(fileName + ".json", data, function (err: any) {
-  //       if (err) {
-  //           console.log(err);
-  //       }
-  //       console.log("saving json");
-  //   });
-  // }
+  saveScene(fileName: string) {
+    // save the current scene to json
+    const json = JSON.stringify(this.currentScene);
+    const nw = window.nw;
+    const fs = nw.require('fs');
+    fs.writeFile(fileName + '.json', json, 'utf8', function(err: { message: string; }) {
+      if (err) {
+        alert("An error occured creating the file "+ err.message)
+      }
+    });
+  }
 
 }
