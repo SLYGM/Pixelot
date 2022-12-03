@@ -8,6 +8,7 @@ export default class SpriteAnimationSystem extends System {
     update(entities: Set<GameObjectBase>) {
         entities.forEach((e) => {
             let sprite = e.get(AnimatedSprite);
+            if (sprite.manualUpdate) return;
             let dt = Game.dt;
             let t = sprite.t;
             let t2 = (sprite.t + dt) % (1 / sprite.fps) ;

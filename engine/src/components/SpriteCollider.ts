@@ -15,9 +15,11 @@ export default class SpriteCollider extends Component {
         super();
     }
 
-    isColliding(pos2: {x: number, y: number}, dim2: {width: number, height: number}): boolean {
+    isColliding(collider2: SpriteCollider): boolean {
         const pos1 = this.owner.get(Sprite).getPos();
         const dim1 = this.owner.get(Sprite).getDimensions();
+        const pos2 = collider2.owner.get(Sprite).getPos();
+        const dim2 = collider2.owner.get(Sprite).getDimensions();
         return (
             pos1.x < pos2.x + dim2.width &&
             pos1.x + dim1.width > pos2.x &&

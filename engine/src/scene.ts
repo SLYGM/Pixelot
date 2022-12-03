@@ -69,8 +69,8 @@ export class Scene {
         return this.entities.filter((e) => e.has(component));
     }
 
-    getEntitiesOfType<T extends GameObjectBase>(type: Constructor<T>) {
-        return this.entities.filter((e) => e instanceof type);
+    getEntitiesOfType<T extends GameObjectBase>(type: Constructor<T>) : T[] {
+        return this.entities.filter((e) => e instanceof type) as T[];
     }
 
     // Add a system to the Scene

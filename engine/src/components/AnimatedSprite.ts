@@ -13,15 +13,17 @@ export default class AnimatedSprite extends Sprite {
     fps: number;
     currFrame: number;
     totalFrames: number;
+    manualUpdate: boolean;
 
     //sprites will be drawn above objects with a lower z index than their own
-    constructor(texAlias: string, lr: string, fps: number, totalFrames: number, zi: number = 0) {
+    constructor(texAlias: string, lr: string, fps: number, totalFrames: number, zi: number = 0, manualUpdate: boolean = false) {
         super(texAlias+"_0", lr, zi);
         this.sourceTex = texAlias;
         this.t = 0;
         this.fps = fps;
         this.currFrame = 0;
         this.totalFrames = totalFrames;
+        this.manualUpdate = manualUpdate;
     }
 
     updateFrame() {
