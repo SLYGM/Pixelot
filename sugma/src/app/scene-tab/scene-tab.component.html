@@ -1,8 +1,8 @@
-<app-left-sidebar></app-left-sidebar>
+<app-left-sidebar [scene]="scene" [layerNames]="layerNames" (entitySelected)="handleEntitySelected"></app-left-sidebar>
 <div class="center-wrapper">
   <div class="temp-canvas">
     <canvas id="canvas"></canvas>
   </div>
   <app-file-manager></app-file-manager>
 </div>
-<app-right-sidebar [entity]="selectedEntity" style="overflow:auto;"></app-right-sidebar>
+<app-right-sidebar [entity]="selectedEntity"></app-right-sidebar>

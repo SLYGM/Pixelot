@@ -21,7 +21,6 @@ export class ImportManager {
         let files: any[];
         try {
             files = fs.readdirSync("../engine/build/" + src) as string[];
-            console.log(files);
         } catch (e) {
             console.trace(e);
             return;

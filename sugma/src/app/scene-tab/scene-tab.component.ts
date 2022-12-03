@@ -17,6 +17,7 @@ export class SceneTabComponent {
   scenes?: Map<string, Scene>;
   scene?: Scene;
   selectedEntity?: Entity;
+  layerNames: string[];
   private sub: Subscription;
 
   constructor(private router: Router, 
@@ -36,6 +37,7 @@ export class SceneTabComponent {
       await engine.doImports();
 
       engine.Game.loadGame("../engine/");
+      this.layerNames = Array.from(engine.Renderer.layerAliases.keys());
       engine.Game.start(true);
 
       this.route.params.subscribe(params => {
@@ -57,6 +59,10 @@ export class SceneTabComponent {
       }
       engine.SceneManager.loadScene(this.sceneName);
     });
+  }
+
+  handleEntitySelected(entity: Entity) {
+    this.selectedEntity = entity;
   }
 
   ngOnDestroy() {
