@@ -34,8 +34,7 @@ class TestSystem extends System {
 }
 
 test("Game Object Functionality", () => {
-    const scene = new Scene();
-    scene.onCreate();
+    const scene = new Scene("");
 
     const testEntity = new TestEntity("test");
     scene.addEntity(testEntity);
@@ -47,8 +46,7 @@ test("Game Object Functionality", () => {
 });
 
 test("System Functionality", () => {
-    const scene = new Scene();
-    scene.onCreate();
+    const scene = new Scene("");
 
     const testEntity = new TestEntity("test");
     testEntity.add(new TestComponent());
@@ -63,8 +61,7 @@ test("System Functionality", () => {
 });
 
 test("Component Dependencies", () => {
-    const scene = new Scene();
-    scene.onCreate();
+    const scene = new Scene("");
 
     const testEntity = new TestEntity("test");
     expect(() => testEntity.add(new TestComponent2)).toThrowError('Component \'TestComponent2\' requires \'TestComponent\'');

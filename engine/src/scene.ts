@@ -16,14 +16,17 @@ export class Scene {
 
     // The time that has elapsed since the last frame.
     public dt: number;
+    public name: string;
 
-    onCreate() {
+    constructor(name: string) {
         this.entities = new Map<string, GameObjectBase>();
         this.systems = [];
         this.added_systems = new Map<string, boolean>();
+        this.dt = 0;
+        this.name = name;
     }
 
-    onDestroy() {
+    destroy() {
         this.entities.clear();
         this.systems = [];
     }

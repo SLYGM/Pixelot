@@ -11,12 +11,16 @@ export class Game {
     static running = true;
     static render_only = false;
     static time = 0;
+    static start_scene: string;
 
     static {
         Game.updateQueue = new Array<Updatable>();
     }
 
     static start(render_only: boolean = false) {
+        Game.addToUpdateQueue(SceneManager);
+        SceneManager.switchToScene(this.start_scene);
+
         this.render_only = render_only;
         requestAnimationFrame(this.gameloop.bind(this));
     }
@@ -55,9 +59,8 @@ export class Game {
         this.loadLayers(game_data["layers"]);
         this.loadTextures(game_data["textures"]);
         this.loadShaders(game_data["shaders"]);
-    
-        Game.addToUpdateQueue(SceneManager);
-        SceneManager.loadScene(game_data["start_scene"]);
+
+        this.start_scene = game_data["start_scene"];
     }
     
     private static loadLayers(layers: string[]) {
