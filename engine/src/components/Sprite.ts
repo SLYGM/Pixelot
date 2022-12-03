@@ -29,4 +29,9 @@ export default class Sprite extends Component {
         const pos = this.owner.get(Position);
         return {x: pos.x, y: pos.y};
     }
+
+    override onDelete() {
+        if (this.layer && this.layer instanceof SpriteLayer) 
+            this.layer.removeSprite(this);
+    }
 }

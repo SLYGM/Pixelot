@@ -27,6 +27,9 @@ export class Scene {
     }
 
     destroy() {
+        for (const entity of this.entities.values()) {
+            entity._delete();
+        }
         this.entities.clear();
         this.systems = [];
     }
