@@ -46,7 +46,6 @@ export class RightSidebarComponent {
     const argType = engine.ImportManager.getComponent(component.component_name).arg_types[property.key];
     gameComponent[argName] = argType.parse(event.target.value);
     console.log(gameComponent);
-    engine.Game.start(false);
   }
 }
 
