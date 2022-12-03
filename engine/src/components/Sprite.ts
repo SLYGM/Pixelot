@@ -1,14 +1,12 @@
 import { Renderer, RenderLayer, SpriteLayer } from "../renderer/renderer.js";
-
 import { Component } from "../ecs.js";
 
-import { Texture } from "../types.js";
 import Position from "./Position.js";
 
 import { Types } from "../argTypes.js";
 
 export default class Sprite extends Component {
-    static arg_names = ["texAlias", "lr", "zi"];
+    static arg_names = ["texAlias", "layer", "z-index"];
     static arg_types = [Types.String, Types.String, Types.Number];
 
     override dependencies = [Position];

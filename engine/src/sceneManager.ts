@@ -1,6 +1,7 @@
 import { GameObjectBase, System } from "./ecs.js";
 import { Scene } from "./scene.js";
 import { ImportManager } from "./importManager.js";
+import { Renderer } from "./engineExport.js";
 
 const nw = (window as any).nw;
 
@@ -139,6 +140,12 @@ export class SceneManager {
      * @param name name of file from which to load scene
      */
     static loadScene(name: string) {
+        // if the scene has already been loaded, switch to it
+        if (this.scenes.has(name)) {
+            this.switchToScene(name);
+            return;
+        }
+
         const fs = nw.require("fs");
         // read JSON object from file
         const data = fs.readFileSync("../engine/" + name + ".json", {encoding: "utf-8"});
@@ -157,9 +164,17 @@ export class SceneManager {
             const ent_args = entity_constr.parseArgs(entity["args"]);
 
             for (const component of entity["components"]) {
+                if (component["component_name"] == "Sprite") {
+                    console.log("before adding sprite component:")
+                    console.log(Renderer.getLayer("foreground"));
+                }
                 const component_constr = ImportManager.getComponent(component["component_name"]);
                 const comp_args = component_constr.parseArgs(component["args"]);
                 toAdd.add(new component_constr.constr(...comp_args));
+                if (component["component_name"] == "Sprite") {
+                    console.log("after adding sprite component:")
+                    console.log(Renderer.getLayer("foreground"));
+                }
             }
 
             scene.addEntity(toAdd, ent_args);
