@@ -57,7 +57,7 @@ export class SceneTabComponent {
       } else if (this.scene.entities.length > 0) {
         this.selectedEntity = this.scene.entities[0];
       }
-      engine.SceneManager.loadScene(this.sceneName);
+      engine.SceneManager.switchToScene(this.sceneName);
     });
   }
 
