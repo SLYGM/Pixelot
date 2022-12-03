@@ -41,6 +41,12 @@ export class RightSidebarComponent {
   handleChange(event: any, component: EntityComponent, property: any) {
     component.args[property.key] = event.target.value;
     this.sceneManager.saveScene(this.sceneManager.currentSceneName);
+    const gameComponent = engine.SceneManager.currentScene.getEntity(this.entity!.name).getFromName(component.component_name);
+    const argName = engine.ImportManager.getComponent(component.component_name).arg_names[property.key];
+    const argType = engine.ImportManager.getComponent(component.component_name).arg_types[property.key];
+    gameComponent[argName] = argType.parse(event.target.value);
+    console.log(gameComponent);
+    engine.Game.start(false);
   }
 }
 

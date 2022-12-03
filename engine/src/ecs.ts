@@ -100,6 +100,15 @@ export abstract class GameObjectBase {
     public get<T extends Component>(c: ComponentType<T>): T {
         return this.component_map.get(c.name) as T;
     }
+    /**
+     * Get the component instance of the given component name.
+     *
+     * @param name The name of the component to get.
+     * @returns The component instance.
+     */
+    public getFromName(name: string): Component {
+        return this.component_map.get(name);
+    }
 
     /**
      * Get all components linked to this entity
