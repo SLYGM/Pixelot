@@ -5,8 +5,8 @@ import { SceneTabComponent } from './scene-tab/scene-tab.component';
 
 const routes: Routes = [
   {path: 'scene/:sceneName', component: SceneTabComponent},
-  // {path: 'construction', component: ConstructionComponent},
-  // { path: '',   redirectTo: '/construction', pathMatch: 'full' },
+  {path: 'construction', component: ConstructionComponent},
+  { path: '',   component: SceneTabComponent },
   { path: '**', component: SceneTabComponent }
 ];
 
