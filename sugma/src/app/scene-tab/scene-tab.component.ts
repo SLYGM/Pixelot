@@ -29,9 +29,7 @@ export class SceneTabComponent {
     ).subscribe(async () => {
 
       // loading the engine here because it needs to be loaded after the canvas is created
-      engine.loadGL();
       engine.Renderer.init();
-      engine.PostProcessing.init();
       engine.Renderer.setResolution(426, 240);
 
       await engine.doImports();
