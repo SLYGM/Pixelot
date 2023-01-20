@@ -5,6 +5,9 @@ import { SceneManagerService } from 'app/services/scene-manager.service';
 import { Scene } from 'types';
 import { NewSceneDialogComponent } from 'app/new-scene-dialog/new-scene-dialog.component';
 import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import * as engine from 'retro-engine';
 
 @Component({
   selector: 'app-navbar',
@@ -17,7 +20,7 @@ export class NavbarComponent {
   background: ThemePalette = 'primary';
   accent: ThemePalette = 'accent'
 
-  constructor(public sceneManager: SceneManagerService, public dialog: MatDialog) { }
+  constructor(public sceneManager: SceneManagerService, public dialog: MatDialog, private router: Router) { }
 
   handleFileSelect(e: any) {
     let files = e.target.files;
@@ -47,9 +50,14 @@ export class NavbarComponent {
   }
 
   createScene(sceneName:string){
-    let scene = new Scene(sceneName);
-    this.sceneManager.addScene(scene);
-    console.log(scene);
+    // create new scene in engine manager
+    if (engine.SceneManager.createScene(sceneName)) {
+      // if the scene has been successfully created, switch to it
+      engine.SceneManager.switchToScene(sceneName);
+      this.sceneManager.addScene(new Scene(sceneName));
+      this.activeLink = sceneName;
+      this.router.navigateByUrl(`/scene/${sceneName}`);
+    }
   }
 }
 
