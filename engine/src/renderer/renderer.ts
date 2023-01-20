@@ -1,6 +1,6 @@
 import Sprite from "../components/Sprite.js";
 
-import { $gl, $canvas } from "./gl.js";
+import { $gl, $canvas, loadGL } from "./gl.js";
 import { GLUtils } from "./webglutils.js";
 import { PostProcessing } from "./post_process.js";
 import { Texture, Updatable } from "../types.js";
@@ -106,6 +106,8 @@ export class Renderer {
     static backgroundColor: [r:number, g:number, b:number, a:number];
 
     static init() {
+        loadGL();                     
+       
         this.shader = {
             prog: undefined,
             proj_loc: undefined,
@@ -150,6 +152,23 @@ export class Renderer {
         this.layers = [];
         this.layerAliases = new Map<string, number>();
         this.backgroundColor = [1, 1, 1, 1];
+
+        PostProcessing.init();
+    }
+
+    static trackResize() {
+        function onResize(entries: ResizeObserverEntry[]) {
+            if (!$gl) return;
+            
+            const entry = entries[0];
+            const width = entry.devicePixelContentBoxSize[0].inlineSize;
+            const height = entry.devicePixelContentBoxSize[0].blockSize;
+            $canvas.width = width;
+            $canvas.height = height;
+        }
+
+        const resizeObserver = new ResizeObserver(onResize);
+        resizeObserver.observe($canvas, {box: 'device-pixel-content-box'});
     }
 
     static setResolution(x: number, y: number) {
