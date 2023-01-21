@@ -4,10 +4,10 @@ import { ConstructionComponent } from './construction/construction.component';
 import { SceneTabComponent } from './scene-tab/scene-tab.component';
 
 const routes: Routes = [
-  {path: 'scene/:sceneName', component: SceneTabComponent},
-  {path: 'construction', component: ConstructionComponent},
-  { path: '',   redirectTo: '/construction', pathMatch: 'full' },
-  // { path: '**', component: SceneTabComponent }
+  { path: 'scene/:sceneName', component: SceneTabComponent },
+  { path: 'construction', component: ConstructionComponent },
+  { path: '',   component: SceneTabComponent },
+  { path: '**', component: SceneTabComponent }
 ];
 
 @NgModule({
