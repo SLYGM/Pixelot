@@ -1,4 +1,4 @@
-<mat-accordion multi>
+<mat-accordion multi *ngIf="scene">
   <mat-expansion-panel *ngFor="let layer of layerNames; index as i">
     <mat-expansion-panel-header>
       <mat-panel-title>
@@ -7,7 +7,7 @@
     </mat-expansion-panel-header>
     <ng-container *ngFor="let entity of layerEntities[i]">
       <button mat-button (click)="selectEntity(entity)">
-        {{entity.name}}
+        {{entity}}
       </button>
     </ng-container>
   </mat-expansion-panel>

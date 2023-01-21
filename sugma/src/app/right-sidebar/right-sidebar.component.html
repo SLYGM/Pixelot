@@ -7,13 +7,13 @@
 
     <h2 class="mat-h2">Components</h2>
     <mat-accordion multi>
-      <mat-expansion-panel *ngFor="let component of entity.components">
+      <mat-expansion-panel *ngFor="let component of entity.getAllComponents()">
         <mat-expansion-panel-header>
           <mat-panel-title>
-            {{component.component_name}}
+            {{component}}
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <ng-container *ngFor="let property of component.args | keyvalue">
+        <ng-container *ngFor="let property of entity.getFromName(component) | keyvalue">
           <mat-form-field [style.width.%]="100" *ngIf="property.key !== 'dependencies'">
             <mat-label color="primary">{{property.key}}</mat-label>
             <input matInput value={{property.value}} (change)="handleChange($event, component, property)">

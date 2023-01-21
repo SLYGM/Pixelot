@@ -1,10 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ErrorStateMatcher, ThemePalette } from '@angular/material/core';
-import { SceneManagerService } from 'app/services/scene-manager.service';
-import { Scene } from 'types';
 import { NewSceneDialogComponent } from 'app/new-scene-dialog/new-scene-dialog.component';
 import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
+import * as engine from 'retro-engine';
 
 @Component({
   selector: 'app-navbar',
@@ -12,25 +11,29 @@ import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent {
-  @Output() loadedScene = new EventEmitter<Scene>();
   activeLink = 'Visual Scripting Editor';
   background: ThemePalette = 'primary';
   accent: ThemePalette = 'accent'
+  scenes: string[] = [];
 
-  constructor(public sceneManager: SceneManagerService, public dialog: MatDialog) { }
+  constructor(public dialog: MatDialog) {
+    this.scenes = [ ...engine.SceneManager.loaded_scenes.keys() ];
+    this.initEngine();
+  }
+
+  // This is temporary. TODO: move to landing page
+  async initEngine() {
+    await engine.doImports();
+  }
+
 
   handleFileSelect(e: any) {
     let files = e.target.files;
     let file = files[0];
-    let reader = new FileReader();
-    reader.onload = (e: any) => {
-      if (e.target) {
-        let scene = JSON.parse(e.target.result as string);
-        this.sceneManager.addScene(scene);
-        console.log(scene);
-      }
-    }
-    reader.readAsText(file);
+    let path = file.path;
+    const sceneName = file.name.split('.')[0];
+    engine.SceneManager.preLoadScene(sceneName, path);
+    this.scenes = [ ...engine.SceneManager.loaded_scenes.keys() ];
   }
 
   openDialog(): void {
@@ -46,10 +49,8 @@ export class NavbarComponent {
     });
   }
 
-  createScene(sceneName:string){
-    let scene = new Scene(sceneName);
-    this.sceneManager.addScene(scene);
-    console.log(scene);
+  createScene(sceneName: string){
+    // TODO
   }
 }
 

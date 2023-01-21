@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { SceneManagerService } from 'app/services/scene-manager.service';
-import { Entity, Scene } from 'types';
 import { filter } from 'rxjs/operators';
 
 import * as engine from 'retro-engine';
 import { Subscription } from 'rxjs';
+import { GameObjectBase, Scene } from 'retro-engine';
 
 @Component({
   selector: 'scene-tab',
@@ -14,15 +13,14 @@ import { Subscription } from 'rxjs';
 })
 export class SceneTabComponent {
   sceneName?: string;
-  scenes?: Map<string, Scene>;
+  // scenes?: Map<string, Scene>;
   scene?: Scene;
-  selectedEntity?: Entity;
+  selectedEntity?: string;
   layerNames: string[];
   private sub: Subscription;
 
   constructor(private router: Router, 
-              private route: ActivatedRoute, 
-              private sceneManager: SceneManagerService) 
+              private route: ActivatedRoute) 
   {
     this.sub = router.events.pipe(
       filter(e => e instanceof NavigationEnd)
@@ -43,23 +41,24 @@ export class SceneTabComponent {
       });
 
       if (this.sceneName) {
-        this.scene = this.sceneManager.getScene(this.sceneName);
-        this.sceneManager.setCurrentScene(this.sceneName);
+        engine.SceneManager.switchToScene(this.sceneName, false);
+        this.scene = engine.SceneManager.currentScene;
+        // this.scene = this.sceneManager.getScene(this.sceneName);
+        // this.sceneManager.setCurrentScene(this.sceneName);
 
       } 
-      if (!this.scene) {
-        // The scene doesn't exist, so redirect home
-        console.log("Scene doesn't exist, redirecting home");
-        this.router.navigate(['/']);
-        return;
-      } else if (this.scene.entities.length > 0) {
-        this.selectedEntity = this.scene.entities[0];
-      }
-      engine.SceneManager.switchToScene(this.sceneName);
+      // if (!this.scene) {
+        // // The scene doesn't exist, so redirect home
+        // console.log("Scene doesn't exist, redirecting home");
+        // this.router.navigate(['/']);
+        // return;
+      // } else if (this.scene.entities.length > 0) {
+        // this.selectedEntity = this.scene.entities[0];
+      // }
     });
   }
 
-  handleEntitySelected(entity: Entity) {
+  handleEntitySelected(entity: string) {
     this.selectedEntity = entity;
   }
 

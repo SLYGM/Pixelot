@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Scene } from 'types';
 import { SceneTabComponent } from './scene-tab/scene-tab.component';
 
 @Component({

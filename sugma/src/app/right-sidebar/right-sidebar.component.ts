@@ -4,9 +4,8 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import { Entity, EntityComponent } from 'types';
 import * as engine from 'retro-engine';
-import { SceneManagerService } from 'app/services/scene-manager.service';
+import { GameObjectBase } from 'retro-engine';
 
 @Component({
   selector: 'app-right-sidebar',
@@ -14,9 +13,20 @@ import { SceneManagerService } from 'app/services/scene-manager.service';
   styleUrls: ['./right-sidebar.component.scss']
 })
 export class RightSidebarComponent {
-  @Input() entity?: Entity;
+  @Input() entityName?: string;
+  entity?: GameObjectBase;
 
-  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, private sceneManager: SceneManagerService) {}
+  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar) {
+    if (this.entityName) {
+      this.entity = engine.SceneManager.currentScene.getEntity(this.entityName);
+    }
+  }
+
+  ngOnChanges() {
+    if (this.entityName) {
+      this.entity = engine.SceneManager.currentScene.getEntity(this.entityName);
+    }
+  }
 
   openDialog(): void {
     const dialogRef = this.dialog.open(AddComponentDialog, {
@@ -27,7 +37,7 @@ export class RightSidebarComponent {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed', result);
       if (this.entity && result) {
-        if (this.entity.components.some(c => c.component_name === result)) {
+        if (this.entity.getAllComponents().find(c => c === result)) {
           this._snackBar.open('Component already exists', 'Close', {
             duration: 2000,
           });
@@ -38,14 +48,14 @@ export class RightSidebarComponent {
     });
   }
 
-  handleChange(event: any, component: EntityComponent, property: any) {
-    component.args[property.key] = event.target.value;
-    this.sceneManager.saveScene(this.sceneManager.currentSceneName);
-    const gameComponent = engine.SceneManager.currentScene.getEntity(this.entity!.name).getFromName(component.component_name);
-    const argName = engine.ImportManager.getComponent(component.component_name).arg_names[property.key];
-    const argType = engine.ImportManager.getComponent(component.component_name).arg_types[property.key];
-    gameComponent[argName] = argType.parse(event.target.value);
-    console.log(gameComponent);
+  handleChange(event: any, component: string, property: any) {
+    const gameComponent = this.entity.getFromName(component);
+    //TODO: save changes to file
+    // this.sceneManager.saveScene(this.sceneManager.currentSceneName);
+    const index = engine.ImportManager.getComponent(component).arg_names.indexOf(property.key);
+    console.log(engine.ImportManager.getComponent(component));
+    const argType = engine.ImportManager.getComponent(component).arg_types[index];
+    gameComponent[property.key] = argType.parse(event.target.value);
   }
 }
 
@@ -61,7 +71,7 @@ export class AddComponentDialog {
 
   constructor(
     public dialogRef: MatDialogRef<AddComponentDialog>,
-    @Inject(MAT_DIALOG_DATA) public entity: Entity,
+    @Inject(MAT_DIALOG_DATA) public entity: GameObjectBase,
   ) {
     this.filteredOptions = this.formControl.valueChanges.pipe(
       startWith(''),
