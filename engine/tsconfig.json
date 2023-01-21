@@ -6,7 +6,8 @@
         "target": "es2022",
         "rootDir": "src",
         "outDir": "build",
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "declaration": true
     },
     
     "include":[

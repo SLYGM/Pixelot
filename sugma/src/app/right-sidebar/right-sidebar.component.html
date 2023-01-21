@@ -16,7 +16,7 @@
         <ng-container *ngFor="let property of component.args | keyvalue">
           <mat-form-field [style.width.%]="100" *ngIf="property.key !== 'dependencies'">
             <mat-label color="primary">{{property.key}}</mat-label>
-            <input matInput value={{property.value}}>
+            <input matInput value={{property.value}} (change)="handleChange($event, component, property)">
           </mat-form-field>
         </ng-container>
       </mat-expansion-panel>

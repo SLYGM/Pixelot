@@ -9,22 +9,28 @@ import { ImportManager } from "./importManager.js";
 
 export class Scene {
     // The list of entities in the scene
-    private entities: GameObjectBase[];
+    private entities: Map<string, GameObjectBase>;
     // The systems in a priority queue
     private systems: SystemNode[];
     private added_systems: Map<string, boolean>;
 
     // The time that has elapsed since the last frame.
     public dt: number;
+    public name: string;
 
-    onCreate() {
-        this.entities = [];
+    constructor(name: string) {
+        this.entities = new Map<string, GameObjectBase>();
         this.systems = [];
         this.added_systems = new Map<string, boolean>();
+        this.dt = 0;
+        this.name = name;
     }
 
-    onDestroy() {
-        this.entities = [];
+    destroy() {
+        for (const entity of this.entities.values()) {
+            entity._delete();
+        }
+        this.entities.clear();
         this.systems = [];
     }
 
@@ -58,7 +64,7 @@ export class Scene {
         }
         
 
-        this.entities.push(entity);
+        this.entities.set(entity.name, entity);
         entity.onCreate(...args);
 
         // Add the entity to the systems that require it
@@ -69,9 +75,14 @@ export class Scene {
         }
     }
 
+    // Get the entity with the given name
+    getEntity(name: string): GameObjectBase | undefined {
+        return this.entities.get(name);
+    }
+
     // Remove the given entity from the scene
     deleteEntity(entity: GameObjectBase) {
-        this.entities = this.entities.filter((e) => e != entity);
+        this.entities.delete(entity.name);
         // Remove the entity from the systems that require it
         for (const system_node of this.systems) {
             system_node.entities.delete(entity);
@@ -83,7 +94,7 @@ export class Scene {
         component: ComponentType<T>
     ): GameObjectBase[] {
         // NOTE: Currently not very efficient. Could be improved by using archetypes to store entities with the same components.
-        return this.entities.filter((e) => e.has(component));
+        return [...this.entities.values()].filter((e) => e.has(component));
     }
 
     // Add a system to the Scene
@@ -118,7 +129,7 @@ export class Scene {
         }
 
         // Run all entity update functions
-        for (const entity of this.entities) {
+        for (const entity of this.entities.values()) {
             entity.update();
         }
     }

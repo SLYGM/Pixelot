@@ -3,6 +3,8 @@ import { PostProcess } from "./renderer/post_process.js";
 import { TypedConstructor } from "./typedConstructor.js";
 import { StringUtils } from "./utils/baseutils.js";
 
+const nw = (window as any).nw;
+
 export class ImportManager {
     private static components = new Map<string, TypedConstructor<Component>>();
     private static systems = new Map<string, TypedConstructor<System>>();
@@ -11,14 +13,14 @@ export class ImportManager {
     private static componentsFolder = "components/";
     private static systemsFolder = "systems/";
     private static entitiesFolder = "entities/";
-    private static shadersFolder = "renderer/post effects/";
+    private static shadersFolder = "shaders/";
 
     static async importScripts(
 { scriptTypeMap, src }: { scriptTypeMap: Map<string, TypedConstructor<Object>>; src: string; }    ) {
-        const fs = require("fs");
-        let files;
+        const fs = nw.require("fs");
+        let files: any[];
         try {
-            files = fs.readdirSync("./build/" + src) as string[];
+            files = fs.readdirSync("../engine/build/" + src) as string[];
         } catch (e) {
             console.trace(e);
             return;
@@ -45,6 +47,9 @@ export class ImportManager {
     }
     static hasComponent(component: string): boolean {
         return this.components.has(component);
+    }
+    static getAllComponents(): string[] {
+        return Array.from(this.components.keys());
     }
 
     static getSystem(system: string): TypedConstructor<System> {

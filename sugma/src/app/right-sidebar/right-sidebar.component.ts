@@ -4,7 +4,9 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import { Entity } from 'types';
+import { Entity, EntityComponent } from 'types';
+import * as engine from 'retro-engine';
+import { SceneManagerService } from 'app/services/scene-manager.service';
 
 @Component({
   selector: 'app-right-sidebar',
@@ -14,7 +16,7 @@ import { Entity } from 'types';
 export class RightSidebarComponent {
   @Input() entity?: Entity;
 
-  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar) {}
+  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, private sceneManager: SceneManagerService) {}
 
   openDialog(): void {
     const dialogRef = this.dialog.open(AddComponentDialog, {
@@ -35,6 +37,16 @@ export class RightSidebarComponent {
       }
     });
   }
+
+  handleChange(event: any, component: EntityComponent, property: any) {
+    component.args[property.key] = event.target.value;
+    this.sceneManager.saveScene(this.sceneManager.currentSceneName);
+    const gameComponent = engine.SceneManager.currentScene.getEntity(this.entity!.name).getFromName(component.component_name);
+    const argName = engine.ImportManager.getComponent(component.component_name).arg_names[property.key];
+    const argType = engine.ImportManager.getComponent(component.component_name).arg_types[property.key];
+    gameComponent[argName] = argType.parse(event.target.value);
+    console.log(gameComponent);
+  }
 }
 
 @Component({
@@ -44,7 +56,7 @@ export class RightSidebarComponent {
 export class AddComponentDialog {
   formControl = new FormControl('');
   // TODO: Get available components
-  options: string[] = ['Position', 'Velocity', 'Sprite'];
+  options: string[] = engine.ImportManager.getAllComponents();
   filteredOptions: Observable<string[]>;
 
   constructor(

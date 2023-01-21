@@ -1,17 +1,15 @@
 import { Renderer, RenderLayer, SpriteLayer } from "../renderer/renderer.js";
-
 import { Component } from "../ecs.js";
 
-import { Texture } from "../types.js";
 import Position from "./Position.js";
 
 import { Types } from "../argTypes.js";
 
 export default class Sprite extends Component {
-    static arg_names = ["texAlias", "lr", "zi"];
+    static arg_names = ["texAlias", "layer", "z-index"];
     static arg_types = [Types.String, Types.String, Types.Number];
 
-    dependencies = [Position];
+    override dependencies = [Position];
     tex: string;
     layer: RenderLayer;
     zindex: number;
@@ -30,5 +28,10 @@ export default class Sprite extends Component {
     getPos(): {x: number, y: number} {
         const pos = this.owner.get(Position);
         return {x: pos.x, y: pos.y};
+    }
+
+    override onDelete() {
+        if (this.layer && this.layer instanceof SpriteLayer) 
+            this.layer.removeSprite(this);
     }
 }

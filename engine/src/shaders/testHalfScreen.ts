@@ -1,6 +1,6 @@
-import { $gl } from '../gl.js';
+import { $gl } from '../renderer/gl.js';
 
-import { PostProcess } from "../post_process.js";
+import { PostProcess } from "../engineExport.js";
 
 
 

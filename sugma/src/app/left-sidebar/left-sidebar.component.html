@@ -1,1 +1,14 @@
-<p>left-sidebar works!</p>
+<mat-accordion multi>
+  <mat-expansion-panel *ngFor="let layer of layerNames; index as i">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{layer}}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <ng-container *ngFor="let entity of layerEntities[i]">
+      <button mat-button (click)="selectEntity(entity)">
+        {{entity.name}}
+      </button>
+    </ng-container>
+  </mat-expansion-panel>
+</mat-accordion>

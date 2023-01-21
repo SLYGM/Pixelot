@@ -1,8 +1,9 @@
 {
-  "name": "nw_renderer",
+  "name": "retro-engine",
   "version": "1.0.0",
   "description": "testing webgl in nw",
-  "main": "index.html",
+  "main": "./build/engineExport.js",
+  "types": "./build/engineExport.d.ts",
   "scripts": {
     "test": "jest --coverage",
     "check": "eslint ./src",

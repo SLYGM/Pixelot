@@ -4,6 +4,9 @@ import { SceneManagerService } from 'app/services/scene-manager.service';
 import { Entity, Scene } from 'types';
 import { filter } from 'rxjs/operators';
 
+import * as engine from 'retro-engine';
+import { Subscription } from 'rxjs';
+
 @Component({
   selector: 'scene-tab',
   templateUrl: './scene-tab.component.html',
@@ -14,7 +17,8 @@ export class SceneTabComponent {
   scenes?: Map<string, Scene>;
   scene?: Scene;
   selectedEntity?: Entity;
-  private sub;
+  layerNames: string[];
+  private sub: Subscription;
 
   constructor(private router: Router, 
               private route: ActivatedRoute, 
@@ -22,12 +26,26 @@ export class SceneTabComponent {
   {
     this.sub = router.events.pipe(
       filter(e => e instanceof NavigationEnd)
-    ).subscribe(() => {
+    ).subscribe(async () => {
+
+      // loading the engine here because it needs to be loaded after the canvas is created
+      engine.Renderer.init();
+      engine.Renderer.setResolution(426, 240);
+
+      await engine.doImports();
+
+      engine.Game.loadGame("../engine/");
+      this.layerNames = Array.from(engine.Renderer.layerAliases.keys());
+      engine.Game.start(true);
+
       this.route.params.subscribe(params => {
         this.sceneName = params['sceneName'];
       });
+
       if (this.sceneName) {
         this.scene = this.sceneManager.getScene(this.sceneName);
+        this.sceneManager.setCurrentScene(this.sceneName);
+
       } 
       if (!this.scene) {
         // The scene doesn't exist, so redirect home
@@ -37,7 +55,12 @@ export class SceneTabComponent {
       } else if (this.scene.entities.length > 0) {
         this.selectedEntity = this.scene.entities[0];
       }
+      engine.SceneManager.switchToScene(this.sceneName);
     });
+  }
+
+  handleEntitySelected(entity: Entity) {
+    this.selectedEntity = entity;
   }
 
   ngOnDestroy() {

@@ -23,18 +23,8 @@ export class PostProcessing {
     static render_buff: WebGLFramebuffer;
     static basic_process: PostProcess;
 
-    static {
-        // initialize the frame buffers and textures for buffer swapping - these are the same size as the screen
-        const { fb: fb1, tex: tex1 } = GLUtils.createTexAndBuffer(
-            $canvas.clientWidth,
-            $canvas.clientHeight
-        );
-        const { fb: fb2, tex: tex2 } = GLUtils.createTexAndBuffer(
-            $canvas.clientWidth,
-            $canvas.clientHeight
-        );
-        this.frame_buffers = [fb1, fb2];
-        this.textures = [tex1, tex2];
+    static init() {
+        this.initPingPongBuffers();
 
         // create the basic post process that renders to the screen
         const v_shader_source = `#version 300 es
@@ -66,6 +56,20 @@ export class PostProcessing {
         `;
         this.basic_process = new PostProcess(v_shader_source, f_shader_source);
     }
+    
+    static initPingPongBuffers() {
+        // initialize the frame buffers and textures for buffer swapping - these are the same size as the screen
+        const { fb: fb1, tex: tex1 } = GLUtils.createTexAndBuffer(
+            $canvas.width,
+            $canvas.height
+        );
+        const { fb: fb2, tex: tex2 } = GLUtils.createTexAndBuffer(
+            $canvas.width,
+            $canvas.height
+        );
+        this.frame_buffers = [fb1, fb2];
+        this.textures = [tex1, tex2];
+    }
 
     static initRenderBuffer() {
         // create the texture and buffer which the scene will be rendered to
@@ -78,7 +82,7 @@ export class PostProcessing {
 
     static apply() {
         //before applying shaders, scale the rendered scene to screen resolution
-        $gl.viewport(0, 0, $canvas.clientWidth, $canvas.clientHeight);
+        $gl.viewport(0, 0, $canvas.width, $canvas.height);
         this.#upscaleScene();
         
         // change the WebGL viewport to be the screen size

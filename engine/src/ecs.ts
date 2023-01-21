@@ -9,6 +9,13 @@ export abstract class Component {
     registerOwner(owner: GameObjectBase) {
         this.owner = owner;
     }
+
+    _delete() {
+        this.owner = null;
+        this.onDelete();
+    }
+
+    onDelete() {}
 }
 
 export type ComponentType<T extends Component> = new (...args: unknown[]) => T;
@@ -54,10 +61,23 @@ export abstract class GameObjectBase {
         });
     }
 
+    _delete() {
+        this.onDelete();
+        for (const component of this.component_map.values()) {
+            component._delete();
+        }
+        this.component_map.clear();
+    }
+
     /**
      * User-defined function that is called when the entity is spawned.
      */
     abstract onCreate(...args: any[]): void;
+
+    /**
+     * User-defined function that is called when the entity is deleted.
+     */
+    onDelete(): void {};
 
     /**
      * User-defined function that is called every frame.
@@ -99,6 +119,15 @@ export abstract class GameObjectBase {
      */
     public get<T extends Component>(c: ComponentType<T>): T {
         return this.component_map.get(c.name) as T;
+    }
+    /**
+     * Get the component instance of the given component name.
+     *
+     * @param name The name of the component to get.
+     * @returns The component instance.
+     */
+    public getFromName(name: string): Component {
+        return this.component_map.get(name);
     }
 
     /**

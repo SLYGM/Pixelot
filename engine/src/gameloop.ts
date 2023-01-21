@@ -4,19 +4,23 @@ import { SceneManager } from "./sceneManager.js";
 import { ImportManager } from "./importManager.js";
 import { PostProcessing } from "./engineExport.js";
 
-const nwjs = require("nw.gui");
+const nw = (window as any).nw;
 
 export class Game {
     static updateQueue: Updatable[];
     static running = true;
     static render_only = false;
     static time = 0;
+    static start_scene: string;
 
     static {
         Game.updateQueue = new Array<Updatable>();
     }
 
     static start(render_only: boolean = false) {
+        Game.addToUpdateQueue(SceneManager);
+        SceneManager.switchToScene(this.start_scene);
+
         this.render_only = render_only;
         requestAnimationFrame(this.gameloop.bind(this));
     }
@@ -45,7 +49,7 @@ export class Game {
      * @param src the path to the folder containing `project.json`
      */
     static loadGame(src: string = "./") {
-        const fs = require("fs");
+        const fs = nw.require("fs");
 
         // load the project.json which contains all info needed to initialise the game
         const data = fs.readFileSync(src + 'project.json', {encoding: "utf-8"});
@@ -55,9 +59,8 @@ export class Game {
         this.loadLayers(game_data["layers"]);
         this.loadTextures(game_data["textures"]);
         this.loadShaders(game_data["shaders"]);
-    
-        Game.addToUpdateQueue(SceneManager);
-        SceneManager.loadScene(game_data["start_scene"]);
+
+        this.start_scene = game_data["start_scene"];
     }
     
     private static loadLayers(layers: string[]) {
@@ -82,6 +85,6 @@ export class Game {
 
     static stop() {
         this.running = false;
-        nwjs.App.closeAllWindows();
+        nw.App.closeAllWindows();
     }
 }
