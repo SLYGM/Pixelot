@@ -29,6 +29,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { FileManagerComponent } from './file-manager/file-manager.component';
 import { MatCardModule } from '@angular/material/card';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { NewFileDialogComponent } from './file-explorer/modals/new-file-dialog/new-file-dialog.component';
 
 @NgModule({
@@ -69,6 +70,7 @@ import { NewFileDialogComponent } from './file-explorer/modals/new-file-dialog/n
     MatGridListModule,
     MatMenuModule,
     MatCardModule,
+    MatSlideToggleModule
   ],
   providers: [],
   bootstrap: [AppComponent]

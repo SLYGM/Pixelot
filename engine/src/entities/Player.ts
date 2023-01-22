@@ -2,12 +2,12 @@
 import * as engine from '../engineExport.js';
 
 export default class Player extends engine.GameObjectBase {
-    static arg_names = ["hp"];
-    static arg_types = [engine.Types.Number];
+    static arg_names = ["hp", "invincible"];
+    static arg_types = [engine.Types.Number, engine.Types.Boolean];
 
-    onCreate(hp) {
+    onCreate(hp, invincible) {
         this.hp = hp;
-        console.log(this.hp);
+        this.invincible = invincible;
     }
 
     update() {

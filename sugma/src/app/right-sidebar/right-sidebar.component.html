@@ -7,10 +7,20 @@
 
     <h2 class="mat-h2">Parameters</h2>
     <ng-container *ngFor="let property of entityArgNames; index as i">
-      <mat-form-field [style.width.%]="100">
+      <!-- if property is a string: -->
+      <mat-form-field *ngIf="importManager.getEntity(sceneData.getEntityClass(currentSceneName, entityName)).arg_types[i] == stringType" [style.width.%]="100">
         <mat-label color="primary">{{property}}</mat-label>
         <input matInput value={{sceneData.getEntityArgs(currentSceneName,entity.name)[i]}} (change)="handleEntityChange($event, i)">
       </mat-form-field>
+      <!-- if property is a number: -->
+      <mat-form-field *ngIf="importManager.getEntity(sceneData.getEntityClass(currentSceneName, entityName)).arg_types[i] == numberType" [style.width.%]="100">
+        <mat-label color="primary">{{property}}</mat-label>
+        <input matInput type="number" value={{sceneData.getEntityArgs(currentSceneName,entity.name)[i]}} (change)="handleEntityChange($event, i)">
+      </mat-form-field>
+      <!-- if property is a bool: -->
+      <mat-slide-toggle *ngIf="importManager.getEntity(sceneData.getEntityClass(currentSceneName, entityName)).arg_types[i] == booleanType" [style.width.%]="100" [checked]="sceneData.getEntityArgs(currentSceneName,entity.name)[i]" (change)="handleEntityChange($event, i)">
+        {{property}}
+      </mat-slide-toggle>
     </ng-container>
 
     <h2 class="mat-h2">Components</h2>
@@ -22,10 +32,20 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
         <ng-container *ngFor="let property of importManager.getComponent(component).arg_names; index as i">
-          <mat-form-field [style.width.%]="100">
+          <!-- if property is a string: -->
+          <mat-form-field *ngIf="importManager.getComponent(component).arg_types[i] == stringType" [style.width.%]="100">
             <mat-label color="primary">{{property}}</mat-label>
             <input matInput value={{sceneData.getComponentArgs(currentSceneName,entity.name,component)[i]}} (change)="handleComponentChange($event, component, i)">
           </mat-form-field>
+          <!-- if property is a number: -->
+          <mat-form-field *ngIf="importManager.getComponent(component).arg_types[i] == numberType" [style.width.%]="100">
+            <mat-label color="primary">{{property}}</mat-label>
+            <input matInput type="number" value={{sceneData.getComponentArgs(currentSceneName,entity.name,component)[i]}} (change)="handleComponentChange($event, component, i)">
+          </mat-form-field>
+          <!-- if property is a bool: -->
+          <mat-slide-toggle *ngIf="importManager.getComponent(component).arg_types[i] == booleanType" [style.width.%]="100" [checked]="sceneData.getComponentArgs(currentSceneName,entity.name,component)[i]">
+            {{property}}
+          </mat-slide-toggle>
         </ng-container>
       </mat-expansion-panel>
     </mat-accordion>

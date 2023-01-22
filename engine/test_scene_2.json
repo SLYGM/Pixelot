@@ -4,7 +4,7 @@
         {
             "name": "foreground frog",
             "class": "Player",
-            "args": ["10"],
+            "args": ["10", "true"],
             "components": [
                 {
                     "component_name": "Position",
@@ -23,7 +23,7 @@
         {
             "name": "background cog",
             "class": "Player",
-            "args": ["15"],
+            "args": ["15", "false"],
             "components": [
                 {
                     "component_name": "Position",
@@ -38,7 +38,7 @@
         {
             "name": "UI tile",
             "class": "Player",
-            "args": ["15"],
+            "args": ["15", "false"],
             "components": [
                 {
                     "component_name": "Position",

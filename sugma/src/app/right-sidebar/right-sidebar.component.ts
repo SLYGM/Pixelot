@@ -20,6 +20,9 @@ export class RightSidebarComponent {
   importManager = engine.ImportManager;
   currentSceneName?: string;
   entityArgNames: string[];
+  stringType = engine.Types.String;
+  numberType = engine.Types.Number;
+  booleanType = engine.Types.Boolean;
 
   constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, public sceneData: SceneDataService) {
     this.update();
@@ -68,18 +71,27 @@ export class RightSidebarComponent {
   }
 
   handleEntityChange(event: any, index: number) {
-    //TODO: save changes to file
-    this.sceneData.updateEntityArg(this.currentSceneName, this.entityName, index, event.target.value);
+    if (event.target) {
+      // textbox event
+      this.sceneData.updateEntityArg(this.currentSceneName, this.entityName, index, event.target.value);
+    } else {
+      // checkbox event
+      this.sceneData.updateEntityArg(this.currentSceneName, this.entityName, index, event.checked.toString());
+    }
     const args = this.sceneData.getEntityArgs(this.currentSceneName, this.entityName);
     const entityClass = this.sceneData.getEntityClass(this.currentSceneName, this.entityName);
     this.entity.onCreate(...engine.ImportManager.getEntity(entityClass).parseArgs(args));
   }
 
   handleComponentChange(event: any, component: string, index: number) {
-    const gameComponent = this.entity.getByName(component);
     //TODO: save changes to file
-    // this.sceneManager.saveScene(this.sceneManager.currentSceneName);
-    this.sceneData.updateComponentArg(this.currentSceneName, this.entityName, component, index, event.target.value);
+    if (event.target) {
+      // textbox event
+      this.sceneData.updateComponentArg(this.currentSceneName, this.entityName, component, index, event.target.value);
+    } else {
+      // checkbox event
+      this.sceneData.updateComponentArg(this.currentSceneName, this.entityName, component, index, event.checked.toString());
+    }
     // remove and re-add component to update it
     this.entity.removeByName(component);
 
