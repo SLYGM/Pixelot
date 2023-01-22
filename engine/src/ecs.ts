@@ -126,7 +126,7 @@ export abstract class GameObjectBase {
      * @param name The name of the component to get.
      * @returns The component instance.
      */
-    public getFromName(name: string): Component {
+    public getByName(name: string): Component {
         return this.component_map.get(name);
     }
 
@@ -158,6 +158,10 @@ export abstract class GameObjectBase {
     // TODO: Check if dependencies are still met
     public remove<T extends Component>(c: ComponentType<T>) {
         this.component_map.delete(c.name);
+    }
+
+    public removeByName(name: string) {
+        this.component_map.delete(name);
     }
 }
 

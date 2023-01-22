@@ -49,9 +49,9 @@ export class SceneManager {
      * 
      * @param scene_name The name of the scene to load
      */
-    static preLoadScene(scene_name: string) {
+    static preLoadScene(scene_name: string, path?: string) {
         if (!this.loaded_scenes.has(scene_name)) {
-            this.loaded_scenes.set(scene_name, this.loadScene(scene_name));
+            this.loaded_scenes.set(scene_name, this.loadScene(scene_name, path));
         } else {
             console.log(`Warning: scene ${scene_name} has already been pre-loaded`);
         }
@@ -89,10 +89,16 @@ export class SceneManager {
      * @param scene_name The name of the scene to load
      * @returns the loaded scene
      */
-    static loadScene(scene_name: string): Scene {
+    static loadScene(scene_name: string, path?: string): Scene {
         const fs = nw.require("fs");
+
         // read JSON object from file
-        const data = fs.readFileSync("../engine/" + scene_name + ".json", {encoding: "utf-8"});
+        let data: { toString: () => string; };
+        if (path) {
+            data = fs.readFileSync(path, "utf8");
+        } else {
+            data = fs.readFileSync("../engine/" + scene_name + ".json", {encoding: "utf-8"});
+        }
 
         // parse JSON object
         const loadedSceneJson = JSON.parse(data.toString());

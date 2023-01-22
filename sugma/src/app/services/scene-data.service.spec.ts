@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SceneManagerService } from './scene-manager.service';
+import { SceneDataService } from './scene-data.service';
 
-describe('SceneManagerService', () => {
-  let service: SceneManagerService;
+describe('SceneDataService', () => {
+  let service: SceneDataService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SceneManagerService);
+    service = TestBed.inject(SceneDataService);
   });
 
   it('should be created', () => {

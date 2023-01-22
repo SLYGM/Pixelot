@@ -1,13 +1,12 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ErrorStateMatcher, ThemePalette } from '@angular/material/core';
-import { SceneManagerService } from 'app/services/scene-manager.service';
-import { Scene } from 'types';
 import { NewSceneDialogComponent } from 'app/new-scene-dialog/new-scene-dialog.component';
 import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import * as engine from 'retro-engine';
+import { SceneDataService } from 'app/services/scene-data.service';
 
 @Component({
   selector: 'app-navbar',
@@ -15,24 +14,33 @@ import * as engine from 'retro-engine';
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent {
-  @Output() loadedScene = new EventEmitter<Scene>();
   activeLink = 'Visual Scripting Editor';
   background: ThemePalette = 'primary';
   accent: ThemePalette = 'accent'
+  scenes: string[] = [];
 
-  constructor(public sceneManager: SceneManagerService, public dialog: MatDialog, private router: Router) { }
+  constructor(public dialog: MatDialog, private sceneData: SceneDataService, private router: Router) {
+    this.scenes = [ ...engine.SceneManager.loaded_scenes.keys() ];
+  }
 
   handleFileSelect(e: any) {
     let files = e.target.files;
     let file = files[0];
+    let path = file.path;
+    let sceneName: string;
     let reader = new FileReader();
     reader.onload = (e: any) => {
       if (e.target) {
         let scene = JSON.parse(e.target.result as string);
-        this.sceneManager.addScene(scene);
         console.log(scene);
+        sceneName = scene['name'];
+        this.sceneData.add(sceneName, scene);
       }
-    }
+    };
+    reader.onloadend = (_e: any) => {
+      engine.SceneManager.preLoadScene(sceneName, path);
+      this.scenes = [ ...engine.SceneManager.loaded_scenes.keys() ];
+    };
     reader.readAsText(file);
   }
 
@@ -54,7 +62,7 @@ export class NavbarComponent {
     if (engine.SceneManager.createScene(sceneName)) {
       // if the scene has been successfully created, switch to it
       engine.SceneManager.switchToScene(sceneName);
-      this.sceneManager.addScene(new Scene(sceneName));
+      this.scenes.push(sceneName);
       this.activeLink = sceneName;
       this.router.navigateByUrl(`/scene/${sceneName}`);
     }

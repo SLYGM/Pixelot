@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Entity, Scene } from 'types';
 import * as engine from 'retro-engine';
+import { GameObjectBase, Scene } from 'retro-engine';
 
 @Component({
   selector: 'app-left-sidebar',
@@ -10,8 +10,8 @@ import * as engine from 'retro-engine';
 export class LeftSidebarComponent {
   @Input() scene?: Scene;
   @Input() layerNames: string[];
-  @Output() entitySelected = new EventEmitter<Entity>();
-  layerEntities: Entity[][];
+  @Output() entitySelected = new EventEmitter<string>();
+  layerEntities?: string[][];
 
   constructor() {
     this.update();
@@ -27,18 +27,17 @@ export class LeftSidebarComponent {
       for (let i = 0; i < this.layerNames.length; i++) {
         this.layerEntities.push([]);
       }
-      for (const entity of this.scene.entities) {
-        for (const component of entity.components) {
-          if (component.component_name === 'Sprite') {
-            this.layerEntities[this.layerNames.indexOf(component.args[1])].push(entity);
-          }
+      for (const [entityName, entity] of this.scene.getEntities()) {
+        const sprite = entity.getByName('Sprite');
+        if (sprite) {
+          //TODO: get actual layer
+          this.layerEntities[this.layerNames.indexOf('foreground')].push(entityName);
         }
       }
     }
-    console.log(this.layerEntities);
   }
     
-  selectEntity(entity: Entity) {
+  selectEntity(entity: string) {
     this.entitySelected.emit(entity);
   }
 }

@@ -2,8 +2,8 @@
     "name": "test2",
     "entities": [
         {
-            "name": "snake",
-            "class": "Enemy",
+            "name": "test1",
+            "class": "Player",
             "args": ["10"],
             "components": [
                 {
@@ -16,7 +16,22 @@
                 },
                 {
                     "component_name": "Sprite",
-                    "args": ["predator", "foreground", 0]
+                    "args": ["frog", "foreground", 0]
+                }
+            ]
+        },
+        {
+            "name": "test2",
+            "class": "Player",
+            "args": ["15"],
+            "components": [
+                {
+                    "component_name": "Position",
+                    "args": ["3", "1"]
+                },
+                {
+                    "component_name": "Sprite",
+                    "args": ["cog", "background", 0]
                 }
             ]
         }
