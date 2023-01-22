@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import * as engine from 'retro-engine';
 import { GameObjectBase } from 'retro-engine';
+import { SceneDataService } from 'app/services/scene-data.service';
 
 @Component({
   selector: 'app-right-sidebar',
@@ -15,16 +16,24 @@ import { GameObjectBase } from 'retro-engine';
 export class RightSidebarComponent {
   @Input() entityName?: string;
   entity?: GameObjectBase;
+  importManager = engine.ImportManager;
+  currentSceneName?: string;
 
-  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar) {
+  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, public sceneData: SceneDataService) {
     if (this.entityName) {
       this.entity = engine.SceneManager.currentScene.getEntity(this.entityName);
+    }
+    if (engine.SceneManager.currentScene) {
+      this.currentSceneName = engine.SceneManager.currentScene.name;
     }
   }
 
   ngOnChanges() {
     if (this.entityName) {
       this.entity = engine.SceneManager.currentScene.getEntity(this.entityName);
+    }
+    if (engine.SceneManager.currentScene) {
+      this.currentSceneName = engine.SceneManager.currentScene.name;
     }
   }
 
@@ -48,14 +57,20 @@ export class RightSidebarComponent {
     });
   }
 
-  handleChange(event: any, component: string, property: any) {
-    const gameComponent = this.entity.getFromName(component);
+  handleChange(event: any, component: string, index: number) {
+    console.log(event, component, index);
+    const gameComponent = this.entity.getByName(component);
     //TODO: save changes to file
     // this.sceneManager.saveScene(this.sceneManager.currentSceneName);
-    const index = engine.ImportManager.getComponent(component).arg_names.indexOf(property.key);
-    console.log(engine.ImportManager.getComponent(component));
-    const argType = engine.ImportManager.getComponent(component).arg_types[index];
-    gameComponent[property.key] = argType.parse(event.target.value);
+    this.sceneData.updateArg(this.currentSceneName, this.entityName, component, index, event.target.value);
+    // remove and re-add component to update it
+    this.entity.removeByName(component);
+
+    const component_constr = engine.ImportManager.getComponent(component);
+    const comp_args = component_constr.parseArgs(this.sceneData.getArgs(this.currentSceneName, this.entityName, component));
+    const updated_component = new component_constr.constr(...comp_args);
+    this.entity.add(updated_component);
+    console.log(engine.SceneManager.currentScene);
   }
 }
 

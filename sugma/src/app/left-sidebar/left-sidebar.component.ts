@@ -28,7 +28,7 @@ export class LeftSidebarComponent {
         this.layerEntities.push([]);
       }
       for (const [entityName, entity] of this.scene.getEntities()) {
-        const sprite = entity.getFromName('Sprite');
+        const sprite = entity.getByName('Sprite');
         if (sprite) {
           //TODO: get actual layer
           this.layerEntities[this.layerNames.indexOf('foreground')].push(entityName);

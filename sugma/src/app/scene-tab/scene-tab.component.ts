@@ -13,7 +13,6 @@ import { GameObjectBase, Scene } from 'retro-engine';
 })
 export class SceneTabComponent {
   sceneName?: string;
-  // scenes?: Map<string, Scene>;
   scene?: Scene;
   selectedEntity?: string;
   layerNames: string[];
@@ -43,18 +42,13 @@ export class SceneTabComponent {
       if (this.sceneName) {
         engine.SceneManager.switchToScene(this.sceneName, false);
         this.scene = engine.SceneManager.currentScene;
-        // this.scene = this.sceneManager.getScene(this.sceneName);
-        // this.sceneManager.setCurrentScene(this.sceneName);
-
       } 
-      // if (!this.scene) {
-        // // The scene doesn't exist, so redirect home
-        // console.log("Scene doesn't exist, redirecting home");
-        // this.router.navigate(['/']);
-        // return;
-      // } else if (this.scene.entities.length > 0) {
-        // this.selectedEntity = this.scene.entities[0];
-      // }
+      if (!this.scene) {
+        // The scene doesn't exist, so redirect home
+        console.log("Scene doesn't exist, redirecting home");
+        this.router.navigate(['/']);
+        return;
+      }
     });
   }
 

@@ -4,6 +4,7 @@ import { ErrorStateMatcher, ThemePalette } from '@angular/material/core';
 import { NewSceneDialogComponent } from 'app/new-scene-dialog/new-scene-dialog.component';
 import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import * as engine from 'retro-engine';
+import { SceneDataService } from 'app/services/scene-data.service';
 
 @Component({
   selector: 'app-navbar',
@@ -16,7 +17,7 @@ export class NavbarComponent {
   accent: ThemePalette = 'accent'
   scenes: string[] = [];
 
-  constructor(public dialog: MatDialog) {
+  constructor(public dialog: MatDialog, private sceneData: SceneDataService) {
     this.scenes = [ ...engine.SceneManager.loaded_scenes.keys() ];
     this.initEngine();
   }
@@ -31,9 +32,21 @@ export class NavbarComponent {
     let files = e.target.files;
     let file = files[0];
     let path = file.path;
-    const sceneName = file.name.split('.')[0];
-    engine.SceneManager.preLoadScene(sceneName, path);
-    this.scenes = [ ...engine.SceneManager.loaded_scenes.keys() ];
+    let sceneName: string;
+    let reader = new FileReader();
+    reader.onload = (e: any) => {
+      if (e.target) {
+        let scene = JSON.parse(e.target.result as string);
+        console.log(scene);
+        sceneName = scene['name'];
+        this.sceneData.add(sceneName, scene);
+      }
+    };
+    reader.onloadend = (_e: any) => {
+      engine.SceneManager.preLoadScene(sceneName, path);
+      this.scenes = [ ...engine.SceneManager.loaded_scenes.keys() ];
+    };
+    reader.readAsText(file);
   }
 
   openDialog(): void {
