@@ -3,6 +3,8 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ErrorStateMatcher, ThemePalette } from '@angular/material/core';
 import { NewSceneDialogComponent } from 'app/new-scene-dialog/new-scene-dialog.component';
 import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+
 import * as engine from 'retro-engine';
 import { SceneDataService } from 'app/services/scene-data.service';
 
@@ -17,16 +19,9 @@ export class NavbarComponent {
   accent: ThemePalette = 'accent'
   scenes: string[] = [];
 
-  constructor(public dialog: MatDialog, private sceneData: SceneDataService) {
+  constructor(public dialog: MatDialog, private sceneData: SceneDataService, private router: Router) {
     this.scenes = [ ...engine.SceneManager.loaded_scenes.keys() ];
-    this.initEngine();
   }
-
-  // This is temporary. TODO: move to landing page
-  async initEngine() {
-    await engine.doImports();
-  }
-
 
   handleFileSelect(e: any) {
     let files = e.target.files;
@@ -62,8 +57,15 @@ export class NavbarComponent {
     });
   }
 
-  createScene(sceneName: string){
-    // TODO
+  createScene(sceneName:string){
+    // create new scene in engine manager
+    if (engine.SceneManager.createScene(sceneName)) {
+      // if the scene has been successfully created, switch to it
+      engine.SceneManager.switchToScene(sceneName);
+      this.scenes.push(sceneName);
+      this.activeLink = sceneName;
+      this.router.navigateByUrl(`/scene/${sceneName}`);
+    }
   }
 }
 

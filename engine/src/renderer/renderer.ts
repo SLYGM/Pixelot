@@ -1,6 +1,6 @@
 import Sprite from "../components/Sprite.js";
 
-import { $gl, $canvas, loadGL } from "./gl.js";
+import { $gl, $canvas, loadGL, $rendering_offscreen, $offscreen_canvas, $canvas_bitmap_context } from "./gl.js";
 import { GLUtils } from "./webglutils.js";
 import { PostProcessing } from "./post_process.js";
 import { Texture, Updatable } from "../types.js";
@@ -105,8 +105,8 @@ export class Renderer {
     static layers: RenderLayer[];
     static backgroundColor: [r:number, g:number, b:number, a:number];
 
-    static init() {
-        loadGL();                     
+    static init(offscreen: boolean = false) {
+        loadGL(offscreen);                     
        
         this.shader = {
             prog: undefined,
@@ -133,10 +133,6 @@ export class Renderer {
             this.shader.prog,
             "u_texture"
         );
-        
-        // set the webgl canvas resolution to the size of the window
-        $canvas.width = $canvas.clientWidth;
-        $canvas.height = $canvas.clientHeight;
 
         this.vao = $gl.createVertexArray();
         $gl.bindVertexArray(this.vao);
@@ -156,24 +152,9 @@ export class Renderer {
         PostProcessing.init();
     }
 
-    static trackResize() {
-        function onResize(entries: ResizeObserverEntry[]) {
-            if (!$gl) return;
-            
-            const entry = entries[0];
-            const width = entry.devicePixelContentBoxSize[0].inlineSize;
-            const height = entry.devicePixelContentBoxSize[0].blockSize;
-            $canvas.width = width;
-            $canvas.height = height;
-        }
-
-        const resizeObserver = new ResizeObserver(onResize);
-        resizeObserver.observe($canvas, {box: 'device-pixel-content-box'});
-    }
-
     static setResolution(x: number, y: number) {
         this.resolution = {x: x, y: y};
-        // recreate the main framebuffer after changing resolution
+        // recreate the main framebuffer after changing resolution to match
         PostProcessing.initRenderBuffer();
     }
 
@@ -182,6 +163,11 @@ export class Renderer {
     }
 
     static render() {
+        // if rendering to an off-screen canvas, but there is no on-screen canvas, don't bother
+        if ($rendering_offscreen && !$canvas) {
+            return;
+        }
+        
         $gl.viewport(0, 0, this.resolution.x, this.resolution.y);
         $gl.clearColor(...this.backgroundColor);
         $gl.clear($gl.COLOR_BUFFER_BIT | $gl.DEPTH_BUFFER_BIT);
@@ -206,6 +192,12 @@ export class Renderer {
             l.render();
         })
         PostProcessing.apply();
+        
+        // if rendering offscreen, the image needs to be copied onto the on-screen canvas
+        if ($rendering_offscreen) {
+            const bitmap_im = $offscreen_canvas.transferToImageBitmap();
+            $canvas_bitmap_context.transferFromImageBitmap(bitmap_im);
+        }
     }
 
     //layers should be added in a bottom-up fashion i.e. the first one added will be rendered first.
