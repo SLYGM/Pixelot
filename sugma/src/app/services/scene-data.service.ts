@@ -32,7 +32,29 @@ export class SceneDataService {
     this.scenes.set(name, scene);
   }
 
-  getArgs(sceneName: string, entityName: string, componentName: string): string[] {
+  getEntityClass(sceneName: string, entityName: string): string {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      const entity = scene.entities.find(e => e.name === entityName);
+      if (entity) {
+        return entity.class;
+      }
+    }
+    return '';
+  }
+
+  getEntityArgs(sceneName: string, entityName: string): string[] {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      const entity = scene.entities.find(e => e.name === entityName);
+      if (entity) {
+        return entity.args;
+      }
+    }
+    return [];
+  }
+
+  getComponentArgs(sceneName: string, entityName: string, componentName: string): string[] {
     const scene = this.scenes.get(sceneName);
     if (scene) {
       const entity = scene.entities.find(e => e.name === entityName);
@@ -46,7 +68,17 @@ export class SceneDataService {
     return [];
   }
 
-  updateArg(sceneName: string, entityName: string, componentName: string, index: number, value: string) {
+  updateEntityArg(sceneName: string, entityName: string, index: number, value: string) {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      const entity = scene.entities.find(e => e.name === entityName);
+      if (entity) {
+        entity.args[index] = value;
+      }
+    }
+  }
+
+  updateComponentArg(sceneName: string, entityName: string, componentName: string, index: number, value: string) {
     const scene = this.scenes.get(sceneName);
     if (scene) {
       const entity = scene.entities.find(e => e.name === entityName);

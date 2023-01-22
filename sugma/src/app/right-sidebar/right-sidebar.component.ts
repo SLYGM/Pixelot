@@ -57,17 +57,25 @@ export class RightSidebarComponent {
     });
   }
 
-  handleChange(event: any, component: string, index: number) {
+  handleEntityChange(event: any, index: number) {
+    //TODO: save changes to file
+    this.sceneData.updateEntityArg(this.currentSceneName, this.entityName, index, event.target.value);
+    const args = this.sceneData.getEntityArgs(this.currentSceneName, this.entityName);
+    const entityClass = this.sceneData.getEntityClass(this.currentSceneName, this.entityName);
+    this.entity.onCreate(...engine.ImportManager.getEntity(entityClass).parseArgs(args));
+  }
+
+  handleComponentChange(event: any, component: string, index: number) {
     console.log(event, component, index);
     const gameComponent = this.entity.getByName(component);
     //TODO: save changes to file
     // this.sceneManager.saveScene(this.sceneManager.currentSceneName);
-    this.sceneData.updateArg(this.currentSceneName, this.entityName, component, index, event.target.value);
+    this.sceneData.updateComponentArg(this.currentSceneName, this.entityName, component, index, event.target.value);
     // remove and re-add component to update it
     this.entity.removeByName(component);
 
     const component_constr = engine.ImportManager.getComponent(component);
-    const comp_args = component_constr.parseArgs(this.sceneData.getArgs(this.currentSceneName, this.entityName, component));
+    const comp_args = component_constr.parseArgs(this.sceneData.getComponentArgs(this.currentSceneName, this.entityName, component));
     const updated_component = new component_constr.constr(...comp_args);
     this.entity.add(updated_component);
     console.log(engine.SceneManager.currentScene);

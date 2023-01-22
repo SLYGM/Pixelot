@@ -5,6 +5,14 @@
       <input matInput type="text" value={{entity.name}}>
     </mat-form-field>
 
+    <h2 class="mat-h2">Parameters</h2>
+    <ng-container *ngFor="let property of importManager.getEntity(sceneData.getEntityClass(currentSceneName, entityName)).arg_names; index as i">
+      <mat-form-field [style.width.%]="100">
+        <mat-label color="primary">{{property}}</mat-label>
+        <input matInput value={{sceneData.getEntityArgs(currentSceneName,entity.name)[i]}} (change)="handleEntityChange($event, i)">
+      </mat-form-field>
+    </ng-container>
+
     <h2 class="mat-h2">Components</h2>
     <mat-accordion multi>
       <mat-expansion-panel *ngFor="let component of entity.getAllComponents()">
@@ -16,7 +24,7 @@
         <ng-container *ngFor="let property of importManager.getComponent(component).arg_names; index as i">
           <mat-form-field [style.width.%]="100">
             <mat-label color="primary">{{property}}</mat-label>
-            <input matInput value={{sceneData.getArgs(currentSceneName,entity.name,component)[i]}} (change)="handleChange($event, component, i)">
+            <input matInput value={{sceneData.getComponentArgs(currentSceneName,entity.name,component)[i]}} (change)="handleComponentChange($event, component, i)">
           </mat-form-field>
         </ng-container>
       </mat-expansion-panel>
