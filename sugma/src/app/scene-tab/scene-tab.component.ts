@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 import * as engine from 'retro-engine';
 import { Subscription } from 'rxjs';
 import { GameObjectBase, Scene } from 'retro-engine';
+import { LeftSidebarComponent } from 'app/left-sidebar/left-sidebar.component';
 
 @Component({
   selector: 'scene-tab',
@@ -12,6 +13,7 @@ import { GameObjectBase, Scene } from 'retro-engine';
   styleUrls: ['./scene-tab.component.scss']
 })
 export class SceneTabComponent {
+  @ViewChild(LeftSidebarComponent) leftSidebar: LeftSidebarComponent;
   sceneName?: string;
   scene?: Scene;
   selectedEntity?: string;
@@ -33,11 +35,11 @@ export class SceneTabComponent {
         this.sceneName = params['sceneName'];
       });
 
-      if (this.sceneName) {
+      if (engine.SceneManager.getSceneNames().includes(this.sceneName)) {
+        console.log("Loading scene " + this.sceneName);
         engine.SceneManager.switchToScene(this.sceneName, false);
         this.scene = engine.SceneManager.currentScene;
-      } 
-      if (!this.scene) {
+      } else {
         // The scene doesn't exist, so redirect home
         console.log("Scene doesn't exist, redirecting home");
         this.router.navigate(['/']);
@@ -48,6 +50,12 @@ export class SceneTabComponent {
 
   handleEntitySelected(entity: string) {
     this.selectedEntity = entity;
+  }
+
+  handleEntityRenamed(event: {'oldName': string, 'newName': string}) {
+    this.scene?.renameEntity(event.oldName, event.newName);
+    this.selectedEntity = event.newName;
+    this.leftSidebar.update();
   }
 
   ngOnDestroy() {

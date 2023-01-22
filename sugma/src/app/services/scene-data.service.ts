@@ -68,6 +68,30 @@ export class SceneDataService {
     return [];
   }
 
+  getEntityLayer(sceneName: string, entityName: string): string {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      const entity = scene.entities.find(e => e.name === entityName);
+      if (entity) {
+        const sprite = entity.components.find(c => c.component_name === 'Sprite');
+        if (sprite) {
+          return sprite.args[1];
+        }
+      }
+    }
+    return '';
+  }
+
+  updateEntityName(sceneName: string, entityName: string, newName: string) {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      const entity = scene.entities.find(e => e.name === entityName);
+      if (entity) {
+        entity.name = newName;
+      }
+    }
+  }
+
   updateEntityArg(sceneName: string, entityName: string, index: number, value: string) {
     const scene = this.scenes.get(sceneName);
     if (scene) {

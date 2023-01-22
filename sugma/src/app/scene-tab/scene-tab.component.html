@@ -5,4 +5,4 @@
   </div>
   <app-file-manager></app-file-manager>
 </div>
-<app-right-sidebar [entityName]="selectedEntity"></app-right-sidebar>
+<app-right-sidebar [entityName]="selectedEntity" (renameEntity)="handleEntityRenamed($event)"></app-right-sidebar>

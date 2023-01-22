@@ -1,4 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { SceneDataService } from 'app/services/scene-data.service';
 import * as engine from 'retro-engine';
 import { GameObjectBase, Scene } from 'retro-engine';
 
@@ -13,7 +15,7 @@ export class LeftSidebarComponent {
   @Output() entitySelected = new EventEmitter<string>();
   layerEntities?: string[][];
 
-  constructor() {
+  constructor(private sceneData: SceneDataService, private _snackBar: MatSnackBar) {
     this.update();
   }
 
@@ -27,11 +29,14 @@ export class LeftSidebarComponent {
       for (let i = 0; i < this.layerNames.length; i++) {
         this.layerEntities.push([]);
       }
-      for (const [entityName, entity] of this.scene.getEntities()) {
-        const sprite = entity.getByName('Sprite');
-        if (sprite) {
-          //TODO: get actual layer
-          this.layerEntities[this.layerNames.indexOf('foreground')].push(entityName);
+      for (const [_, entity] of this.scene.getEntities()) {
+        const layer = this.sceneData.getEntityLayer(this.scene.name, entity.name);
+        if (this.layerNames.indexOf(layer) !== -1) {
+          this.layerEntities[this.layerNames.indexOf(layer)].push(entity.name);
+        } else if (layer !== '') {
+          this._snackBar.open(`Entity ${entity.name} has invalid layer ${layer}`, 'Close', {
+            duration: 5000
+          });
         }
       }
     }

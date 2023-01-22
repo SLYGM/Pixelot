@@ -89,6 +89,16 @@ export class Scene {
         }
     }
 
+    // Rename an entity
+    renameEntity(old_name: string, new_name: string) {
+        const entity = this.entities.get(old_name);
+        if (entity) {
+            entity.name = new_name;
+            this.entities.delete(old_name);
+            this.entities.set(new_name, entity);
+        }
+    }
+
     // Get all entities that have the given component.
     getEntitiesWithComponent<T extends Component>(
         component: ComponentType<T>

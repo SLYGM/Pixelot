@@ -1,4 +1,4 @@
-import { Component, Inject, Input } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -15,25 +15,30 @@ import { SceneDataService } from 'app/services/scene-data.service';
 })
 export class RightSidebarComponent {
   @Input() entityName?: string;
+  @Output() renameEntity = new EventEmitter<{'oldName': string, 'newName': string}>();
   entity?: GameObjectBase;
   importManager = engine.ImportManager;
   currentSceneName?: string;
+  entityArgNames: string[];
 
   constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, public sceneData: SceneDataService) {
-    if (this.entityName) {
-      this.entity = engine.SceneManager.currentScene.getEntity(this.entityName);
-    }
-    if (engine.SceneManager.currentScene) {
-      this.currentSceneName = engine.SceneManager.currentScene.name;
-    }
+    this.update();
   }
 
+
   ngOnChanges() {
+    this.update();
+  }
+
+  update() {
     if (this.entityName) {
       this.entity = engine.SceneManager.currentScene.getEntity(this.entityName);
     }
     if (engine.SceneManager.currentScene) {
       this.currentSceneName = engine.SceneManager.currentScene.name;
+    }
+    if (this.entityName && this.currentSceneName) {
+      this.entityArgNames = engine.ImportManager.getEntity(this.sceneData.getEntityClass(this.currentSceneName, this.entityName)).arg_names
     }
   }
 
@@ -57,6 +62,11 @@ export class RightSidebarComponent {
     });
   }
 
+  handleEntityNameChange(event: any) {
+    this.sceneData.updateEntityName(this.currentSceneName, this.entityName, event.target.value);
+    this.renameEntity.emit({'oldName': this.entityName, 'newName': event.target.value});
+  }
+
   handleEntityChange(event: any, index: number) {
     //TODO: save changes to file
     this.sceneData.updateEntityArg(this.currentSceneName, this.entityName, index, event.target.value);
@@ -66,7 +76,6 @@ export class RightSidebarComponent {
   }
 
   handleComponentChange(event: any, component: string, index: number) {
-    console.log(event, component, index);
     const gameComponent = this.entity.getByName(component);
     //TODO: save changes to file
     // this.sceneManager.saveScene(this.sceneManager.currentSceneName);
