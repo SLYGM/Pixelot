@@ -12,7 +12,17 @@ export class SceneManager {
         this.loaded_scenes = new Map();
         this.currentScene = null;
     }
-
+    
+    /**
+    * Gets an array of loaded scene names
+    *
+    *@returns array of strings of scene names
+    */
+    static getSceneNames() {
+        return Array.from(this.loaded_scenes.keys());
+    }
+    
+    
     /**
      * Switches the current scene to the scene with the given name
      * 
@@ -138,6 +148,32 @@ export class SceneManager {
      */
     static addSystemToScene(sceneName: string, system: System, priority: number) {
         this.loaded_scenes.get(sceneName).addSystem(system, priority);
+    }
+    
+    /**
+    * Create a json for a new scene
+    *
+    * @param sceneName name of the scene
+    * @returns boolean which indicates success of operation
+    */
+    static createScene(sceneName: string) {
+        const fs = nw.require("fs");
+        
+        // make sure that the scene doesn't already exist
+        if (fs.existsSync("../engine/" + sceneName + ".json")) {
+            console.log(`Warning: trying to create scene: ${sceneName} which already exists`);
+            return false;
+        }
+        
+        // template for scene JSONs
+        const template = 
+`{
+    "name": "${sceneName}",
+    "entities": []
+}`;
+        
+        fs.writeFileSync("../engine/" + sceneName + ".json", template);
+        return true;
     }
 
     /**

@@ -27,16 +27,10 @@ export class SceneTabComponent {
     this.sub = router.events.pipe(
       filter(e => e instanceof NavigationEnd)
     ).subscribe(async () => {
-
-      // loading the engine here because it needs to be loaded after the canvas is created
-      engine.Renderer.init();
-      engine.Renderer.setResolution(426, 240);
-
-      await engine.doImports();
-
-      engine.Game.loadGame("../engine/");
+      
+      // connect the canvas to the engine
+      engine.connectCanvas();
       this.layerNames = Array.from(engine.Renderer.layerAliases.keys());
-      engine.Game.start(true);
 
       this.route.params.subscribe(params => {
         this.sceneName = params['sceneName'];
@@ -65,5 +59,6 @@ export class SceneTabComponent {
 
   ngOnDestroy() {
     this.sub.unsubscribe();
-}
+    engine.disconnectCanvas();
+  }
 }

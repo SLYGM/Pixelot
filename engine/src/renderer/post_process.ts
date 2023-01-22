@@ -1,4 +1,4 @@
-import { $gl, $canvas } from './gl.js';
+import { $gl, $canvas, $rendering_offscreen } from './gl.js';
 import { Renderer } from './renderer.js';
 import { GLUtils } from './webglutils.js'
 
@@ -58,6 +58,11 @@ export class PostProcessing {
     }
     
     static initPingPongBuffers() {
+        // only initialise if the canvas exists
+        if (!$canvas) {
+            return;
+        }
+        
         // initialize the frame buffers and textures for buffer swapping - these are the same size as the screen
         const { fb: fb1, tex: tex1 } = GLUtils.createTexAndBuffer(
             $canvas.width,
