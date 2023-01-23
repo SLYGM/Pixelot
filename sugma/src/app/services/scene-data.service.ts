@@ -115,4 +115,27 @@ export class SceneDataService {
     }
   }
 
+  addComponent(sceneName: string, entityName: string, componentName: string, args: string[]) {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      const entity = scene.entities.find(e => e.name === entityName);
+      if (entity) {
+        entity.components.push({
+          component_name: componentName,
+          args: args
+        });
+      }
+    }
+  }
+
+  removeComponent(sceneName: string, entityName: string, componentName: string) {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      const entity = scene.entities.find(e => e.name === entityName);
+      if (entity) {
+        entity.components = entity.components.filter(c => c.component_name !== componentName);
+      }
+    }
+  }
+
 }

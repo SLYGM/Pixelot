@@ -4,7 +4,6 @@
     <mat-label>Component name</mat-label>
     <input type="text" matInput [formControl]="formControl" [matAutocomplete]="auto">
     <mat-autocomplete #auto="matAutocomplete">
-      <!-- TODO: get list of valid components -->
       <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
         {{option}}
       </mat-option>

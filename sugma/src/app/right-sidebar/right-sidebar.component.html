@@ -47,6 +47,9 @@
             {{property}}
           </mat-slide-toggle>
         </ng-container>
+        <mat-action-row>
+          <button mat-stroked-button color="warn" (click)="removeComponent(component)">Remove Component</button>
+        </mat-action-row>
       </mat-expansion-panel>
     </mat-accordion>
     <button mat-raised-button id="add-component-button" (click)="openDialog()" >Add Component</button>
