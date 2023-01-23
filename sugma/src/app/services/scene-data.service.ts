@@ -32,6 +32,18 @@ export class SceneDataService {
     this.scenes.set(name, scene);
   }
 
+  addEntity(sceneName: string, entityClass: string, entityName: string, args: string[]) {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      scene.entities.push({
+        name: entityName,
+        class: entityClass,
+        args: args,
+        components: []
+      });
+    }
+  }
+
   getEntityClass(sceneName: string, entityName: string): string {
     const scene = this.scenes.get(sceneName);
     if (scene) {

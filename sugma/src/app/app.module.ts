@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
-import { LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
+import { AddEntityDialog, LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
 import { AddComponentDialog, RightSidebarComponent } from './right-sidebar/right-sidebar.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SceneTabComponent } from './scene-tab/scene-tab.component';
@@ -39,6 +39,7 @@ import { NewFileDialogComponent } from './file-explorer/modals/new-file-dialog/n
     LeftSidebarComponent,
     RightSidebarComponent,
     AddComponentDialog,
+    AddEntityDialog,
     NavbarComponent,
     SceneTabComponent,
     NewSceneDialogComponent,

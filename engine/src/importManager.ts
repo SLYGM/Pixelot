@@ -69,6 +69,9 @@ export class ImportManager {
     static hasEntity(entity: string): boolean {
         return this.entities.has(entity);
     }
+    static getAllEntities(): string[] {
+        return Array.from(this.entities.keys());
+    }
 
     static getShader(shader: string): TypedConstructor<PostProcess> {
         if (this.shaders.has(shader)) return this.shaders.get(shader);
