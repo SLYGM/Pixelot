@@ -15,17 +15,21 @@ export class ImportManager {
     private static entitiesFolder = "entities/";
     private static shadersFolder = "shaders/";
 
-    static async importScripts(
+    static async importProjectScripts(
 { scriptTypeMap, src }: { scriptTypeMap: Map<string, TypedConstructor<Object>>; src: string; }    ) {
         const fs = nw.require("fs");
         let files: any[];
+        // get the list of scripts in the directory
         try {
-            files = fs.readdirSync("./" + src.slice(src.indexOf("projects"))) as string[];
+            // note that the fs reading will occur from the apps working directory, 
+            // whereas the dynamic importing is done from the engine's src directory, hence the paths differ
+            files = fs.readdirSync("./projects/" + src) as string[];
         } catch (e) {
             console.trace(e);
             return;
         }
         
+        // extract the script names for .js files only
         const scriptsList: string[] = [];
         files.forEach((file) => {
             const fileName = file.split(".")[0];
@@ -33,9 +37,11 @@ export class ImportManager {
                 scriptsList.push(fileName);
             }
         });
-
+        
+        // dynamically import the default exports of the script
         for (const script of scriptsList) {
-            const a = await import(src + script + ".js");
+            // dynamic imports must have a static string beginning in order for webpack to load them
+            const a = await import(`../../sugma/projects/${src}${script}.js`);
             const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
             scriptTypeMap.set(a.default.name, typed_constr);
         }
@@ -81,28 +87,38 @@ export class ImportManager {
         return this.shaders.has(shader);
     }
 
-    static async importComponents(relUserdirPath: string = "./") {
-        await this.importScripts({ scriptTypeMap: this.components, src: relUserdirPath + this.componentsFolder });
+    static async importProjectComponents(project: string) {
+        await this.importProjectScripts({ scriptTypeMap: this.components, src: `${project}/scripts/${this.componentsFolder}` });
     }
 
-    static async importSystems(relUserdirPath: string = "./") {
-        await this.importScripts({ scriptTypeMap: this.systems, src: relUserdirPath + this.systemsFolder });
+    static async importProjectSystems(project: string) {
+        await this.importProjectScripts({ scriptTypeMap: this.systems, src: `${project}/scripts/${this.systemsFolder}` });
     }
 
-    static async importEntities(relUserdirPath: string = "./") {
-        await this.importScripts({ scriptTypeMap: this.entities, src: relUserdirPath + this.entitiesFolder });
+    static async importProjectEntities(project: string) {
+        await this.importProjectScripts({ scriptTypeMap: this.entities, src: `${project}/scripts/${this.entitiesFolder}` });
     }
 
-    static async importShaders(relUserdirPath: string = "./") {
-        await this.importScripts({ scriptTypeMap: this.shaders, src: relUserdirPath + this.shadersFolder });
+    static async importProjectShaders(project: string) {
+        await this.importProjectScripts({ scriptTypeMap: this.shaders, src: `${project}/scripts/${this.shadersFolder}` });
     }
 }
 
-export async function doImports(relUserdirPath: string = "./") {
+/**
+* Import user scripts for given project name. For use in app context only, for built game imports, see `doGameImports()`.   
+* **NOTE:** This function assumes the relative path of the project to the engine source will be `../../sugma/projects/<project>`
+*/
+export async function doProjectImports(project: string) {
     await Promise.all([
-        ImportManager.importComponents(relUserdirPath),
-        ImportManager.importSystems(relUserdirPath),
-        ImportManager.importEntities(relUserdirPath),
-        ImportManager.importShaders(relUserdirPath)
+        ImportManager.importProjectComponents(project),
+        ImportManager.importProjectSystems(project),
+        ImportManager.importProjectEntities(project),
+        ImportManager.importProjectShaders(project)
     ]);
+}
+
+
+export async function doGameImports() {
+    // TODO:
+    console.log("The doGameImports() function hasn't been implemented");
 }
