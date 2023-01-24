@@ -16,11 +16,11 @@ export class AppComponent {
     (async function() {
       engine.Renderer.init(true);
   
-      await engine.doImports();
+      //await engine.doImports();
     
       // NOTE: this line loads the project.json
-      engine.Game.loadGame("../engine/");
-      engine.Game.start(true);
+      //engine.Game.loadGame("../sugma/projects/project1/");
+      //engine.Game.start(true);
     })();
     
   }
