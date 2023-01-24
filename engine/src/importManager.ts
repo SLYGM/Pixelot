@@ -20,11 +20,12 @@ export class ImportManager {
         const fs = nw.require("fs");
         let files: any[];
         try {
-            files = fs.readdirSync("../engine/build/" + src) as string[];
+            files = fs.readdirSync("./" + src.slice(src.indexOf("projects"))) as string[];
         } catch (e) {
             console.trace(e);
             return;
         }
+        
         const scriptsList: string[] = [];
         files.forEach((file) => {
             const fileName = file.split(".")[0];
@@ -32,8 +33,9 @@ export class ImportManager {
                 scriptsList.push(fileName);
             }
         });
+
         for (const script of scriptsList) {
-            const a = await import("./" + src + script + ".js");
+            const a = await import(src + script + ".js");
             const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
             scriptTypeMap.set(a.default.name, typed_constr);
         }
@@ -79,26 +81,28 @@ export class ImportManager {
         return this.shaders.has(shader);
     }
 
-    static async importComponents() {
-        await this.importScripts({ scriptTypeMap: this.components, src: this.componentsFolder });
+    static async importComponents(relUserdirPath: string = "./") {
+        await this.importScripts({ scriptTypeMap: this.components, src: relUserdirPath + this.componentsFolder });
     }
 
-    static async importSystems() {
-        await this.importScripts({ scriptTypeMap: this.systems, src: this.systemsFolder });
+    static async importSystems(relUserdirPath: string = "./") {
+        await this.importScripts({ scriptTypeMap: this.systems, src: relUserdirPath + this.systemsFolder });
     }
 
-    static async importEntities() {
-        await this.importScripts({ scriptTypeMap: this.entities, src: this.entitiesFolder });
+    static async importEntities(relUserdirPath: string = "./") {
+        await this.importScripts({ scriptTypeMap: this.entities, src: relUserdirPath + this.entitiesFolder });
     }
 
-    static async importShaders() {
-        await this.importScripts({ scriptTypeMap: this.shaders, src: this.shadersFolder });
+    static async importShaders(relUserdirPath: string = "./") {
+        await this.importScripts({ scriptTypeMap: this.shaders, src: relUserdirPath + this.shadersFolder });
     }
 }
 
-export async function doImports() {
-    await ImportManager.importComponents();
-    await ImportManager.importSystems();
-    await ImportManager.importEntities();
-    await ImportManager.importShaders();
+export async function doImports(relUserdirPath: string = "./") {
+    await Promise.all([
+        ImportManager.importComponents(relUserdirPath),
+        ImportManager.importSystems(relUserdirPath),
+        ImportManager.importEntities(relUserdirPath),
+        ImportManager.importShaders(relUserdirPath)
+    ]);
 }
