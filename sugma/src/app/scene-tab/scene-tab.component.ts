@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
@@ -14,11 +14,29 @@ import { LeftSidebarComponent } from 'app/left-sidebar/left-sidebar.component';
 })
 export class SceneTabComponent {
   @ViewChild(LeftSidebarComponent) leftSidebar: LeftSidebarComponent;
+
+  // add mouse listeners to the document so that we can pan the viewport
+  @HostListener('document:mousemove', ['$event']) 
+  onMouseMove(e: MouseEvent) {
+    if (this.mouseDown) {
+      if (this.mouseDown) {
+        let dx = e.clientX - this.prevMousePos[0];
+        let dy = e.clientY - this.prevMousePos[1];
+        this.prevMousePos = [e.clientX, e.clientY];
+        engine.Renderer.viewport.x -= dx;
+        engine.Renderer.viewport.y -= dy;
+      }
+    }
+  }
+
   sceneName?: string;
   scene?: Scene;
   selectedEntity?: string;
   layerNames: string[];
   private sub: Subscription;
+  private mouseDown: boolean = false;
+  private prevMousePos: number[];
+
 
   constructor(private router: Router, 
               private route: ActivatedRoute) 
@@ -61,5 +79,14 @@ export class SceneTabComponent {
   ngOnDestroy() {
     this.sub.unsubscribe();
     engine.disconnectCanvas();
+  }
+  
+  handleMouseDown(event: MouseEvent) {
+    this.prevMousePos = [event.clientX, event.clientY];
+    this.mouseDown = true;
+  }
+  
+  handleMouseUp(event: MouseEvent) {
+    this.mouseDown = false;
   }
 }
