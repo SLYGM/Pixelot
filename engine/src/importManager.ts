@@ -11,10 +11,6 @@ export class ImportManager {
     private static systems = new Map<string, TypedConstructor<System>>();
     private static entities = new Map<string, TypedConstructor<GameObjectBase>>();
     private static shaders = new Map<string, TypedConstructor<PostProcess>>();
-    private static componentsFolder = "components/";
-    private static systemsFolder = "systems/";
-    private static entitiesFolder = "entities/";
-    private static shadersFolder = "shaders/";
     
     static getScriptPaths(srcPath: string) {
         
