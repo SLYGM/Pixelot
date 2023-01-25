@@ -4,6 +4,7 @@ import { TypedConstructor } from "./typedConstructor.js";
 import { StringUtils } from "./utils/baseutils.js";
 
 const nw = (window as any).nw;
+const fs = nw.require("fs");
 
 export class ImportManager {
     private static components = new Map<string, TypedConstructor<Component>>();
@@ -14,36 +15,81 @@ export class ImportManager {
     private static systemsFolder = "systems/";
     private static entitiesFolder = "entities/";
     private static shadersFolder = "shaders/";
-
-    static async importProjectScripts(
-{ scriptTypeMap, src }: { scriptTypeMap: Map<string, TypedConstructor<Object>>; src: string; }    ) {
-        const fs = nw.require("fs");
-        let files: any[];
-        // get the list of scripts in the directory
+    
+    static getScriptPaths(srcPath: string) {
+        
+        function getScripts(srcPath: string, relPath: string) {
+            const files = fs.readdirSync(srcPath + relPath) as string[];
+            let scripts: string[] = [];
+            files.forEach((file) => {
+                // if its a folder, recursively search it for scripts
+                if (fs.lstatSync(srcPath + relPath + file).isDirectory()) {
+                    scripts.push(...getScripts(srcPath, relPath + file + "/"));
+                } 
+                
+                // otherwise append the script with its relative path
+                else {
+                    const fileName = file.split(".")[0];
+                    if (StringUtils.isPostfix(file, ".js")) {
+                        scripts.push(relPath + fileName);
+                    }
+                }
+            })
+            
+            return scripts;
+        }
+        
+        return getScripts(srcPath, "");
+    }
+    
+    /*
+    * Get the name of the prototype class of a class.
+    */
+    static getProtoName(cls: any): string {
+        return Object.getPrototypeOf(cls).name as string;
+    }
+    
+    /**
+    * Get the relevant import map for an import. i.e. if the default import is a component, then return the component map.
+    */
+    static getMapFromImport(imp: any) {
+        // need to use the prototype class name here rather than `instanceof` because webpack will replace all the class names
+        const protoName = this.getProtoName(imp);
+        if (protoName == "Component")
+            return this.components;
+        else if (protoName == "System")
+            return this.systems;
+        else if (protoName == "GameObjectBase")
+            return this.entities;
+        else if (protoName == "PostProcess")
+            return this.shaders;
+        else
+            console.trace(`Error importing ${imp.name}: invalid script class: ${protoName}`);
+            return undefined;
+    }
+    
+    static async importProjectScripts(project: string) {
+        let scripts: string[];
         try {
             // note that the fs reading will occur from the apps working directory, 
             // whereas the dynamic importing is done from the engine's src directory, hence the paths differ
-            files = fs.readdirSync("./projects/" + src) as string[];
+            scripts = this.getScriptPaths(`./projects/${project}/`);
         } catch (e) {
             console.trace(e);
             return;
         }
         
-        // extract the script names for .js files only
-        const scriptsList: string[] = [];
-        files.forEach((file) => {
-            const fileName = file.split(".")[0];
-            if (StringUtils.isPostfix(file, ".js")) {
-                scriptsList.push(fileName);
-            }
-        });
-        
         // dynamically import the default exports of the script
-        for (const script of scriptsList) {
+        for (const script of scripts) {
             // dynamic imports must have a static string beginning in order for webpack to load them
-            const a = await import(`../../sugma/projects/${src}${script}.js`);
+            const a = await import(`../../sugma/projects/${project}/${script}.js`);
             const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
-            scriptTypeMap.set(a.default.name, typed_constr);
+            // work out what kind of script this is (component, system, etc.)
+            const map = this.getMapFromImport(a.default);
+            if (map) {
+                // we know the types are correct here if map exists (see getMapFromImport), so we can use map as any
+                (map as any).set(a.default.name, typed_constr);
+            }
         }
     }
 
@@ -86,22 +132,6 @@ export class ImportManager {
     static hasShader(shader: string): boolean {
         return this.shaders.has(shader);
     }
-
-    static async importProjectComponents(project: string) {
-        await this.importProjectScripts({ scriptTypeMap: this.components, src: `${project}/scripts/${this.componentsFolder}` });
-    }
-
-    static async importProjectSystems(project: string) {
-        await this.importProjectScripts({ scriptTypeMap: this.systems, src: `${project}/scripts/${this.systemsFolder}` });
-    }
-
-    static async importProjectEntities(project: string) {
-        await this.importProjectScripts({ scriptTypeMap: this.entities, src: `${project}/scripts/${this.entitiesFolder}` });
-    }
-
-    static async importProjectShaders(project: string) {
-        await this.importProjectScripts({ scriptTypeMap: this.shaders, src: `${project}/scripts/${this.shadersFolder}` });
-    }
 }
 
 /**
@@ -109,16 +139,11 @@ export class ImportManager {
 * **NOTE:** This function assumes the relative path of the project to the engine source will be `../../sugma/projects/<project>`
 */
 export async function doProjectImports(project: string) {
-    await Promise.all([
-        ImportManager.importProjectComponents(project),
-        ImportManager.importProjectSystems(project),
-        ImportManager.importProjectEntities(project),
-        ImportManager.importProjectShaders(project)
-    ]);
+    await ImportManager.importProjectScripts(project);
 }
 
 
 export async function doGameImports() {
     // TODO:
-    console.log("The doGameImports() function hasn't been implemented");
+    console.log("The `doGameImports()` function hasn't been implemented");
 }
