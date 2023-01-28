@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>Open Existing Project</h1>
+<div mat-dialog-content>
+  <div class="project-list" cdkMenu>
+    <div class="project-list-item" *ngFor="let project of projects" cdkMenuItem>
+      <button mat-flat-button (click)="projectSelected(project)">
+        {{project}}
+      </button>
+    </div>
+  </div>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-raised-button (click)="onCancelClick()">Cancel</button>
+</div>

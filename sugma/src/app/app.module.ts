@@ -31,6 +31,8 @@ import { FileManagerComponent } from './file-manager/file-manager.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { NewFileDialogComponent } from './file-explorer/modals/new-file-dialog/new-file-dialog.component';
+import { LandingComponent } from './landing/landing.component';
+import { OpenProjectDialogComponent } from './open-project-dialog/open-project-dialog.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +50,9 @@ import { NewFileDialogComponent } from './file-explorer/modals/new-file-dialog/n
     RenameDialogComponent,
     FileManagerComponent,
     FileExplorerComponent,
-    NewFileDialogComponent
+    NewFileDialogComponent,
+    LandingComponent,
+    OpenProjectDialogComponent
   ],
   imports: [
     BrowserModule,
