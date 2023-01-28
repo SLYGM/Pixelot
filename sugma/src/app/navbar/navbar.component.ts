@@ -3,7 +3,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ErrorStateMatcher, ThemePalette } from '@angular/material/core';
 import { NewSceneDialogComponent } from 'app/new-scene-dialog/new-scene-dialog.component';
 import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import * as engine from 'retro-engine';
 import { SceneDataService } from 'app/services/scene-data.service';
@@ -14,13 +14,16 @@ import { SceneDataService } from 'app/services/scene-data.service';
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent {
-  activeLink = 'Visual Scripting Editor';
+  activeLink: string;
   background: ThemePalette = 'primary';
   accent: ThemePalette = 'accent'
   scenes: string[] = [];
 
-  constructor(public dialog: MatDialog, private sceneData: SceneDataService, private router: Router) {
+  constructor(public dialog: MatDialog, private sceneData: SceneDataService, private router: Router, private route: ActivatedRoute) {
     this.scenes = [ ...engine.SceneManager.loaded_scenes.keys() ];
+    this.route.params.subscribe(params => {
+      this.activeLink = params['sceneName'];
+    });
   }
 
   handleFileSelect(e: any) {
