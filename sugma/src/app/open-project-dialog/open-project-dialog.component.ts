@@ -52,7 +52,7 @@ export class OpenProjectDialogComponent {
     // initialize engine
     await engine.doProjectImports(project);
     engine.Game.loadGame(projectPath);
-    engine.Game.start();
+    engine.Game.start(true);
 
     // open the scene
     engine.SceneManager.preLoadScene(sceneName, projectPath + "scenes/" + projectJson.start_scene + ".json");
