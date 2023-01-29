@@ -12,15 +12,9 @@ export class AppComponent {
   title = 'sugma';
   
   constructor() {
-    // initialise the engine
+    // initialise the engine renderer
     (async function() {
       engine.Renderer.init(true);
-  
-      await engine.doImports();
-    
-      // NOTE: this line loads the project.json
-      engine.Game.loadGame("../engine/");
-      engine.Game.start(true);
     })();
     
   }

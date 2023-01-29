@@ -1,7 +1,13 @@
 :host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.scene-tab {
+    flex: 1;
     display: flex;
     flex-direction: row;
-    height: 100%;
+    overflow: auto;
 }
 
 .center-wrapper {

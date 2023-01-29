@@ -6,6 +6,5 @@ import * as engine from 'retro-engine';
 
 (window as any).engine = engine;
 
-
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.error(err));

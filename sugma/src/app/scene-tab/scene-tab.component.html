@@ -1,8 +1,11 @@
-<app-left-sidebar [scene]="scene" [layerNames]="layerNames" (entitySelected)="handleEntitySelected($event)"></app-left-sidebar>
-<div class="center-wrapper">
-  <div class="temp-canvas">
-    <canvas id="canvas" (mousedown) = "handleMouseDown($event)" (mouseup) = "handleMouseUp($event)"></canvas>
+<app-navbar></app-navbar>
+<div class="scene-tab">
+  <app-left-sidebar [scene]="scene" [layerNames]="layerNames" (entitySelected)="handleEntitySelected($event)"></app-left-sidebar>
+  <div class="center-wrapper">
+    <div class="temp-canvas">
+      <canvas id="canvas" (mousedown) = "handleMouseDown($event)" (mouseup) = "handleMouseUp($event)"></canvas>
+    </div>
+    <app-file-manager></app-file-manager>
   </div>
-  <app-file-manager></app-file-manager>
+  <app-right-sidebar [entityName]="selectedEntity" (renameEntity)="handleEntityRenamed($event)"></app-right-sidebar>
 </div>
-<app-right-sidebar [entityName]="selectedEntity" (renameEntity)="handleEntityRenamed($event)"></app-right-sidebar>
