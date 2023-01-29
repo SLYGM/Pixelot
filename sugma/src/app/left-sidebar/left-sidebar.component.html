@@ -1,14 +1,29 @@
-<mat-accordion multi *ngIf="scene">
-  <mat-expansion-panel *ngFor="let layer of layerNames; index as i">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        {{layer}}
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <ng-container *ngFor="let entity of layerEntities[i]">
-      <button mat-button (click)="selectEntity(entity)">
-        {{entity}}
-      </button>
-    </ng-container>
-  </mat-expansion-panel>
-</mat-accordion>
+<div id="left-sidebar">
+  <mat-accordion multi *ngIf="scene">
+    <mat-expansion-panel *ngFor="let layer of layerNames; index as i">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{layer}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <ng-container *ngFor="let entity of layerEntities[i]">
+        <button mat-button (click)="selectEntity(entity)">
+          {{entity}}
+        </button>
+      </ng-container>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          No Layer
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <ng-container *ngFor="let entity of otherEntities">
+        <button mat-button (click)="selectEntity(entity)">
+          {{entity}}
+        </button>
+      </ng-container>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <button mat-raised-button id="add-entity-button" (click)="openEntityDialog()" >Add Entity</button>
+</div>

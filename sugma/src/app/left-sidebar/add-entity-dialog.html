@@ -1,8 +1,12 @@
-<h1 mat-dialog-title>Adding component to {{entity.name}}</h1>
+<h1 mat-dialog-title>New Entity</h1>
 <div mat-dialog-content>
   <mat-form-field>
-    <mat-label>Component name</mat-label>
-    <input type="text" matInput [formControl]="formControl" [matAutocomplete]="auto">
+    <mat-label>Entity Name</mat-label>
+    <input type="text" matInput [formControl]="nameForm">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>GameObject</mat-label>
+    <input type="text" matInput [formControl]="gameObjectForm" [matAutocomplete]="auto">
     <mat-autocomplete #auto="matAutocomplete">
       <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
         {{option}}

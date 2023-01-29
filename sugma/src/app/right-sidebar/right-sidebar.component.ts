@@ -59,10 +59,32 @@ export class RightSidebarComponent {
             duration: 2000,
           });
         } else {
-          // TODO: Get component data and add it to the entity
+          const component_constr = engine.ImportManager.getComponent(result);
+          let default_args = [];
+          for (const t of component_constr.arg_types) {
+            if (t === engine.Types.String) {
+              default_args.push('');
+            } else if (t === engine.Types.Number) {
+              default_args.push(0);
+            } else if (t === engine.Types.Boolean) {
+              default_args.push(false);
+            }
+          }
+          // Add to scene JSON
+          this.sceneData.addComponent(this.currentSceneName, this.entityName, result, default_args);
+          // Add to entity
+          const comp_args = component_constr.parseArgs(default_args);
+          const new_component = new component_constr.constr(...comp_args);
+          this.entity.add(new_component);
         }
       }
     });
+  }
+
+  removeComponent(component: string) {
+    this.sceneData.removeComponent(this.currentSceneName, this.entityName, component);
+    //TODO: give error if another component depends on this one
+    this.entity.removeByName(component);
   }
 
   handleEntityNameChange(event: any) {
@@ -109,7 +131,6 @@ export class RightSidebarComponent {
 })
 export class AddComponentDialog {
   formControl = new FormControl('');
-  // TODO: Get available components
   options: string[] = engine.ImportManager.getAllComponents();
   filteredOptions: Observable<string[]>;
 
