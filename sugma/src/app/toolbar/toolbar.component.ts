@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { OpenProjectDialogComponent } from 'app/open-project-dialog/open-project-dialog.component';
 
 @Component({
   selector: 'app-toolbar',
@@ -9,13 +11,20 @@ import { Component } from '@angular/core';
 
 export class ToolbarComponent {
 
-  constructor() { 
+  constructor(public dialog: MatDialog, private zone: NgZone) {
     let nw = window.nw;
     if (nw) {
       let menu = new nw.Menu({ type: 'menubar' });
 
       let file = new nw.Menu();
-      file.append(new nw.MenuItem({ label: 'Open' }));
+      file.append(new nw.MenuItem({
+        label: 'Open',
+        click: () => {
+          this.zone.run(() => {
+            this.openProjectDialog();
+          });
+        }
+      }));
       file.append(new nw.MenuItem({ label: 'New' }));
       file.append(new nw.MenuItem({ label: 'Save' }));
       file.append(new nw.MenuItem({ label: 'Save As' }));
@@ -33,5 +42,11 @@ export class ToolbarComponent {
 
       nw.Window.get().menu = menu;
     }
+  }
+
+  openProjectDialog(): void {
+    this.dialog.open(OpenProjectDialogComponent, {
+      width: '400px'
+    });
   }
 }
