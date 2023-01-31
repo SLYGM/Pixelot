@@ -52,10 +52,10 @@ export class OpenProjectDialogComponent {
     // initialize engine
     await engine.doProjectImports(project);
     engine.Game.loadGame(projectPath);
+    const startScene = engine.Game.start_scene;
+    // preload the start scene
+    engine.SceneManager.preLoadScene(startScene, engine.FileUtils.findFile(startScene + ".json", projectPath));
     engine.Game.start(true);
-
-    // open the scene
-    engine.SceneManager.preLoadScene(sceneName, projectPath + "scenes/" + projectJson.start_scene + ".json");
     this.router.navigate(["/scene/" + sceneName]);
   }
 }
