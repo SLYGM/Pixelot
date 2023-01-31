@@ -1,6 +1,6 @@
 <div id="right-sidebar">
   <div *ngIf="entity">
-    <mat-form-field appearance="fill">
+    <mat-form-field appearance="fill" [style.width.%]="100">
       <mat-label>Entity name</mat-label>
       <input matInput type="text" value={{entity.name}} (change)="handleEntityNameChange($event)">
     </mat-form-field>

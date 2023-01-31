@@ -33,6 +33,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { NewFileDialogComponent } from './file-explorer/modals/new-file-dialog/new-file-dialog.component';
 import { LandingComponent } from './landing/landing.component';
 import { OpenProjectDialogComponent } from './open-project-dialog/open-project-dialog.component';
+import { NewProjectDialogComponent } from './new-project-dialog/new-project-dialog.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { OpenProjectDialogComponent } from './open-project-dialog/open-project-d
     FileExplorerComponent,
     NewFileDialogComponent,
     LandingComponent,
-    OpenProjectDialogComponent
+    OpenProjectDialogComponent,
+    NewProjectDialogComponent
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { NewProjectDialogComponent } from 'app/new-project-dialog/new-project-dialog.component';
 import { OpenProjectDialogComponent } from 'app/open-project-dialog/open-project-dialog.component';
 
 @Component({
@@ -25,7 +26,14 @@ export class ToolbarComponent {
           });
         }
       }));
-      file.append(new nw.MenuItem({ label: 'New' }));
+      file.append(new nw.MenuItem({
+        label: 'New Project',
+        click: () => {
+          this.zone.run(() => {
+            this.newProjectDialog();
+          });
+        }
+      }));
       file.append(new nw.MenuItem({ label: 'Save' }));
       file.append(new nw.MenuItem({ label: 'Save As' }));
       menu.append(new nw.MenuItem({ label: 'File', submenu: file }));
@@ -46,6 +54,12 @@ export class ToolbarComponent {
 
   openProjectDialog(): void {
     this.dialog.open(OpenProjectDialogComponent, {
+      width: '400px'
+    });
+  }
+
+  newProjectDialog(): void {
+    this.dialog.open(NewProjectDialogComponent, {
       width: '400px'
     });
   }
