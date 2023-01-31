@@ -38,29 +38,21 @@ export class ImportManager {
         return getScripts(srcPath, "");
     }
     
-    /*
-    * Get the name of the prototype class of a class.
-    */
-    static getProtoName(cls: any): string {
-        return Object.getPrototypeOf(cls).name as string;
-    }
-    
     /**
     * Get the relevant import map for an import. i.e. if the default import is a component, then return the component map.
     */
     static getMapFromImport(imp: any) {
-        // need to use the prototype class name here rather than `instanceof` because webpack will replace all the class names
-        const protoName = this.getProtoName(imp);
-        if (protoName == "Component")
+        // need to use the prototype of the class with `instanceof` because it's not an instance of the class yet
+        if (imp.prototype instanceof Component)
             return this.components;
-        else if (protoName == "System")
+        else if (imp.prototype instanceof System)
             return this.systems;
-        else if (protoName == "GameObjectBase")
+        else if (imp.prototype instanceof GameObjectBase)
             return this.entities;
-        else if (protoName == "PostProcess")
+        else if (imp.prototype instanceof PostProcess)
             return this.shaders;
         else
-            console.trace(`Error importing ${imp.name}: invalid script class: ${protoName}`);
+            console.trace(`Error importing ${imp.name}: invalid script class: ${imp.prototype.name}`);
             return undefined;
     }
     
