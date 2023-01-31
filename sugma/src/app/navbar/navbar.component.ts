@@ -62,14 +62,15 @@ export class NavbarComponent {
   }
 
   createScene(sceneName:string){
+    //TODO: scenes should be created in the current project location
     // create new scene in engine manager
-    if (engine.SceneManager.createScene(sceneName)) {
-      // if the scene has been successfully created, switch to it
-      engine.SceneManager.switchToScene(sceneName);
-      this.scenes.push(sceneName);
-      this.activeLink = sceneName;
-      this.router.navigateByUrl(`/scene/${sceneName}`);
-    }
+    // if (engine.SceneManager.createScene(sceneName)) {
+    //   // if the scene has been successfully created, switch to it
+    //   engine.SceneManager.switchToScene(sceneName);
+    //   this.scenes.push(sceneName);
+    //   this.activeLink = sceneName;
+    //   this.router.navigateByUrl(`/scene/${sceneName}`);
+    // }
   }
 }
 

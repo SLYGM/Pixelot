@@ -160,13 +160,14 @@ export class SceneManager {
     * Create a json for a new scene
     *
     * @param sceneName name of the scene
+    * @param path path to the where the scene will be saved
     * @returns boolean which indicates success of operation
     */
-    static createScene(sceneName: string) {
+    static createScene(sceneName: string, path: string) {
         const fs = nw.require("fs");
         
         // make sure that the scene doesn't already exist
-        if (fs.existsSync("../engine/" + sceneName + ".json")) {
+        if (fs.existsSync(path + sceneName + ".scene")) {
             console.log(`Warning: trying to create scene: ${sceneName} which already exists`);
             return false;
         }
@@ -178,7 +179,7 @@ export class SceneManager {
     "entities": []
 }`;
         
-        fs.writeFileSync("../engine/" + sceneName + ".json", template);
+        fs.writeFileSync(path + sceneName + ".scene", template);
         return true;
     }
 

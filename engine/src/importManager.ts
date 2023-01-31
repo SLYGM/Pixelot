@@ -6,33 +6,62 @@ import { StringUtils } from "./utils/baseutils.js";
 const nw = (window as any).nw;
 const fs = nw.require("fs");
 
+class ProjectFiles {
+    project: string;
+    scripts: string[];
+    scenes: string[];
+
+    constructor() {
+        this.project = null;
+        this.scripts = [];
+        this.scenes = [];
+    }
+
+    combine(other: ProjectFiles) {
+        this.project = other.project || this.project;
+        this.scripts.push(...other.scripts);
+        this.scenes.push(...other.scenes);
+    }
+}
+
 export class ImportManager {
     private static components = new Map<string, TypedConstructor<Component>>();
     private static systems = new Map<string, TypedConstructor<System>>();
     private static entities = new Map<string, TypedConstructor<GameObjectBase>>();
     private static shaders = new Map<string, TypedConstructor<PostProcess>>();
     
-    static getScriptPaths(srcPath: string) {
+    static getFilePaths(srcPath: string) {
         
         function getScripts(srcPath: string, relPath: string) {
             const files = fs.readdirSync(srcPath + relPath) as string[];
-            let scripts: string[] = [];
+            let projFiles = new ProjectFiles();
+
             files.forEach((file) => {
                 // if its a folder, recursively search it for scripts
                 if (fs.lstatSync(srcPath + relPath + file).isDirectory()) {
-                    scripts.push(...getScripts(srcPath, relPath + file + "/"));
+                    projFiles.combine(getScripts(srcPath, relPath + file + "/"));
                 } 
                 
                 // otherwise append the script with its relative path
                 else {
                     const fileName = file.split(".")[0];
                     if (StringUtils.isPostfix(file, ".js")) {
-                        scripts.push(relPath + fileName);
+                        projFiles.scripts.push(relPath + fileName);
+                    }
+                    else if (StringUtils.isPostfix(file, ".proj")) {
+                        if (projFiles.project) {
+                            console.trace(`Error: multiple project files found in ${srcPath + relPath}`);
+                            return;
+                        }
+                        projFiles.project = relPath + fileName;
+                    }
+                    else if (StringUtils.isPostfix(file, ".scene")) {
+                        projFiles.scenes.push(relPath + fileName);
                     }
                 }
-            })
+            });
             
-            return scripts;
+            return projFiles;
         }
         
         return getScripts(srcPath, "");
@@ -61,7 +90,7 @@ export class ImportManager {
         try {
             // note that the fs reading will occur from the apps working directory, 
             // whereas the dynamic importing is done from the engine's src directory, hence the paths differ
-            scripts = this.getScriptPaths(`./projects/${project}/`);
+            scripts = this.getFilePaths(`./projects/${project}/`).scripts;
         } catch (e) {
             console.trace(e);
             return;

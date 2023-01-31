@@ -44,15 +44,15 @@ export class Game {
     }
 
     /**
-     * Load a project from a project.json file
+     * Load a project from a project json file
      * 
-     * @param src the path to the folder containing `project.json`
+     * @param src the path to the project json
      */
-    static loadGame(src: string = "./") {
+    static loadGame(projJSONPath: string) {
         const fs = nw.require("fs");
 
-        // load the project.json which contains all info needed to initialise the game
-        const data = fs.readFileSync(src + 'project.json', {encoding: "utf-8"});
+        // load the project json which contains all info needed to initialise the game
+        const data = fs.readFileSync(projJSONPath, {encoding: "utf-8"});
         const game_data = JSON.parse(data.toString());
     
         Renderer.setResolution(game_data["resolution"][0], game_data["resolution"][1]);
