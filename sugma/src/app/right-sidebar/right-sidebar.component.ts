@@ -52,7 +52,6 @@ export class RightSidebarComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed', result);
       if (this.entity && result) {
         if (this.entity.getAllComponents().find(c => c === result)) {
           this._snackBar.open('Component already exists', 'Close', {
@@ -76,6 +75,8 @@ export class RightSidebarComponent {
           const comp_args = component_constr.parseArgs(default_args);
           const new_component = new component_constr.constr(...comp_args);
           this.entity.add(new_component);
+          // Save changes to file
+          this.sceneData.saveScene(this.currentSceneName);
         }
       }
     });
@@ -85,11 +86,15 @@ export class RightSidebarComponent {
     this.sceneData.removeComponent(this.currentSceneName, this.entityName, component);
     //TODO: give error if another component depends on this one
     this.entity.removeByName(component);
+    // Save changes to file
+    this.sceneData.saveScene(this.currentSceneName);
   }
 
   handleEntityNameChange(event: any) {
     this.sceneData.updateEntityName(this.currentSceneName, this.entityName, event.target.value);
     this.renameEntity.emit({'oldName': this.entityName, 'newName': event.target.value});
+    // Save changes to file
+    this.sceneData.saveScene(this.currentSceneName);
   }
 
   handleEntityChange(event: any, index: number) {
@@ -103,10 +108,11 @@ export class RightSidebarComponent {
     const args = this.sceneData.getEntityArgs(this.currentSceneName, this.entityName);
     const entityClass = this.sceneData.getEntityClass(this.currentSceneName, this.entityName);
     this.entity.onCreate(...engine.ImportManager.getEntity(entityClass).parseArgs(args));
+    // Save changes to file
+    this.sceneData.saveScene(this.currentSceneName);
   }
 
   handleComponentChange(event: any, component: string, index: number) {
-    //TODO: save changes to file
     if (event.target) {
       // textbox event
       this.sceneData.updateComponentArg(this.currentSceneName, this.entityName, component, index, event.target.value);
@@ -121,7 +127,9 @@ export class RightSidebarComponent {
     const comp_args = component_constr.parseArgs(this.sceneData.getComponentArgs(this.currentSceneName, this.entityName, component));
     const updated_component = new component_constr.constr(...comp_args);
     this.entity.add(updated_component);
-    console.log(engine.SceneManager.currentScene);
+
+    // Save changes to file
+    this.sceneData.saveScene(this.currentSceneName);
   }
 }
 

@@ -1,24 +1,37 @@
 {
-    "name": "test_scene",
-    "entities": [
+  "name": "test_scene",
+  "entities": [
+    {
+      "name": "tile",
+      "class": "Player",
+      "args": [
+        "9",
+        "true"
+      ],
+      "components": [
         {
-            "name": "frog",
-            "class": "Player",
-            "args": ["10"],
-            "components": [
-                {
-                    "component_name": "Position",
-                    "args": ["1", "1"]
-                },
-                {
-                    "component_name": "Velocity",
-                    "args": ["1", "1"]
-                },
-                {
-                    "component_name": "Sprite",
-                    "args": ["frog", "foreground", 0]
-                }
-            ]
+          "component_name": "Position",
+          "args": [
+            "10",
+            "10"
+          ]
+        },
+        {
+          "component_name": "Velocity",
+          "args": [
+            "1",
+            "1"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "tile",
+            "background",
+            0
+          ]
         }
-    ]
+      ]
+    }
+  ]
 }

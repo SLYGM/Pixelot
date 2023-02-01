@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 
+const nw = (window as any).nw;
+const fs = nw.require("fs");
+
 export type EntityComponent = {
   component_name: string;
   args: string[];
@@ -27,9 +30,24 @@ export class Scene {
 })
 export class SceneDataService {
   scenes: Map<string, Scene> = new Map();
+  scene_paths: Map<string, string> = new Map();
 
-  add(name: string, scene: Scene) {
+  saveScene(sceneName: string) {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      const sceneJson = JSON.stringify(scene, null, 2);
+      const scenePath = this.scene_paths.get(sceneName);
+      fs.writeFile(scenePath, sceneJson, (err: any) => {
+        if (err) {
+          console.error(err);
+        }
+      });
+    }
+  }
+
+  add(name: string, scene: Scene, path: string) {
     this.scenes.set(name, scene);
+    this.scene_paths.set(name, path);
   }
 
   addEntity(sceneName: string, entityClass: string, entityName: string, args: string[]) {

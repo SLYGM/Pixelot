@@ -48,9 +48,10 @@ export class OpenProjectDialogComponent {
 
     // load start scene from project.json
     const projectJson = JSON.parse(fs.readFileSync(projJSONPath, "utf8"));
-    const scene = JSON.parse(fs.readFileSync(projectPath + "scenes/" + projectJson.start_scene + ".scene", "utf8"));
+    const scenePath = projectPath + "scenes/" + projectJson.start_scene + ".scene";
+    const scene = JSON.parse(fs.readFileSync(scenePath, "utf8"));
     const sceneName = scene['name'];
-    this.sceneData.add(sceneName, scene);
+    this.sceneData.add(sceneName, scene, scenePath);
 
     // initialize engine
     await engine.doProjectImports(project);

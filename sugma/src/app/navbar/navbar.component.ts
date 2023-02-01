@@ -29,7 +29,7 @@ export class NavbarComponent {
   handleFileSelect(e: any) {
     let files = e.target.files;
     let file = files[0];
-    let path = file.path;
+    let path: string = file.path;
     let sceneName: string;
     let reader = new FileReader();
     reader.onload = (e: any) => {
@@ -37,7 +37,7 @@ export class NavbarComponent {
         let scene = JSON.parse(e.target.result as string);
         console.log(scene);
         sceneName = scene['name'];
-        this.sceneData.add(sceneName, scene);
+        this.sceneData.add(sceneName, scene, path);
       }
     };
     reader.onloadend = (_e: any) => {
