@@ -17,4 +17,6 @@ export * from './mouseState.js';
 
 export * from './importManager.js';
 
+export * from './prefabs.js';
+
 export { Types, Type } from './argTypes.js';
