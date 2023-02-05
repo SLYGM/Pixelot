@@ -15,7 +15,7 @@ import { FileService } from 'app/services/file.service';
 export class FileExplorerComponent {
   @Input() fileElements?: FileElement[] | null
   @Input() canNavigateUp?: boolean
-  @Input() directory_path?: string
+  @Input() directory_path!: string
 
   @Output() fileAdded = new EventEmitter<{ name: string }>()
   @Output() folderAdded = new EventEmitter<{ name: string }>()
@@ -33,6 +33,10 @@ export class FileExplorerComponent {
     this.listDirectory(this.directory_path);
   }
 
+  onInit() {
+    console.log(this.directory_path);
+  }
+
   onDirectorySelected(event) {
     const selectedFile = event.target.files[0];
     console.log(selectedFile.path)
@@ -43,21 +47,18 @@ export class FileExplorerComponent {
     // Use Node.js fs module to read the contents of the directory
     const nw = (window as any).nw;
     const fs = nw.require('fs');
-    const path = nw.require('path');
     fs.readdir(directory_path, (err: any, files: any[]) => {
       if (err) {
         console.error('Error reading directory:', err);
         return;
       }
-      console.log(files);
+
       this.fileElements = [];
       files.forEach(file => {
         if (fs.statSync(directory_path + file).isDirectory()) {
-          console.log(`${file} is a directory.`);
           this.folderAdded.emit({ name: file });
         }
         else {
-          console.log(`${file} is a file.`);
           this.fileAdded.emit({ name: file });
         }
       });
@@ -85,7 +86,20 @@ export class FileExplorerComponent {
   openNewFolderDialog() {
     let dialogRef = this.dialog.open(NewFolderDialogComponent);
     dialogRef.afterClosed().subscribe(res => {
-      if (res) this.folderAdded.emit({ name: res });
+      if (res) {
+        this.folderAdded.emit({ name: res });
+        const folderPath = this.fileService.path + res;
+        const nw = (window as any).nw;
+        const fs = nw.require('fs');
+        fs.mkdir(folderPath, { recursive: false }, err => {
+          if (err) {
+            console.error(`An error occurred while creating the folder: ${err}`);
+            return;
+          }
+
+          console.log(`Folder ${folderPath} created successfully.`);
+        });
+      }
     });
   }
 
