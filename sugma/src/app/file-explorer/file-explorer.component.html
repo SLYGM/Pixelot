@@ -1,13 +1,19 @@
-<mat-toolbar color="primary" style="max-height:45px">
+<mat-toolbar color="primary" style="max-height: 45px">
   <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">
     arrow_back
   </mat-icon>
-  <span style="margin-left: 8px"> {{ path || "Files" }} </span>
+  <span style="margin-left: 8px"> {{ directory_path || "Files" }} </span>
   <span class="spacer"></span>
   <mat-icon class="pointer" (click)="openNewFolderDialog()">
     create_new_folder
   </mat-icon>
-  <mat-icon class="pointer" style="margin-left: 8px" (click)="openNewFileDialog()"> insert_drive_file</mat-icon>
+  <mat-icon
+    class="pointer"
+    style="margin-left: 8px"
+    (click)="openNewFileDialog()"
+  >
+    insert_drive_file</mat-icon
+  >
 </mat-toolbar>
 
 <div

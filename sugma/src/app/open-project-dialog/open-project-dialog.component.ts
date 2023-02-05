@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { FileService } from 'app/services/file.service';
 import { SceneDataService } from 'app/services/scene-data.service';
 import * as engine from 'retro-engine';
 
@@ -15,7 +16,7 @@ const fs = nw.require("fs");
 export class OpenProjectDialogComponent {
   projects: string[] = [];
 
-  constructor(public dialogRef: MatDialogRef<OpenProjectDialogComponent>, private router: Router, private sceneData: SceneDataService) {}
+  constructor(public dialogRef: MatDialogRef<OpenProjectDialogComponent>, private router: Router, private sceneData: SceneDataService, public fileService: FileService) {}
 
   ngOnInit() {
     fs.readdir("../sugma/projects", (err: any, files: any[]) => {
@@ -43,6 +44,7 @@ export class OpenProjectDialogComponent {
   async projectSelected(project: string) {
     this.dialogRef.close();
     const projectPath = "../sugma/projects/" + project + "/";
+    this.fileService.path = projectPath;
     const projectFiles = engine.ImportManager.getFilePaths(projectPath);
     const projJSONPath = projectPath + projectFiles.project + ".proj";
 

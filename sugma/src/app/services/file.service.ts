@@ -17,6 +17,7 @@ export interface IFileService {
 export class FileService implements IFileService {
   private map = new Map<string, FileElement>();
   private querySubject?: BehaviorSubject<FileElement[]>
+  public path?: string
 
   constructor() {}
 

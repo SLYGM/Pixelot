@@ -5,6 +5,7 @@ import { NewFolderDialogComponent } from './modals/new-folder-dialog/new-folder-
 import { RenameDialogComponent } from './modals/rename-dialog/rename-dialog.component';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { NewFileDialogComponent } from './modals/new-file-dialog/new-file-dialog.component';
+import { FileService } from 'app/services/file.service';
 
 @Component({
   selector: 'app-file-explorer',
@@ -14,9 +15,9 @@ import { NewFileDialogComponent } from './modals/new-file-dialog/new-file-dialog
 export class FileExplorerComponent {
   @Input() fileElements?: FileElement[] | null
   @Input() canNavigateUp?: boolean
-  @Input() path?: string
+  @Input() directory_path?: string
 
-  @Output() fileAdded = new EventEmitter<{name: string}>()
+  @Output() fileAdded = new EventEmitter<{ name: string }>()
   @Output() folderAdded = new EventEmitter<{ name: string }>()
   @Output() elementRemoved = new EventEmitter<FileElement>()
   @Output() elementRenamed = new EventEmitter<FileElement>()
@@ -27,7 +28,41 @@ export class FileExplorerComponent {
   @Output() navigatedDown = new EventEmitter<FileElement>()
   @Output() navigatedUp = new EventEmitter()
 
-  constructor(public dialog: MatDialog) { }
+  constructor(public dialog: MatDialog, public fileService: FileService) {
+    this.directory_path = fileService.path;
+    this.listDirectory(this.directory_path);
+  }
+
+  onDirectorySelected(event) {
+    const selectedFile = event.target.files[0];
+    console.log(selectedFile.path)
+    this.listDirectory(selectedFile.path);
+  }
+
+  listDirectory(directory_path: string) {
+    // Use Node.js fs module to read the contents of the directory
+    const nw = (window as any).nw;
+    const fs = nw.require('fs');
+    const path = nw.require('path');
+    fs.readdir(directory_path, (err: any, files: any[]) => {
+      if (err) {
+        console.error('Error reading directory:', err);
+        return;
+      }
+      console.log(files);
+      this.fileElements = [];
+      files.forEach(file => {
+        if (fs.statSync(directory_path + file).isDirectory()) {
+          console.log(`${file} is a directory.`);
+          this.folderAdded.emit({ name: file });
+        }
+        else {
+          console.log(`${file} is a file.`);
+          this.fileAdded.emit({ name: file });
+        }
+      });
+    });
+  }
 
   deleteElement(element: FileElement) {
     this.elementRemoved.emit(element);
