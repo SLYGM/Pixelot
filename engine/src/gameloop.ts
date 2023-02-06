@@ -12,7 +12,6 @@ export class Game {
     static render_only = false;
     static time = 0;
     static start_scene: string;
-    static project_dir: string;
 
     static {
         Game.updateQueue = new Array<Updatable>();
@@ -20,7 +19,7 @@ export class Game {
 
     static start(render_only = false) {
         Game.addToUpdateQueue(SceneManager);
-        SceneManager.switchToScene(this.start_scene, this.project_dir);
+        SceneManager.switchToScene(this.start_scene);
 
         this.render_only = render_only;
         requestAnimationFrame(this.gameloop.bind(this));
@@ -52,7 +51,7 @@ export class Game {
     static loadGame(project_dir: string) {
         const fs = nw.require("fs");
 
-        this.project_dir = project_dir;
+        SceneManager.project_dir = project_dir;
         const project_file_path = project_dir + "/project.proj";
 
         // load the project json which contains all info needed to initialise the game

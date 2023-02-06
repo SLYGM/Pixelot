@@ -58,7 +58,7 @@ export class OpenProjectDialogComponent {
     engine.Game.loadGame(projectPath);
     const startScene = engine.Game.start_scene;
     // preload the start scene
-    engine.SceneManager.preLoadScene(startScene, projectPath);
+    engine.SceneManager.preLoadScene(startScene);
     engine.Game.start(true);
     this.router.navigate(["/scene/" + projectJson.start_scene]);
   }

@@ -8,6 +8,7 @@ const nw = (window as any).nw;
 export class SceneManager {
     static loaded_scenes: Map<string, Scene>;
     static currentScene: Scene;
+    static project_dir: string;
 
     static {
         this.loaded_scenes = new Map();
@@ -28,10 +29,9 @@ export class SceneManager {
      * Switches the current scene to the scene with the given name
      * 
      * @param scene_name The name of the scene to switch to
-     * @param project_dir The path to the root of the project
      * @param unload_current Whether to unload the current scene
      */
-    static switchToScene(scene_name: string, project_dir: string, unload_current = true) {
+    static switchToScene(scene_name: string, unload_current = true) {
         if (unload_current && this.currentScene) {
             this.currentScene.destroy();
             this.loaded_scenes.delete(this.currentScene.name);
@@ -41,7 +41,7 @@ export class SceneManager {
         if (this.loaded_scenes.has(scene_name)) {
             this.currentScene = this.loaded_scenes.get(scene_name);
         } else {
-            const path = FileUtils.findFile(scene_name + ".scene", project_dir);
+            const path = FileUtils.findFile(scene_name + ".scene", this.project_dir);
             if (!path) {
                 throw new Error("No scene found with name " + scene_name);
             }
@@ -55,11 +55,10 @@ export class SceneManager {
      * Pre-load the scene with the given name, so that it can be quickly switched to later
      * 
      * @param scene_name The name of the scene to load
-     * @param project_dir The path to the root of the project
      */
-    static preLoadScene(scene_name: string, project_dir: string) {
+    static preLoadScene(scene_name: string) {
         if (!this.loaded_scenes.has(scene_name)) {
-            const path = FileUtils.findFile(scene_name + ".scene", project_dir);
+            const path = FileUtils.findFile(scene_name + ".scene", this.project_dir);
             if (!path) {
                 throw new Error("No scene found with name " + scene_name);
             }
