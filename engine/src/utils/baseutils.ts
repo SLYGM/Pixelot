@@ -16,7 +16,7 @@ export class FileUtils {
      * @param startPath starting path of the search e.g. './projects/project1/'
      * @returns file path if found, null otherwise
      */
-    static findFile(name: string, startPath: string) {
+    static findFile(name: string, startPath: string): string | null {
         // if file exists, return it's path
         if (fs.existsSync(startPath + name)) {
             return path.join(startPath, name);

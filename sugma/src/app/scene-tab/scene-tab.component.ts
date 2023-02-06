@@ -55,7 +55,7 @@ export class SceneTabComponent {
 
       if (engine.SceneManager.getSceneNames().includes(this.sceneName)) {
         console.log("Loading scene " + this.sceneName);
-        engine.SceneManager.switchToScene(this.sceneName, false);
+        engine.SceneManager.switchToScene(this.sceneName, engine.Game.project_dir, false);
         this.scene = engine.SceneManager.currentScene;
       } else {
         // The scene doesn't exist, so redirect home

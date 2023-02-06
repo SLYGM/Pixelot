@@ -42,7 +42,7 @@ export class NavbarComponent {
     };
     reader.onloadend = (_e: any) => {
       console.log(sceneName);
-      engine.SceneManager.preLoadScene(sceneName, path);
+      engine.SceneManager.preLoadScene(sceneName, engine.Game.project_dir);
       this.scenes = [ ...engine.SceneManager.loaded_scenes.keys() ];
     };
     reader.readAsText(file);

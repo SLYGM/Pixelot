@@ -1,6 +1,7 @@
 import { GameObjectBase, System } from "./ecs.js";
 import { Scene } from "./scene.js";
 import { ImportManager } from "./importManager.js";
+import { FileUtils } from "./engineExport.js";
 
 const nw = (window as any).nw;
 
@@ -27,9 +28,10 @@ export class SceneManager {
      * Switches the current scene to the scene with the given name
      * 
      * @param scene_name The name of the scene to switch to
+     * @param project_dir The path to the root of the project
      * @param unload_current Whether to unload the current scene
      */
-    static switchToScene(scene_name: string, unload_current: boolean = true) {
+    static switchToScene(scene_name: string, project_dir: string, unload_current = true) {
         if (unload_current && this.currentScene) {
             this.currentScene.destroy();
             this.loaded_scenes.delete(this.currentScene.name);
@@ -39,7 +41,12 @@ export class SceneManager {
         if (this.loaded_scenes.has(scene_name)) {
             this.currentScene = this.loaded_scenes.get(scene_name);
         } else {
-            this.currentScene = this.loadScene(scene_name);
+            const path = FileUtils.findFile(scene_name + ".scene", project_dir);
+            if (!path) {
+                throw new Error("No scene found with name " + scene_name);
+            }
+            this.currentScene = this.loadScene(path);
+            this.loaded_scenes.set(scene_name, this.currentScene);
         }
     }
 
@@ -48,10 +55,15 @@ export class SceneManager {
      * Pre-load the scene with the given name, so that it can be quickly switched to later
      * 
      * @param scene_name The name of the scene to load
+     * @param project_dir The path to the root of the project
      */
-    static preLoadScene(scene_name: string, path?: string) {
+    static preLoadScene(scene_name: string, project_dir: string) {
         if (!this.loaded_scenes.has(scene_name)) {
-            this.loaded_scenes.set(scene_name, this.loadScene(scene_name, path));
+            const path = FileUtils.findFile(scene_name + ".scene", project_dir);
+            if (!path) {
+                throw new Error("No scene found with name " + scene_name);
+            }
+            this.loaded_scenes.set(scene_name, this.loadScene(path));
         } else {
             console.log(`Warning: scene ${scene_name} has already been pre-loaded`);
         }
@@ -78,34 +90,29 @@ export class SceneManager {
      * 
      * @param scene_names The names of the scenes to load
      */
-    static batchLoadScenes(scene_names: string[]) {
-        scene_names.forEach((scene_name) => { this.preLoadScene(scene_name); });
-    }
+    // static batchLoadScenes(scene_names: string[]) {
+        // scene_names.forEach((scene_name) => { this.preLoadScene(scene_name); });
+    // }
 
 
     /**
      * Load a scene by name from a json file
      * 
-     * @param scene_name The name of the scene to load
+     * @param path The path to the scene file
      * @returns the loaded scene
      */
-    static loadScene(scene_name: string, path?: string): Scene {
+    static loadScene(path: string): Scene {
         const fs = nw.require("fs");
 
         // read JSON object from file
-        let data: { toString: () => string; };
-        if (path) {
-            data = fs.readFileSync(path, "utf8");
-        } else {
-            data = fs.readFileSync("../engine/" + scene_name + ".json", {encoding: "utf-8"});
-        }
+        const data = fs.readFileSync(path, "utf8");
 
         // parse JSON object
         const loadedSceneJson = JSON.parse(data.toString());
         const loadedEntities = loadedSceneJson["entities"];
 
         // construct Scene object from json data and add to sceneManager
-        const scene = new Scene(scene_name);
+        const scene = new Scene(loadedSceneJson["name"]);
 
         // construct each entity in the scene
         for (const entity of loadedEntities) {
