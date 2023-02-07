@@ -80,10 +80,11 @@ export class Scene {
         return this.entities.get(name);
     }
 
-    // Remove the given entity from the scene
-    deleteEntity(entity: GameObjectBase) {
-        this.entities.delete(entity.name);
+    // Remove the entity with the given name from the scene
+    deleteEntity(name: string) {
+        this.entities.delete(name);
         // Remove the entity from the systems that require it
+        const entity = this.entities.get(name);
         for (const system_node of this.systems) {
             system_node.entities.delete(entity);
         }

@@ -4,7 +4,7 @@ import { filter } from 'rxjs/operators';
 
 import * as engine from 'retro-engine';
 import { Subscription } from 'rxjs';
-import { GameObjectBase, Scene } from 'retro-engine';
+import { Scene } from 'retro-engine';
 import { LeftSidebarComponent } from 'app/left-sidebar/left-sidebar.component';
 
 @Component({
@@ -66,7 +66,7 @@ export class SceneTabComponent {
     });
   }
 
-  handleEntitySelected(entity: string) {
+  handleEntitySelected(entity: string | null) {
     this.selectedEntity = entity;
   }
 

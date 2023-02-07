@@ -62,6 +62,13 @@ export class SceneDataService {
     }
   }
 
+  removeEntity(sceneName: string, entityName: string) {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      scene.entities = scene.entities.filter(entity => entity.name !== entityName);
+    }
+  }
+
   getEntityClass(sceneName: string, entityName: string): string {
     const scene = this.scenes.get(sceneName);
     if (scene) {

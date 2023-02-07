@@ -36,6 +36,8 @@ export class RightSidebarComponent {
   update() {
     if (this.entityName) {
       this.entity = engine.SceneManager.currentScene.getEntity(this.entityName);
+    } else {
+      this.entity = undefined;
     }
     if (engine.SceneManager.currentScene) {
       this.currentSceneName = engine.SceneManager.currentScene.name;

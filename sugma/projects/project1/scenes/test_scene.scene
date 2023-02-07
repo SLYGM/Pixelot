@@ -2,32 +2,25 @@
   "name": "test_scene",
   "entities": [
     {
-      "name": "tile",
+      "name": "frog",
       "class": "Player",
       "args": [
-        "9",
-        "true"
+        0,
+        false
       ],
       "components": [
         {
           "component_name": "Position",
           "args": [
-            "10",
-            "10"
-          ]
-        },
-        {
-          "component_name": "Velocity",
-          "args": [
-            "1",
-            "1"
+            "100",
+            "100"
           ]
         },
         {
           "component_name": "Sprite",
           "args": [
-            "tile",
-            "background",
+            "frog",
+            "foreground",
             0
           ]
         }

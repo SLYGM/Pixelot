@@ -1,12 +1,13 @@
-import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SceneDataService } from 'app/services/scene-data.service';
 import { Observable } from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import * as engine from 'retro-engine';
-import { GameObjectBase, Scene } from 'retro-engine';
+import { Scene } from 'retro-engine';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-left-sidebar',
@@ -14,6 +15,7 @@ import { GameObjectBase, Scene } from 'retro-engine';
   styleUrls: ['./left-sidebar.component.scss']
 })
 export class LeftSidebarComponent {
+  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @Input() scene?: Scene;
   @Input() layerNames: string[];
   @Output() entitySelected = new EventEmitter<string>();
@@ -54,6 +56,19 @@ export class LeftSidebarComponent {
     this.entitySelected.emit(entity);
   }
 
+  handleEntityRightclick(event: Event) {
+    event.preventDefault();
+    this.trigger.openMenu();
+  }
+
+  deleteEntity(entity: string) {
+    this.sceneData.removeEntity(this.scene.name, entity);
+    engine.SceneManager.currentScene.deleteEntity(entity);
+    this.entitySelected.emit(null);
+    this.update();
+    this.sceneData.saveScene(this.scene.name);
+  }
+
   openEntityDialog(): void {
     const dialogRef = this.dialog.open(AddEntityDialog, {
       width: '500px',
@@ -80,6 +95,7 @@ export class LeftSidebarComponent {
           this.scene?.addEntity(entity, default_args);
           this.sceneData.addEntity(this.scene.name, entityClass, entityName, default_args);
           this.update();
+          this.sceneData.saveScene(this.scene.name);
         }
       }
     });
