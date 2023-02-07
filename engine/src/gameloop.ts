@@ -17,7 +17,7 @@ export class Game {
         Game.updateQueue = new Array<Updatable>();
     }
 
-    static start(render_only: boolean = false) {
+    static start(render_only = false) {
         Game.addToUpdateQueue(SceneManager);
         SceneManager.switchToScene(this.start_scene);
 
@@ -46,13 +46,16 @@ export class Game {
     /**
      * Load a project from a project json file
      * 
-     * @param src the path to the project json
+     * @param project_dir The path to the root of the project (containing the .proj file)
      */
-    static loadGame(projJSONPath: string) {
+    static loadGame(project_dir: string) {
         const fs = nw.require("fs");
 
+        SceneManager.project_dir = project_dir;
+        const project_file_path = project_dir + "/project.proj";
+
         // load the project json which contains all info needed to initialise the game
-        const data = fs.readFileSync(projJSONPath, {encoding: "utf-8"});
+        const data = fs.readFileSync(project_file_path, {encoding: "utf-8"});
         const game_data = JSON.parse(data.toString());
     
         Renderer.setResolution(game_data["resolution"][0], game_data["resolution"][1]);
