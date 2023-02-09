@@ -1,5 +1,4 @@
-import { PostProcess } from "../engineExport.js";
-
+import { PostProcess } from "../renderer/post_process";
 
 export default class BarrelShader extends PostProcess {
     static arg_names = []
