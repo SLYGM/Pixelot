@@ -16,7 +16,9 @@ export class FileManagerComponent {
   currentPath!: string;
   canNavigateUp = false;
 
-  constructor(public fileService: FileService) { }
+  constructor(public fileService: FileService) {
+    this.currentPath = fileService.path;
+  }
 
   addFolder(folder: { name: string }) {
     this.fileService.add({ id: v4(), isFolder: true, name: folder.name, parent: this.currentRoot ? this.currentRoot.id : 'root' });
@@ -52,13 +54,13 @@ export class FileManagerComponent {
       this.currentRoot = null;
       this.canNavigateUp = false;
       this.updateFileElementQuery();
-    } else if(this.currentRoot?.parent) {
+    } else if (this.currentRoot?.parent) {
       this.currentRoot = this.fileService.get(this.currentRoot.parent);
       this.updateFileElementQuery();
     }
     this.currentPath = this.popFromPath(this.currentPath);
   }
-  
+
   navigateToFolder(element: FileElement) {
     this.currentRoot = element;
     this.updateFileElementQuery();
@@ -71,7 +73,7 @@ export class FileManagerComponent {
     p += `${folderName}/`;
     return p;
   }
-  
+
   popFromPath(path: string) {
     let p = path ? path : '';
     let split = p.split('/');
