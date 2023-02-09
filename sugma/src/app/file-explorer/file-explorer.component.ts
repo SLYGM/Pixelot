@@ -83,6 +83,11 @@ export class FileExplorerComponent {
         });
       });
     }
+    else {
+      const nw = (window as any).nw;
+      const open = nw.require('open');
+      open(this.directory_path + element.name);
+    }
   }
 
   navigateUp() {
@@ -118,7 +123,7 @@ export class FileExplorerComponent {
     dialogRef.afterClosed().subscribe(res => {
       if (res) this.fileAdded.emit({ name: res });
       const filePath = this.fileService.path + res;
-      const content = 'Hello World!';
+      const content = '';
       const nw = (window as any).nw;
       const fs = nw.require('fs');
       fs.writeFile(filePath, content, err => {
@@ -126,8 +131,10 @@ export class FileExplorerComponent {
           console.error(`An error occurred while writing to the file: ${err}`);
           return;
         }
-
         console.log(`File ${filePath} created successfully.`);
+        const nw = (window as any).nw;
+        const open = nw.require('open');
+        open(this.fileService.path + res);
       });
     });
   }
