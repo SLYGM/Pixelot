@@ -1,4 +1,5 @@
 import { Component, GameObjectBase, System } from "./ecs.js";
+import { PrefabFactory } from "./prefabs.js";
 import { PostProcess } from "./renderer/post_process.js";
 import { TypedConstructor } from "./typedConstructor.js";
 import { StringUtils } from "./utils/baseutils.js";
@@ -10,17 +11,20 @@ class ProjectFiles {
     project: string;
     scripts: string[];
     scenes: string[];
+    prefabs: string[];
 
     constructor() {
         this.project = null;
         this.scripts = [];
         this.scenes = [];
+        this.prefabs = [];
     }
 
     combine(other: ProjectFiles) {
         this.project = other.project || this.project;
         this.scripts.push(...other.scripts);
         this.scenes.push(...other.scenes);
+        this.prefabs.push(...other.prefabs);
     }
 }
 
@@ -58,6 +62,9 @@ export class ImportManager {
                     else if (StringUtils.isPostfix(file, ".scene")) {
                         projFiles.scenes.push(relPath + fileName);
                     }
+                    else if (StringUtils.isPostfix(file, ".prefab")) {
+                        projFiles.prefabs.push(relPath + fileName);
+                    }
                 }
             });
             
@@ -87,10 +94,12 @@ export class ImportManager {
     
     static async importProjectScripts(project: string) {
         let scripts: string[];
+        let projFiles: ProjectFiles;
         try {
             // note that the fs reading will occur from the apps working directory, 
             // whereas the dynamic importing is done from the engine's src directory, hence the paths differ
-            scripts = this.getFilePaths(`./projects/${project}/`).scripts;
+            projFiles = this.getFilePaths(`./projects/${project}/`);
+            scripts = projFiles.scripts;
         } catch (e) {
             console.trace(e);
             return;
@@ -107,6 +116,11 @@ export class ImportManager {
                 // we know the types are correct here if map exists (see getMapFromImport), so we can use map as any
                 (map as any).set(a.default.name, typed_constr);
             }
+        }
+
+        // load prefabs once all scripts have been loaded
+        for (const prefab of projFiles.prefabs) {
+            PrefabFactory.loadPrefab(`./projects/${project}/` + prefab + ".prefab");
         }
     }
 

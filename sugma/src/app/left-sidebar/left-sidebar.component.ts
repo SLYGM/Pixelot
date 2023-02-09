@@ -8,6 +8,10 @@ import {map, startWith} from 'rxjs/operators';
 import * as engine from 'retro-engine';
 import { Scene } from 'retro-engine';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { GameObjectBase } from 'retro-engine';
+import { TypedConstructor } from 'retro-engine/build/typedConstructor';
+import { FileUtils } from 'retro-engine';
 
 @Component({
   selector: 'app-left-sidebar',
@@ -75,13 +79,36 @@ export class LeftSidebarComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
-      const entityClass = result['gameObjectName'];
-      const entityName = result['entityName'];
+      const entityClass = result.base as EntityClass;
+      const entityName = result.entityName as string;
+      
       if (entityClass && entityName) {
-        const gameObject = engine.ImportManager.getEntity(entityClass);
-        if (gameObject) {
-          let entity = new gameObject.constr(entityName);
+        let entity: GameObjectBase;
+        let gameObject: TypedConstructor<GameObjectBase>;
+        let className: string;
+
+        // result needs to be handled differently if it's a prefab or not
+        if (result.base.prefab) {
+          // get the base class of the prefab
+          gameObject = engine.PrefabFactory.getPrefab(entityClass.name).base;
+          className = engine.PrefabFactory.getPrefab(entityClass.name).base.constr.name;
+          // preload the prefab
+          const prefab_path = FileUtils.findFile(entityClass.name + ".prefab", engine.SceneManager.project_dir);
+          if (prefab_path) {
+            engine.PrefabFactory.loadPrefab(prefab_path);
+          } else {
+            console.error(`Prefab ${entityClass.name} not found`);
+            return null;
+          }
+          // create the entity from the prefab
+          entity = engine.PrefabFactory.create(entityClass.name, entityName);
+        }
+        else {
+          gameObject = engine.ImportManager.getEntity(entityClass.name);
+          className = entityClass.name;
+          entity = new gameObject.constr(entityName);
+        }
+        if (gameObject && entity) {
           let default_args = [];
           for (const t of gameObject.arg_types) {
             if (t === engine.Types.String) {
@@ -93,14 +120,32 @@ export class LeftSidebarComponent {
             }
           }
           this.scene?.addEntity(entity, default_args);
-          this.sceneData.addEntity(this.scene.name, entityClass, entityName, default_args);
+          this.sceneData.addEntity(this.scene.name, className, entityName, default_args);
           this.update();
+          
+          // if it's a prefab, also add all the components to the scene data
+          if (result.base.prefab) {
+            const components = engine.PrefabFactory.getPrefab(entityClass.name).components;
+            for (const component of components) {
+              // the args need to be converted back to strings
+              this.sceneData.addComponent(this.scene.name, entityName, 
+                component.constr.constr.name, component.args.map(arg => String(arg)));
+              }
+            }
+          }
+
+          // finally, save the scene
           this.sceneData.saveScene(this.scene.name);
-        }
       }
     });
 
   }
+}
+
+// represents a base class for a new entity
+type EntityClass = {
+  name: string,
+  prefab: boolean,
 }
 
 @Component({
@@ -110,21 +155,47 @@ export class LeftSidebarComponent {
 export class AddEntityDialog {
   nameForm = new FormControl('');
   gameObjectForm = new FormControl('');
-  options: string[] = engine.ImportManager.getAllEntities();
-  filteredOptions: Observable<string[]>;
+  options: EntityClass[] = [];
+  filtered_base: Observable<EntityClass[]>;
+  filtered_prefab: Observable<EntityClass[]>;
+  selectedOption: EntityClass = null;
 
   constructor(
     public dialogRef: MatDialogRef<AddEntityDialog>,
   ) {
-    this.filteredOptions = this.gameObjectForm.valueChanges.pipe(
+    this.options = this.getOptions();
+    this.filtered_base = this.gameObjectForm.valueChanges.pipe(
       startWith(''),
-      map(value => this._filter(value || ''))
+      map(value => this._filter(value || '', this.options.filter(e => !e.prefab)))
+    );
+    this.filtered_prefab = this.gameObjectForm.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '', this.options.filter(e => e.prefab)))
     );
   }
 
-  private _filter(value: string): string[] {
+  getOptions(): EntityClass[] {
+    const options = [];
+    for (const name of engine.ImportManager.getAllEntities()) {
+      options.push({name, prefab: false});
+    }
+    for (const name of engine.PrefabFactory.getAllPrefabNames()) {
+      options.push({name, prefab: true});
+    }
+    return options;
+  }
+
+  displayFn(entityClass: EntityClass): string {
+    return entityClass && entityClass.name ? entityClass.name : '';
+  }
+
+  selectOption(e: MatAutocompleteSelectedEvent) {
+    this.selectedOption = e.option.value;
+  }
+
+  private _filter(value: string, values: EntityClass[]): EntityClass[] {
     const filterValue = value.toLowerCase();
-    return this.options.filter(option => option.toLowerCase().includes(filterValue));
+    return values.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
   onCancelClick(): void {
@@ -132,8 +203,8 @@ export class AddEntityDialog {
   }
 
   onAddClick(): void {
-    const gameObjectName = this.gameObjectForm.value;
+    const base = this.selectedOption;
     const entityName = this.nameForm.value;
-    this.dialogRef.close({gameObjectName, entityName});
+    this.dialogRef.close({base, entityName});
   }
 }

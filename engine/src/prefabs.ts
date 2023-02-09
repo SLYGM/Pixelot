@@ -28,7 +28,7 @@ class Prefab {
     constructor(prefabPath: string) {
         this.components = [];
         const prefabJSON = JSON.parse(fs.readFileSync(prefabPath));
-        this.base = ImportManager.getEntity(prefabJSON['base']);
+        this.base = ImportManager.getEntity(prefabJSON['class']);
         this.name = prefabJSON['name'];
         for (const component of prefabJSON['components']) {
             const compConstructor = ImportManager.getComponent(component['component_name']);
@@ -37,12 +37,11 @@ class Prefab {
         }
     }
 
-    create(...args: any[]) {
-        const instance = new this.base.constr();
+    create(name?: string) {
+        const instance = new this.base.constr(name);
         for (const component of this.components) {
             instance.add(component.create());
         }
-        instance.onCreate(...args);
         return instance;
     }
 }
@@ -58,32 +57,43 @@ export class PrefabFactory {
      * @param path 
      */
     static loadPrefab(path: string) {
-        // TODO: cache commonly used prefabs 
         const prefab = new Prefab(path);
         this.prefabs.set(prefab.name, prefab);
     }
 
-    static create(name: string, ...args: any[]) {
-        const prefab = this.prefabs.get(name);
-        //TODO: get prefab from file if not in map when using in built game
+    /**
+     * 
+     * @returns list of all prefab names
+     */
+    static getAllPrefabNames() {
+        return Array.from(this.prefabs.keys());
+    }
+
+    /**
+     * 
+     * @param name name of the prefab
+     * @returns prefab instance, or null if not found
+     */
+    static getPrefab(name: string) {
+        return this.prefabs.get(name);
+    }
+ 
+    /**
+    * Create a prefab instance with the given name and arguments. 
+    * This function won't call the `onCreate` method, as this should be called by the scene.
+    * **NOTE**: if using in editor, then make sure to use `PrefabFactory.loadPrefab` before calling this function.
+    * 
+    * @param name name of the prefab to spawn
+    * @param args list of constructor arguments for the prefab
+    * @returns Spawned entity instance
+    */
+    static create(prefab_name: string, name?: string) {
+        const prefab = this.prefabs.get(prefab_name);
         if (!prefab) {
-            console.trace("Prefab not found: " + name);
+            console.trace("Prefab not found: " + prefab_name);
             return null;
         }
-        const instance = prefab.create(...args);
-        instance.onCreate(...args);
+        const instance = prefab.create(name);
         return instance;
     }
-}
-
-/**
- * Spawn a prefab with the given name and arguments.  
- * **NOTE**: if using in editor, then make sure to use `PrefabFactory.loadPrefab` before calling this function.
- * 
- * @param name name of the prefab to spawn
- * @param args list of constructor arguments for the prefab
- * @returns Spawned entity instance
- */
-export function spawnPrefab(name: string, args: any[]) {
-    return PrefabFactory.create(name, ...args);
 }
