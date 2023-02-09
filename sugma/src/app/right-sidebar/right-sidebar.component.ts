@@ -8,6 +8,10 @@ import * as engine from 'retro-engine';
 import { GameObjectBase } from 'retro-engine';
 import { SceneDataService } from 'app/services/scene-data.service';
 
+const nw = (window as any).nw;
+const fs = nw.require('fs');
+const path = nw.require('path');
+
 @Component({
   selector: 'app-right-sidebar',
   templateUrl: './right-sidebar.component.html',
@@ -132,6 +136,16 @@ export class RightSidebarComponent {
 
     // Save changes to file
     this.sceneData.saveScene(this.currentSceneName);
+  }
+
+  saveAsPrefab() {
+    // get the selected entity
+    const ent = this.sceneData.scenes.get(this.currentSceneName)
+                .entities.find(e => e.name === this.entityName);
+    const ent_path = path.join(engine.SceneManager.project_dir, ent.name + '.prefab')
+    fs.writeFileSync(ent_path, JSON.stringify(ent));
+    // load the newly created prefab
+    engine.PrefabFactory.loadPrefab(ent_path);
   }
 }
 

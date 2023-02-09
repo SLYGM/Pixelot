@@ -31,17 +31,10 @@ export class FileExplorerComponent {
   constructor(public dialog: MatDialog, public fileService: FileService) {
     this.directory_path = fileService.path;
     this.listDirectory(this.directory_path);
+    this.fileElements = [];
   }
 
-  onInit() {
-    console.log(this.directory_path);
-  }
-
-  onDirectorySelected(event) {
-    const selectedFile = event.target.files[0];
-    console.log(selectedFile.path)
-    this.listDirectory(selectedFile.path);
-  }
+  ngOnInit() { }
 
   listDirectory(directory_path: string) {
     // Use Node.js fs module to read the contents of the directory
@@ -53,7 +46,6 @@ export class FileExplorerComponent {
         return;
       }
 
-      this.fileElements = [];
       files.forEach(file => {
         if (fs.statSync(directory_path + file).isDirectory()) {
           this.folderAdded.emit({ name: file });
@@ -72,6 +64,29 @@ export class FileExplorerComponent {
   navigate(element: FileElement) {
     if (element.isFolder) {
       this.navigatedDown.emit(element);
+
+      const nw = (window as any).nw;
+      const fs = nw.require('fs');
+      fs.readdir(this.directory_path + element.name, (err: any, files: any[]) => {
+        if (err) {
+          console.error('Error reading directory:', err);
+          return;
+        }
+
+        files.forEach(file => {
+          if (fs.statSync(this.directory_path + file).isDirectory()) {
+            this.folderAdded.emit({ name: file });
+          }
+          else {
+            this.fileAdded.emit({ name: file });
+          }
+        });
+      });
+    }
+    else {
+      const nw = (window as any).nw;
+      const open = nw.require('open');
+      open(this.directory_path + element.name);
     }
   }
 
@@ -107,6 +122,20 @@ export class FileExplorerComponent {
     let dialogRef = this.dialog.open(NewFileDialogComponent);
     dialogRef.afterClosed().subscribe(res => {
       if (res) this.fileAdded.emit({ name: res });
+      const filePath = this.fileService.path + res;
+      const content = '';
+      const nw = (window as any).nw;
+      const fs = nw.require('fs');
+      fs.writeFile(filePath, content, err => {
+        if (err) {
+          console.error(`An error occurred while writing to the file: ${err}`);
+          return;
+        }
+        console.log(`File ${filePath} created successfully.`);
+        const nw = (window as any).nw;
+        const open = nw.require('open');
+        open(this.fileService.path + res);
+      });
     });
   }
 
