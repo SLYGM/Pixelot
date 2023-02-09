@@ -23,6 +23,13 @@
             "foreground",
             0
           ]
+        },
+        {
+          "component_name": "Velocity",
+          "args": [
+            "0.1",
+            0
+          ]
         }
       ]
     }
