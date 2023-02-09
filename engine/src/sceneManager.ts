@@ -115,16 +115,13 @@ export class SceneManager {
         // construct Scene object from json data and add to sceneManager
         const scene = new Scene(loadedSceneJson["name"]);
 
-        console.log(loadedLayers);
         for (const layer of loadedLayers) {
             Renderer.addLayer(new SpriteLayer(), layer, scene);
         }
-        console.log(Renderer.layerAliases, Renderer.layers);
 
         // construct each entity in the scene
         for (const entity of loadedEntities) {
             const entity_constr = ImportManager.getEntity(entity["class"]);
-            console.log(entity_constr.constr);
             const toAdd = new entity_constr.constr(entity["name"], scene);
             const ent_args = entity_constr.parseArgs(entity["args"]);
 
