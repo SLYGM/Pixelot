@@ -42,7 +42,7 @@ class Prefab {
         for (const component of this.components) {
             instance.add(component.create());
         }
-        instance.onCreate(...args);
+        instance._create(...args);
         return instance;
     }
 }
@@ -71,7 +71,7 @@ export class PrefabFactory {
             return null;
         }
         const instance = prefab.create(...args);
-        instance.onCreate(...args);
+        instance._create(...args);
         return instance;
     }
 }

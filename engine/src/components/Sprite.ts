@@ -13,15 +13,19 @@ export default class Sprite extends Component {
     tex: string;
     layer: RenderLayer;
     zindex: number;
+    lr: string;
 
     //sprites will be drawn above objects with a lower z index than their own
     constructor(texAlias: string, lr: string, zi: number = 0) {
         super();
         this.tex = texAlias;
         this.zindex = zi;
-        const layer = Renderer.getLayer(lr);
+        this.lr = lr;
+    }
+
+    override onCreate() {
+        const layer = Renderer.getLayer(this.lr, this.owner.scene);
         if (layer && layer instanceof SpriteLayer) layer.addSprite(this);
-        else return undefined;
         this.layer = layer;
     }
 

@@ -1,3 +1,5 @@
+import { Scene } from "./scene";
+
 export abstract class Component {
     /**
      * The list of components that this component depends on.
@@ -10,10 +12,16 @@ export abstract class Component {
         this.owner = owner;
     }
 
+    _create() {
+        this.onCreate();
+    }
+
     _delete() {
         this.owner = null;
         this.onDelete();
     }
+
+    onCreate() {}
 
     onDelete() {}
 }
@@ -44,13 +52,15 @@ export abstract class GameObjectBase {
     // Mapping from component name to component instance
     private component_map: Map<string, Component> = new Map();
     public name: string;
+    public scene: Scene;
 
     /**
      * Constructor which wraps the object in a proxy.
      * This allows the user to access the components directly.
      */
-    constructor(name: string) {
+    constructor(name: string, scene: Scene) {
         this.name = name;
+        this.scene = scene;
         return new Proxy(this, {
             get: (target, prop: string) => {
                 if (this.component_map.has(prop)) {
@@ -67,6 +77,13 @@ export abstract class GameObjectBase {
             component._delete();
         }
         this.component_map.clear();
+    }
+
+    _create(...args: any[]) {
+        for (const component of this.component_map.values()) {
+            component._create();
+        }
+        this.onCreate(...args);
     }
 
     /**

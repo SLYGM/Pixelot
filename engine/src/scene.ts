@@ -65,7 +65,7 @@ export class Scene {
         
 
         this.entities.set(entity.name, entity);
-        entity.onCreate(...args);
+        entity._create(...args);
 
         // Add the entity to the systems that require it
         for (const system_node of this.systems) {
