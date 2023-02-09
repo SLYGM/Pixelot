@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { FileExplorerComponent } from 'app/file-explorer/file-explorer.component';
 import { FileElement } from 'app/file-explorer/model/file-element';
 import { FileService } from 'app/services/file.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { toArray } from 'rxjs/operators';
 import { v4 } from 'uuid';
 
 @Component({
@@ -47,6 +48,11 @@ export class FileManagerComponent {
 
   updateFileElementQuery() {
     this.fileElements = this.fileService.queryInFolder(this.currentRoot ? this.currentRoot.id : 'root');
+    this.fileElements.pipe()
+      .subscribe((array) => {
+        const sortedArray = array.sort((a, b) => Number(b.isFolder) - Number(a.isFolder));
+        this.fileElements = of(sortedArray);
+      });
   }
 
   navigateUp() {
