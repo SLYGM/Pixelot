@@ -79,9 +79,16 @@ export class LeftSidebarComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
+      // if the dialog was cancelled, return
+      if (!result) {
+        return;
+      }
+
+      // otherwise, get the class and name of the entity
       const entityClass = result.base as EntityClass;
       const entityName = result.entityName as string;
       
+      // if both are valid, create the entity
       if (entityClass && entityName) {
         let entity: GameObjectBase;
         let gameObject: TypedConstructor<GameObjectBase>;
@@ -193,8 +200,14 @@ export class AddEntityDialog {
     this.selectedOption = e.option.value;
   }
 
-  private _filter(value: string, values: EntityClass[]): EntityClass[] {
-    const filterValue = value.toLowerCase();
+  private _filter(value: string | EntityClass, values: EntityClass[]): EntityClass[] {
+    let filterValue: string;
+    if (typeof value === 'string') {
+      filterValue = value.toLowerCase();
+    }
+    else{
+      filterValue = value.name.toLowerCase();
+    }
     return values.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
