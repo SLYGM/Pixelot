@@ -8,16 +8,18 @@ export default class Sprite extends engine.Component {
     tex;
     layer;
     zindex;
+    lr;
     //sprites will be drawn above objects with a lower z index than their own
     constructor(texAlias, lr, zi = 0) {
         super();
         this.tex = texAlias;
         this.zindex = zi;
-        const layer = engine.Renderer.getLayer(lr);
-        if (layer && layer instanceof engine.SpriteLayer)
-            layer.addSprite(this);
-        else
-            return undefined;
+        this.lr = lr;
+    }
+    onCreate() {
+        const layer = engine.Renderer.getLayer(this.lr, this.owner.scene);
+        if (layer && layer instanceof engine.SpriteLayer) layer.addSprite(this);
+        else return undefined;
         this.layer = layer;
     }
     getPos() {

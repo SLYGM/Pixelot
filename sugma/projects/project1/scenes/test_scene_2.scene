@@ -1,5 +1,6 @@
 {
     "name": "test_scene_2",
+    "layers": ["background", "foreground", "ui"],
     "entities": [
         {
             "name": "foreground frog",
