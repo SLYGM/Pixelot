@@ -52,15 +52,14 @@ export abstract class GameObjectBase {
     // Mapping from component name to component instance
     private component_map: Map<string, Component> = new Map();
     public name: string;
-    public scene: Scene;
+    public scene: Scene = null;
 
     /**
      * Constructor which wraps the object in a proxy.
      * This allows the user to access the components directly.
      */
-    constructor(name: string, scene: Scene) {
+    constructor(name: string) {
         this.name = name;
-        this.scene = scene;
         return new Proxy(this, {
             get: (target, prop: string) => {
                 if (this.component_map.has(prop)) {
@@ -69,6 +68,10 @@ export abstract class GameObjectBase {
                 return target[prop];
             },
         });
+    }
+
+    setScene(scene: Scene) {
+        this.scene = scene;
     }
 
     _delete() {
