@@ -122,7 +122,7 @@ export class SceneManager {
         // construct each entity in the scene
         for (const entity of loadedEntities) {
             const entity_constr = ImportManager.getEntity(entity["class"]);
-            const toAdd = new entity_constr.constr(entity["name"], scene);
+            const toAdd = new entity_constr.constr(entity["name"]);
             const ent_args = entity_constr.parseArgs(entity["args"]);
 
             // construct each component on the entity
