@@ -23,7 +23,7 @@
   fxLayoutAlign="space-between stretch"
 >
   <div class="content" fxFlex fxLayout="row">
-    <mat-grid-list cols="6" rowHeight="100px" fxFlex>
+    <mat-grid-list cols="6" fxFlex>
       <mat-grid-tile
         *ngFor="let element of fileElements"
         class="file-or-folder"
@@ -56,7 +56,7 @@
           </mat-icon>
           <br />
 
-          <span>{{ element.name }}</span>
+          <span width="50px">{{ element.name }}</span>
         </div>
       </mat-grid-tile>
     </mat-grid-list>

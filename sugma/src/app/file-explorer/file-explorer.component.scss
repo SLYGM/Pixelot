@@ -32,3 +32,17 @@
 .spacer {
   flex: 1 1 auto;
 }
+
+@media (min-width: 600px) {
+  .grid-list {
+    width: 500px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .grid-list {
+    width: 800px;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

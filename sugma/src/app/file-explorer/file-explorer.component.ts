@@ -59,6 +59,15 @@ export class FileExplorerComponent {
 
   deleteElement(element: FileElement) {
     this.elementRemoved.emit(element);
+    const nw = (window as any).nw;
+    const fs = nw.require('fs');
+    fs.unlink(this.directory_path + element.name, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log('File successfully deleted.');
+      }
+    });
   }
 
   navigate(element: FileElement) {
