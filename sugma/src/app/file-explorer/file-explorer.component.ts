@@ -161,8 +161,19 @@ export class FileExplorerComponent {
     let dialogRef = this.dialog.open(RenameDialogComponent);
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
+        let prev_name = element.name;
         element.name = res;
         this.elementRenamed.emit(element);
+
+        const nw = (window as any).nw;
+        const fs = nw.require('fs');
+        fs.rename(this.directory_path + prev_name, this.directory_path + element.name, (err) => {
+          if (err) {
+            console.error(err);
+          } else {
+            console.log('File successfully renamed.');
+          }
+        });
       }
     });
   }
