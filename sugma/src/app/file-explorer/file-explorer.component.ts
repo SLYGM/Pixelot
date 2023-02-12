@@ -105,6 +105,15 @@ export class FileExplorerComponent {
 
   moveElement(element: FileElement, moveTo: FileElement) {
     this.elementMoved.emit({ element: element, moveTo: moveTo });
+    const nw = (window as any).nw;
+    const fs = nw.require('fs');
+    fs.rename(this.directory_path + element.name, this.directory_path + '/' + moveTo.name + '/' + element.name, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log('File successfully moved.');
+      }
+    });
   }
 
   openNewFolderDialog() {
