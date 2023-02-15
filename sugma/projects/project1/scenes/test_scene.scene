@@ -1,6 +1,10 @@
 {
   "name": "test_scene",
-  "layers": ["background", "foreground", "ui"],
+  "layers": [
+    "background",
+    "foreground",
+    "ui"
+  ],
   "entities": [
     {
       "name": "frog",
