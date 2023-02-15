@@ -17,8 +17,10 @@ export class FileManagerComponent {
   currentPath!: string;
   canNavigateUp = false;
 
-  constructor(public fileService: FileService) {
-    this.currentPath = fileService.path;
+  constructor(public fileService: FileService) { }
+
+  ngOnInit(): void {
+    this.currentPath = this.fileService.path;
   }
 
   addFolder(folder: { name: string }) {

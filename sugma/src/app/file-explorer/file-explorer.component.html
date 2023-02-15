@@ -2,8 +2,7 @@
   <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">
     arrow_back
   </mat-icon>
-  <span style="margin-left: 8px"> {{ directory_path || "Files" }} </span>
-  <span class="spacer"></span>
+  <div class="path-wrapper"><span>{{ "&lrm;" + directory_path + "&lrm;" || "Files" }}</span></div>
   <mat-icon class="pointer" (click)="openNewFolderDialog()">
     create_new_folder
   </mat-icon>
@@ -20,46 +19,43 @@
   class="container"
   fxFlex
   fxLayout="row"
-  fxLayoutAlign="space-between stretch"
+  fxLayoutAlign="space-between"
 >
-  <div class="content" fxFlex fxLayout="row">
-    <mat-grid-list cols="6" fxFlex>
-      <mat-grid-tile
-        *ngFor="let element of fileElements"
-        class="file-or-folder"
+  <div
+    *ngFor="let element of fileElements"
+    class="file-or-folder-wrapper"
+  >
+    <span
+      [matMenuTriggerFor]="rootMenu"
+      [matMenuTriggerData]="{ element: element }"
+      #menuTrigger="matMenuTrigger"
+    >
+    </span>
+    <div
+      class="file-or-folder"
+      fxLayout="column"
+      fxLayoutAlign="space-between center"
+      (click)="navigate(element)"
+      (contextmenu)="openMenu($event, menuTrigger)"
+    >
+      <mat-icon
+        color="accent"
+        class="file-or-folder-icon pointer"
+        *ngIf="element.isFolder"
       >
-        <span
-          [matMenuTriggerFor]="rootMenu"
-          [matMenuTriggerData]="{ element: element }"
-          #menuTrigger="matMenuTrigger"
-        >
-        </span>
-        <div
-          fxLayout="column"
-          fxLayoutAlign="space-between center"
-          (click)="navigate(element)"
-          (contextmenu)="openMenu($event, menuTrigger)"
-        >
-          <mat-icon
-            color="accent"
-            class="file-or-folder-icon pointer"
-            *ngIf="element.isFolder"
-          >
-            folder
-          </mat-icon>
-          <mat-icon
-            color="primary"
-            class="file-or-folder-icon pointer"
-            *ngIf="!element.isFolder"
-          >
-            insert_drive_file
-          </mat-icon>
-          <br />
+        folder
+      </mat-icon>
+      <mat-icon
+        color="primary"
+        class="file-or-folder-icon pointer"
+        *ngIf="!element.isFolder"
+      >
+        insert_drive_file
+      </mat-icon>
+      <br />
 
-          <span width="50px">{{ element.name }}</span>
-        </div>
-      </mat-grid-tile>
-    </mat-grid-list>
+      <span [attr.title]="element.name" width="50px">{{ element.name }}</span>
+    </div>
   </div>
 </div>
 

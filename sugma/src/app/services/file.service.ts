@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { FileElement } from 'app/file-explorer/model/file-element';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { v4 } from 'uuid';
+import * as engine from 'retro-engine';
 
 export interface IFileService {
   add(fileElement: FileElement): FileElement;
