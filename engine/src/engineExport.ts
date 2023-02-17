@@ -4,6 +4,7 @@ export * from './renderer/gl.js'
 export * from './renderer/post_process.js'
 export * from './renderer/webglutils.js'
 export * from './renderer/renderer.js'
+export * from './renderer/tilemap.js'
 
 export * from './utils/baseutils.js'
 
