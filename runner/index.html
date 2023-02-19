@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+  <title>Game</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+ <canvas id="canvas"></canvas>
+  <script>
+    let win = nw.Window.get();
+    win.resizeTo(426*3, 240*3); // 2x internal res
+    win.setResizable(false);    // disable resizing
+  </script>
+  <script src="dist/bundle.js"></script>
+</body>
+
+
+</html>

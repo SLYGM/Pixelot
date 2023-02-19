@@ -34,7 +34,7 @@ export class ImportManager {
         
         function getScripts(srcPath: string, relPath: string) {
             const files = fs.readdirSync(srcPath + relPath) as string[];
-            let projFiles = new ProjectFiles();
+            const projFiles = new ProjectFiles();
 
             files.forEach((file) => {
                 // if its a folder, recursively search it for scripts
@@ -110,6 +110,30 @@ export class ImportManager {
         }
     }
 
+    static async importGameScripts() {
+        let scripts: string[];
+        try {
+            scripts = this.getFilePaths("./game/").scripts;
+        } catch (e) {
+            console.trace(e);
+            return;
+        }
+
+        // dynamically import the default exports of the script
+        for (const script of scripts) {
+            // dynamic imports must have a static string beginning in order for webpack to load them
+            console.log(`importing ${script}`);
+            const a = await import(`../../runner/game/${script}.js`);
+            const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
+            // work out what kind of script this is (component, system, etc.)
+            const map = this.getMapFromImport(a.default);
+            if (map) {
+                // we know the types are correct here if map exists (see getMapFromImport), so we can use map as any
+                (map as any).set(a.default.name, typed_constr);
+            }
+        }
+    }
+
     static getComponent(component: string): TypedConstructor<Component> {
         if (this.components.has(component))
             return this.components.get(component);
@@ -162,8 +186,9 @@ export async function doProjectImports(project: string) {
     await ImportManager.importProjectScripts(project);
 }
 
-
+/**
+ * Import all scripts for the game. For use in built game context only, for app imports, see `doProjectImports()`.
+ */
 export async function doGameImports() {
-    // TODO:
-    console.log("The `doGameImports()` function hasn't been implemented");
+    await ImportManager.importGameScripts();
 }

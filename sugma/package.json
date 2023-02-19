@@ -7,11 +7,16 @@
     "nw": "concurrently \"ng serve --port=8964\" \"nw .\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "dist": "build --concurrent --tasks win-x86,win-x64,linux-x86,linux-x64,mac-x64 --mirror https://dl.nwjs.io/ .",
+    "dist:linux": "build --tasks linux-x64 --mirror https://dl.nwjs.io/ .",
     "test": "ng test"
   },
   "private": true,
   "main": "http://localhost:8964",
   "node-remote": "http://localhost:8964",
+  "build": {
+    "nwVersion": "0.72.0"
+  },
   "window": {
     "width": 960,
     "height": 600,
@@ -50,6 +55,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "nw": "^0.72.0-sdk",
+    "nwjs-builder-phoenix": "^1.15.0",
     "nwjs-types": "^1.0.0",
     "typescript": "~4.8.2"
   }

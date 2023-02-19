@@ -8,7 +8,7 @@ const nw = (window as any).nw;
 export class SceneManager {
     static loaded_scenes: Map<string, Scene>;
     static currentScene: Scene;
-    static project_dir: string;
+    static project_dir?: string;
 
     static {
         this.loaded_scenes = new Map();
@@ -41,9 +41,16 @@ export class SceneManager {
         if (this.loaded_scenes.has(scene_name)) {
             this.currentScene = this.loaded_scenes.get(scene_name);
         } else {
-            const path = FileUtils.findFile(scene_name + ".scene", this.project_dir);
-            if (!path) {
-                throw new Error("No scene found with name " + scene_name);
+            let path: string;
+            if (this.project_dir) {
+                path = FileUtils.findFile(scene_name + ".scene", this.project_dir);
+                console.log("Loading scene from " + path);
+                if (!path) {
+                    throw new Error("No scene found with name " + scene_name);
+                }
+            } else {
+                // If the project_dir is not set, we are running a built project, so the path is known
+                path = "./game/scenes/" + scene_name + ".scene";
             }
             this.currentScene = this.loadScene(path);
             this.loaded_scenes.set(scene_name, this.currentScene);
@@ -58,9 +65,16 @@ export class SceneManager {
      */
     static preLoadScene(scene_name: string) {
         if (!this.loaded_scenes.has(scene_name)) {
-            const path = FileUtils.findFile(scene_name + ".scene", this.project_dir);
-            if (!path) {
-                throw new Error("No scene found with name " + scene_name);
+            let path: string;
+            if (this.project_dir) {
+                path = FileUtils.findFile(scene_name + ".scene", this.project_dir);
+                console.log("Loading scene from " + path);
+                if (!path) {
+                    throw new Error("No scene found with name " + scene_name);
+                }
+            } else {
+                // If the project_dir is not set, we are running a built project, so the path is known
+                path = "./game/scenes/" + scene_name + ".scene";
             }
             this.loaded_scenes.set(scene_name, this.loadScene(path));
         } else {
@@ -227,6 +241,4 @@ export class SceneManager {
     //         console.log("saving json");
     //     });
     // }
-
-    static saveAllScenes() {}
 }

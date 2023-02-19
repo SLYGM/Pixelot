@@ -2,10 +2,10 @@ import * as engine from 'retro-engine';
 
 Initialise();
 
-export async function Initialise() {
+async function Initialise() {
   console.log(`Hello World!`);
   engine.Renderer.init();
-  await engine.doProjectImports('project1');
-  engine.Game.loadGame('../sugma/projects/project1');
+  await engine.doGameImports();
+  engine.Game.loadGame();
   engine.Game.start();
 }
