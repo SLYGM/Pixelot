@@ -7,7 +7,6 @@ import { Texture, Updatable } from "../types.js";
 import { AutoMap } from "../utils/baseutils.js";
 import { Scene } from "../scene.js";
 import { SceneManager } from "../sceneManager.js";
-import { TileMap } from "./tilemap.js";
 
 const { glMatrix, mat4, vec3 } = require("gl-matrix");
 
@@ -18,19 +17,6 @@ type AVLTree = InstanceType<typeof AVLTree>;
 
 export abstract class RenderLayer {
     abstract render(): void;
-}
-
-export class TileMapLayer extends RenderLayer {
-    tilemap: TileMap;
-
-    constructor(tilemap: TileMap) {
-        super();
-        this.tilemap = tilemap;
-    }
-
-    render() {
-        this.tilemap.render();
-    }
 }
 
 export class SpriteLayer extends RenderLayer {

@@ -86,9 +86,8 @@ export class PostProcessing {
     }
 
     static apply() {
-        const tex_coords = [0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1];
-        $gl.bufferData($gl.ARRAY_BUFFER, new Float32Array(tex_coords), $gl.STATIC_DRAW);
-        
+        $gl.activeTexture($gl.TEXTURE0);
+
         //before applying shaders, scale the rendered scene to screen resolution
         $gl.viewport(0, 0, $canvas.width, $canvas.height);
         this.#upscaleScene();
