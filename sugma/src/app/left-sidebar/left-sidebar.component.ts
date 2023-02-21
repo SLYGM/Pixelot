@@ -175,7 +175,7 @@ export class LeftSidebarComponent {
       engine.Renderer.addLayer(new engine.SpriteLayer(), result, engine.SceneManager.currentScene);
       this.sceneData.addLayer(this.scene.name, result);
       this.update();
-      // this.sceneData.saveScene(this.scene.name);
+      this.sceneData.saveScene(this.scene.name);
     });
   }
 }
