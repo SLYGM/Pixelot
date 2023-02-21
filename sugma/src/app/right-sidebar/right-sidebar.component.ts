@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, Optional, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -7,6 +7,8 @@ import {map, startWith} from 'rxjs/operators';
 import * as engine from 'retro-engine';
 import { GameObjectBase } from 'retro-engine';
 import { SceneDataService } from 'app/services/scene-data.service';
+import { SceneTabComponent } from 'app/scene-tab/scene-tab.component';
+
 
 const nw = (window as any).nw;
 const fs = nw.require('fs');
@@ -28,7 +30,8 @@ export class RightSidebarComponent {
   numberType = engine.Types.Number;
   booleanType = engine.Types.Boolean;
 
-  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, public sceneData: SceneDataService) {
+  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, public sceneData: SceneDataService, @Optional() public parentComponent?: SceneTabComponent) {
+    this.parentComponent = parentComponent;
     this.update();
   }
 
@@ -48,6 +51,12 @@ export class RightSidebarComponent {
     }
     if (this.entityName && this.currentSceneName) {
       this.entityArgNames = engine.ImportManager.getEntity(this.sceneData.getEntityClass(this.currentSceneName, this.entityName)).arg_names
+    }
+  }
+
+  updateLeftSidebar() {
+    if (this.parentComponent && this.parentComponent.leftSidebar) {
+      this.parentComponent.leftSidebar.update();
     }
   }
 
@@ -116,6 +125,7 @@ export class RightSidebarComponent {
     this.entity.onCreate(...engine.ImportManager.getEntity(entityClass).parseArgs(args));
     // Save changes to file
     this.sceneData.saveScene(this.currentSceneName);
+    this.updateLeftSidebar();
   }
 
   handleComponentChange(event: any, component: string, index: number) {
@@ -133,9 +143,11 @@ export class RightSidebarComponent {
     const comp_args = component_constr.parseArgs(this.sceneData.getComponentArgs(this.currentSceneName, this.entityName, component));
     const updated_component = new component_constr.constr(...comp_args);
     this.entity.add(updated_component);
+    updated_component._create();
 
     // Save changes to file
     this.sceneData.saveScene(this.currentSceneName);
+    this.updateLeftSidebar();
   }
 
   saveAsPrefab() {

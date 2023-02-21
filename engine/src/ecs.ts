@@ -181,6 +181,9 @@ export abstract class GameObjectBase {
     }
 
     public removeByName(name: string) {
+        const component = this.component_map.get(name);
+        if (component)
+            this.component_map.get(name)._delete();
         this.component_map.delete(name);
     }
 }
