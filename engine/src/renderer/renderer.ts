@@ -3,12 +3,12 @@ import Sprite from "../components/Sprite.js";
 import { $gl, $canvas, loadGL, $rendering_offscreen, $offscreen_canvas, $canvas_bitmap_context } from "./gl.js";
 import { GLUtils } from "./webglutils.js";
 import { PostProcessing } from "./post_process.js";
-import { Texture, Updatable } from "../types.js";
+import { Texture } from "../types.js";
 import { AutoMap } from "../utils/baseutils.js";
 import { Scene } from "../scene.js";
 import { SceneManager } from "../sceneManager.js";
 
-const { glMatrix, mat4, vec3 } = require("gl-matrix");
+const { mat4, vec3 } = require("gl-matrix");
 
 const nw = (window as any).nw;
 const AVLTree = nw.require('avl');

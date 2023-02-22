@@ -328,7 +328,7 @@ export class TileMapJSONParser {
 
 
 
-export class TileMapLayer extends RenderLayer {
+class TileMapLayer extends RenderLayer {
     pos: {x: number, y: number};
     tile_width: number;
     tile_height: number;

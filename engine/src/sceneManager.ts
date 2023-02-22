@@ -3,6 +3,7 @@ import { Scene } from "./scene.js";
 import { ImportManager } from "./importManager.js";
 import { FileUtils } from "./utils/baseutils.js";
 import { Renderer, SpriteLayer } from "./renderer/renderer.js";
+import { TileMapJSONParser } from "./engineExport.js";
 
 const nw = (window as any).nw;
 
@@ -115,8 +116,23 @@ export class SceneManager {
         // construct Scene object from json data and add to sceneManager
         const scene = new Scene(loadedSceneJson["name"]);
 
+        // construct each layer in the scene
         for (const layer of loadedLayers) {
-            Renderer.addLayer(new SpriteLayer(), layer, scene);
+            const type = layer["type"];
+            const name = layer["name"];
+
+            if (type == "sprite") {
+                Renderer.addLayer(new SpriteLayer(), name, scene);
+            }
+            else if (type == "tilemap") {
+                const source = layer["source"];
+                const tileLayer = TileMapJSONParser.parse(source);
+                Renderer.addLayer(tileLayer, name, scene);
+            }
+            else {
+                console.trace("Unknown layer type: " + type);
+                continue
+            }
         }
 
         // construct each entity in the scene
