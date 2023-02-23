@@ -163,19 +163,42 @@ export class LeftSidebarComponent {
 
   }
 
-  openLayerDialog(): void {
+  openLayerDialog(type: string): void {
     const dialogRef = this.dialog.open(AddLayerDialog, {
       width: '500px',
     });
 
+    if (type == 'tile') {
+      dialogRef.componentInstance.path_required = true;
+    }
+
     dialogRef.afterClosed().subscribe(result => {
       if (!result)
         return;
+      
+      console.log(result);
 
-      engine.Renderer.addLayer(new engine.SpriteLayer(), result, engine.SceneManager.currentScene);
-      this.sceneData.addLayer(this.scene.name, result);
-      this.update();
-      this.sceneData.saveScene(this.scene.name);
+      if (type == 'tile') {
+        if (result.path == '') {
+          this._snackBar.open('Please enter a path', 'Close', {
+            duration: 5000
+          });
+          return;
+        }
+
+        const tileLayer = engine.TileMapJSONParser.parse(result.path);
+        engine.Renderer.addLayer(tileLayer, result.name, engine.SceneManager.currentScene);
+        this.sceneData.addLayer(this.scene.name, result.name);
+        this.update();
+        this.sceneData.saveScene(this.scene.name);
+      }
+      else if (type == 'sprite') {
+        const spriteLayer = new engine.SpriteLayer();
+        engine.Renderer.addLayer(spriteLayer, result.name, engine.SceneManager.currentScene);
+        this.sceneData.addLayer(this.scene.name, result.name);
+        this.update();
+        this.sceneData.saveScene(this.scene.name);
+      }
     });
   }
 }
@@ -260,9 +283,13 @@ export class AddEntityDialog {
 @Component({
   selector: 'add-layer-dialog',
   templateUrl: 'add-layer-dialog.html',
+  styleUrls: ['./add-layer-dialog.scss']
 })
 export class AddLayerDialog {
   nameForm = new FormControl('');
+  pathForm = new FormControl('');
+  path_required = false;
+  file: any;
 
   constructor(
     public dialogRef: MatDialogRef<AddLayerDialog>,
@@ -272,8 +299,21 @@ export class AddLayerDialog {
     this.dialogRef.close();
   }
 
+  handleFileSelect(e: any) {
+    this.file = e.target.files[0];
+  
+    // update the path form
+    this.pathForm.setValue(this.file.name);
+  }
+
   onAddClick(): void {
     const name = this.nameForm.value;
-    this.dialogRef.close(name);
+    if (this.path_required) {
+      const path = this.file.path;
+      this.dialogRef.close({name, path});
+      return;
+    }
+
+    this.dialogRef.close({name});
   }
 }
