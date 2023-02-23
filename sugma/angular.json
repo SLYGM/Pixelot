@@ -15,11 +15,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "outputPath": "dist/sugma",
             "index": "src/index.html",
             "main": "src/main.ts",
+            "customWebpackConfig": {
+              "path": "./extra-webpack.config.js",
+              "replaceDuplicatePlugins": true
+            },
             "polyfills": [
               "zone.js",
               "src/polyfills.ts"
@@ -47,15 +51,16 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "4mb"
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumError": "5kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "none",
+              "optimization": false
             },
             "development": {
               "buildOptimizer": false,

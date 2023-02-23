@@ -31,6 +31,7 @@ export class ImportManager {
     private static shaders = new Map<string, TypedConstructor<PostProcess>>();
     
     static getFilePaths(srcPath: string) {
+        console.log("Importing from " + srcPath);
         
         function getScripts(srcPath: string, relPath: string) {
             const files = fs.readdirSync(srcPath + relPath) as string[];
@@ -85,12 +86,13 @@ export class ImportManager {
             return undefined;
     }
     
-    static async importProjectScripts(project: string) {
+    static async importProjectScripts(project: string, isDevMode = true) {
         let scripts: string[];
         try {
             // note that the fs reading will occur from the apps working directory, 
             // whereas the dynamic importing is done from the engine's src directory, hence the paths differ
             scripts = this.getFilePaths(`./projects/${project}/`).scripts;
+            console.log(scripts);
         } catch (e) {
             console.trace(e);
             return;
@@ -99,7 +101,13 @@ export class ImportManager {
         // dynamically import the default exports of the script
         for (const script of scripts) {
             // dynamic imports must have a static string beginning in order for webpack to load them
-            const a = await import(`../../sugma/projects/${project}/${script}.js`);
+            let a;
+            if (isDevMode) {
+                a = await import(`../../sugma/projects/${project}/${script}.js`);
+            } else {
+                a = await import(/* webpackIgnore: true */ `./assets/projects/${project}/${script}.js`);
+            }
+            console.log(a);
             const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
             // work out what kind of script this is (component, system, etc.)
             const map = this.getMapFromImport(a.default);
@@ -182,8 +190,8 @@ export class ImportManager {
 * Import user scripts for given project name. For use in app context only, for built game imports, see `doGameImports()`.   
 * **NOTE:** This function assumes the relative path of the project to the engine source will be `../../sugma/projects/<project>`
 */
-export async function doProjectImports(project: string) {
-    await ImportManager.importProjectScripts(project);
+export async function doProjectImports(project: string, isDevMode = true) {
+    await ImportManager.importProjectScripts(project, isDevMode);
 }
 
 /**

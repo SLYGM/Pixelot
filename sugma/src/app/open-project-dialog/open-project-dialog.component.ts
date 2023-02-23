@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, isDevMode } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { FileService } from 'app/services/file.service';
@@ -19,15 +19,21 @@ export class OpenProjectDialogComponent {
   constructor(public dialogRef: MatDialogRef<OpenProjectDialogComponent>, private router: Router, private sceneData: SceneDataService, public fileService: FileService) {}
 
   ngOnInit() {
-    fs.readdir("../sugma/projects", (err: any, files: any[]) => {
+    let basePath: string;
+    if (isDevMode()) {
+      basePath = "../sugma/projects/";
+    } else {
+      basePath = "./projects/";
+    }
+    fs.readdir(basePath, (err: any, files: any[]) => {
       if (err) {
         console.log(err);
       } else {
         files.forEach(file => {
           // make sure we only get directories
-          if (fs.statSync("../sugma/projects/" + file).isDirectory()) {
+          if (fs.statSync(basePath + file).isDirectory()) {
             // make sure the directory has a project.json
-            const projectFiles = engine.ImportManager.getFilePaths("../sugma/projects/" + file + "/");
+            const projectFiles = engine.ImportManager.getFilePaths(basePath + file + "/");
             if (projectFiles.project) {
               this.projects.push(file);
             }
@@ -43,7 +49,12 @@ export class OpenProjectDialogComponent {
 
   async projectSelected(project: string) {
     this.dialogRef.close();
-    const projectPath = "../sugma/projects/" + project + "/";
+    let projectPath: string;
+    if (isDevMode()) {
+      projectPath = "../sugma/projects/" + project + "/";
+    } else {
+      projectPath = "./projects/" + project + "/";
+    }
     this.fileService.path = projectPath;
     const projectFiles = engine.ImportManager.getFilePaths(projectPath);
     const projJSONPath = projectPath + projectFiles.project + ".proj";
@@ -56,7 +67,7 @@ export class OpenProjectDialogComponent {
     this.sceneData.add(sceneName, scene, scenePath);
 
     // initialize engine
-    await engine.doProjectImports(project);
+    await engine.doProjectImports(project, isDevMode());
     engine.Game.loadGame(projectPath);
     const startScene = engine.Game.start_scene;
     // preload the start scene
