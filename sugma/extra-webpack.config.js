@@ -1,4 +1,5 @@
 // const TerserPlugin = require("terser-webpack-plugin");
+console.log("extra-webpack.config.js");
 
 module.exports = {
   module: {

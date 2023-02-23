@@ -105,7 +105,7 @@ export class ImportManager {
             if (isDevMode) {
                 a = await import(`../../sugma/projects/${project}/${script}.js`);
             } else {
-                a = await import(/* webpackIgnore: true */ `./assets/projects/${project}/${script}.js`);
+                a = await import(/* webpackIgnore: true */ `../projects/${project}/${script}.js`);
             }
             console.log(a);
             const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
