@@ -48,7 +48,7 @@ export class SpriteLayer extends RenderLayer {
         this.sprites.forEach((node) => {
             const sprite = node.key as Sprite;
             const pos = sprite.getPos();
-            Renderer.drawImage(sprite.tex, pos.x, pos.y, sprite.rotation);
+            Renderer.drawImage(sprite.tex, pos.x, pos.y, sprite.rotation, sprite.anchor.x, sprite.anchor.y);
         })
     }
 }
@@ -288,7 +288,7 @@ export class Renderer {
         return alias;
     }
 
-    static drawImage(alias: string, x: number, y: number, rotation: number = 0) {
+    static drawImage(alias: string, x: number, y: number, rotation: number = 0, anchorX: number = 0.5, anchorY: number = 0.5) {
         const tex = this.textures.get(alias);
         if (tex === undefined) {
             console.warn("Texture not found: " + alias);
@@ -311,12 +311,15 @@ export class Renderer {
             img_matrix,
             vec3.fromValues(tex.width, tex.height, 1)
         );
+        //rotate around the center of the image
+        mat4.translate(img_matrix, img_matrix, vec3.fromValues(anchorX, anchorY, 0));
         mat4.rotate(
             img_matrix,
             img_matrix,
             rotation,
             vec3.fromValues(0, 0, 1)
-        )
+        );
+        mat4.translate(img_matrix, img_matrix, vec3.fromValues(-anchorX, -anchorY, 0));
         $gl.uniformMatrix4fv(this.shader.mat_loc, false, img_matrix);
 
         const offset = 0;
