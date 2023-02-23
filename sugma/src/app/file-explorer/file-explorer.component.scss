@@ -10,39 +10,46 @@
   user-select: none;
 }
 
-.mat-grid-tile{
-    text-align: center;
+.path-wrapper {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+
+  span {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
 }
 
-.file-or-folder {
-  padding: 8px;
+.container {
+  overflow-y: auto;
+}
+
+.file-or-folder-wrapper {
+  padding: 4px;
   overflow: hidden;
+  width: 90px;
+  display: inline-block;
+
+  .file-or-folder span {
+    display: block;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .file-or-folder-icon {
   width: 50px;
   height: 50px;
   font-size: 50px;
+  padding-left: 20px;
 }
 
 .pointer {
   cursor: pointer;
-}
-
-.spacer {
-  flex: 1 1 auto;
-}
-
-@media (min-width: 600px) {
-  .grid-list {
-    width: 500px;
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 960px) {
-  .grid-list {
-    width: 800px;
-    grid-template-columns: repeat(3, 1fr);
-  }
+  flex-shrink: 0;
 }

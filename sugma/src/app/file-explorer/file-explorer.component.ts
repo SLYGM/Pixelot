@@ -28,13 +28,13 @@ export class FileExplorerComponent {
   @Output() navigatedDown = new EventEmitter<FileElement>()
   @Output() navigatedUp = new EventEmitter()
 
-  constructor(public dialog: MatDialog, public fileService: FileService) {
-    this.directory_path = fileService.path;
+  constructor(public dialog: MatDialog, public fileService: FileService) { }
+
+  ngOnInit() {
+    this.directory_path = this.fileService.path;
     this.listDirectory(this.directory_path);
     this.fileElements = [];
   }
-
-  ngOnInit() { }
 
   listDirectory(directory_path: string) {
     // Use Node.js fs module to read the contents of the directory
