@@ -37,6 +37,12 @@ export class LeftSidebarComponent {
   update() {
     if (this.scene) {
       this.layerEntities = [];
+        let newLayerNames = Array.from(engine.Renderer.layerAliases.get(this.scene).keys());
+        if (JSON.stringify(this.layerNames) != JSON.stringify(newLayerNames)) {
+          this.layerNames = newLayerNames;
+        }
+
+
       for (let i = 0; i < this.layerNames.length; i++) {
         this.layerEntities.push([]);
       }
@@ -54,6 +60,15 @@ export class LeftSidebarComponent {
         }
       }
     }
+  }
+
+  removeLayer(layer: string) {
+    if (layer=='default')
+      return;
+    this.sceneData.removeLayer(this.scene.name, layer);
+    engine.Renderer.removeLayer(layer, engine.SceneManager.currentScene);
+    this.update();
+    this.sceneData.saveScene(this.scene.name);
   }
     
   selectEntity(entity: string) {
@@ -147,12 +162,32 @@ export class LeftSidebarComponent {
     });
 
   }
+
+  openLayerDialog(): void {
+    const dialogRef = this.dialog.open(AddLayerDialog, {
+      width: '500px',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result)
+        return;
+
+      engine.Renderer.addLayer(new engine.SpriteLayer(), result, engine.SceneManager.currentScene);
+      this.sceneData.addLayer(this.scene.name, result);
+      this.update();
+      this.sceneData.saveScene(this.scene.name);
+    });
+  }
 }
 
 // represents a base class for a new entity
 type EntityClass = {
   name: string,
   prefab: boolean,
+}
+
+type LayerClass = {
+  name: string
 }
 
 @Component({
@@ -219,5 +254,26 @@ export class AddEntityDialog {
     const base = this.selectedOption;
     const entityName = this.nameForm.value;
     this.dialogRef.close({base, entityName});
+  }
+}
+
+@Component({
+  selector: 'add-layer-dialog',
+  templateUrl: 'add-layer-dialog.html',
+})
+export class AddLayerDialog {
+  nameForm = new FormControl('');
+
+  constructor(
+    public dialogRef: MatDialogRef<AddLayerDialog>,
+  ) { }
+
+  onCancelClick(): void {
+    this.dialogRef.close();
+  }
+
+  onAddClick(): void {
+    const name = this.nameForm.value;
+    this.dialogRef.close(name);
   }
 }
