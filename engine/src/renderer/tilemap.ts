@@ -57,19 +57,8 @@ function initTilemapRendering() {
     tex_loc = $gl.getUniformLocation(prog, "u_texture");
     mat_loc = $gl.getUniformLocation(prog, "u_matrix");
     proj_loc = $gl.getUniformLocation(prog, "u_projection");
-    const proj_matrix = mat4.create();
-    // use orthographic projection to scale coords to -1->1 (calculate once per frame)
-    mat4.ortho(
-        proj_matrix,
-        0,
-        Renderer.resolution.x * Renderer.viewport.sx,
-        Renderer.resolution.y * Renderer.viewport.sy,
-        0,
-        -1,
-        1
-    );
+    
     $gl.useProgram(prog);
-    $gl.uniformMatrix4fv(proj_loc, false, proj_matrix);
 
     // setup texture coord buffer
     texcoord_buffer = $gl.createBuffer();
@@ -144,6 +133,11 @@ class TileMapSubLayer {
         this.pos = pos;
     }
 
+    /**
+     * 
+     * @param (x, y) the position of the tile to get
+     * @param tile - the gid of the tile to set
+     */
     setTile(x: number, y: number, tile: number) {
         this.data[y][x] = tile;
     }
@@ -244,6 +238,22 @@ class TileMapPolygon extends TileMapObject {
 
 
 export class TileMapJSONParser {
+    /**
+     * Parse a tilemap object from a `.json` file, exported from Tiled (https://www.mapeditor.org/).  
+     * In order to export in the correct format, ensure that the tilesets are embedded in the `json` file (can be toggled when opening a tileset in Tiled).   
+     * Additionally, make sure to export it directly into the projects directory, as Tiled will configure the paths to the tilesets relative to the `json` file.  
+     * As such, also make sure that the tileset images are being stored within the projects directory.  
+     * **This means that if you want to move the location of the tilemap `.json` you should delete it and re-export from Tiled to ensure the relative paths stay valid**
+     * 
+     * This function supports arbitrary layers and tilesets, but won't support any custom properties, or transparency colours set in Tiled.
+     * In order to add transparency, make tilesets with transparent backgrounds in an image editor, and then export them as `.png` files.
+     * 
+     * To retrieve objects from the object layer, use the `getObject` function of the `TileMapObjectLayer` class. 
+     * To retrieve an object layer from the tilemap, use the `getObjectLayer` function of the `TileMapLayer` class.
+     * 
+     * @param json_path path to the json file
+     * @returns a new TileMapLayer object, if the json file is valid
+     */
     static parse(json_path: string): TileMapLayer {
         const file = fs.readFileSync(json_path, 'utf8');
         const data = JSON.parse(file);
@@ -283,7 +293,7 @@ export class TileMapJSONParser {
         return new TileMapLayer(args);
     }
 
-    static parseTileLayer(layer: any): TileMapSubLayer {
+    private static parseTileLayer(layer: any): TileMapSubLayer {
         const data = layer.data;
         // convert the data to a 2d array
         let data2d = [];
@@ -296,7 +306,7 @@ export class TileMapJSONParser {
         return new TileMapSubLayer(name, data2d, pos);
     }
 
-    static parseObjectLayer(layer: any): TileMapObjectLayer {
+    private static parseObjectLayer(layer: any): TileMapObjectLayer {
         let objects = new Map<string, TileMapObject>();
         for (const object of layer.objects) {
             if (object.point) {
@@ -313,7 +323,7 @@ export class TileMapJSONParser {
         return new TileMapObjectLayer(layer.name, objects);
     }
 
-    static parseTileSet(tileset: any): TileSet {
+    private static parseTileSet(tileset: any): TileSet {
         const firstgid = tileset.firstgid;
         const texture = Renderer.loadTexture(tileset.image);
         const columns = tileset.columns;
@@ -360,6 +370,19 @@ class TileMapLayer extends RenderLayer {
         $gl.useProgram(prog);
         this.bindTextures();
         $gl.bindBuffer($gl.ARRAY_BUFFER, texcoord_buffer);
+
+        // use orthographic projection to scale coords to -1->1 (calculate once per frame to account for viewport changes)
+        const proj_matrix = mat4.create();
+        mat4.ortho(
+            proj_matrix,
+            0,
+            Renderer.resolution.x * Renderer.viewport.sx,
+            Renderer.resolution.y * Renderer.viewport.sy,
+            0,
+            -1,
+            1
+        );
+        $gl.uniformMatrix4fv(proj_loc, false, proj_matrix);
 
         for (const layer of this.tilemap_layers) {
             this.renderLayer(layer);
