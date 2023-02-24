@@ -168,7 +168,7 @@ export class LeftSidebarComponent {
       width: '500px',
     });
 
-    if (type == 'tile') {
+    if (type == 'tilemap') {
       dialogRef.componentInstance.path_required = true;
     }
 
@@ -178,7 +178,9 @@ export class LeftSidebarComponent {
       
       console.log(result);
 
-      if (type == 'tile') {
+      let new_layer: engine.RenderLayer;
+
+      if (type == 'tilemap') {
         if (result.path == '') {
           this._snackBar.open('Please enter a path', 'Close', {
             duration: 5000
@@ -186,19 +188,16 @@ export class LeftSidebarComponent {
           return;
         }
 
-        const tileLayer = engine.TileMapJSONParser.parse(result.path);
-        engine.Renderer.addLayer(tileLayer, result.name, engine.SceneManager.currentScene);
-        this.sceneData.addLayer(this.scene.name, result.name);
-        this.update();
-        this.sceneData.saveScene(this.scene.name);
+        new_layer = engine.TileMapJSONParser.parse(result.path);
       }
       else if (type == 'sprite') {
-        const spriteLayer = new engine.SpriteLayer();
-        engine.Renderer.addLayer(spriteLayer, result.name, engine.SceneManager.currentScene);
-        this.sceneData.addLayer(this.scene.name, result.name);
-        this.update();
-        this.sceneData.saveScene(this.scene.name);
+        new_layer = new engine.SpriteLayer();
       }
+
+      engine.Renderer.addLayer(new_layer, result.name, engine.SceneManager.currentScene);
+      this.sceneData.addLayer(this.scene.name, result.name, type, result.path);
+      this.update();
+      this.sceneData.saveScene(this.scene.name);
     });
   }
 }
