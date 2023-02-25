@@ -1,7 +1,7 @@
-import { $gl } from 'retro-engine';
-import { PostProcess } from "retro-engine";
+// import { $gl } from 'retro-engine';
+// import { PostProcess } from "retro-engine";
 //TODO: this looks terrible
-export default class CRTShader extends PostProcess {
+export default class CRTShader extends engine.PostProcess {
     static arg_names = [];
     static arg_types = [];
     constructor() {

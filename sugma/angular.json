@@ -18,11 +18,10 @@
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "outputPath": "dist/sugma",
-            "index": "src/index.html",
+            "index": "src/index-dev.html",
             "main": "src/main.ts",
             "customWebpackConfig": {
-              "path": "./extra-webpack.config.js",
-              "replaceDuplicatePlugins": true
+              "path": "./extra-webpack.config.js"
             },
             "polyfills": [
               "zone.js",
@@ -59,8 +58,8 @@
                   "maximumError": "5kb"
                 }
               ],
-              "outputHashing": "none",
-              "optimization": false
+              "outputHashing": "all",
+              "optimization": true
             },
             "development": {
               "buildOptimizer": false,

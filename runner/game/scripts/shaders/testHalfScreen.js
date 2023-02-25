@@ -1,6 +1,6 @@
-import { $gl } from 'retro-engine';
-import { PostProcess } from "retro-engine";
-export default class TestHalfScreenShader extends PostProcess {
+// import { $gl } from 'retro-engine';
+// import { PostProcess } from "retro-engine";
+export default class TestHalfScreenShader extends engine.PostProcess {
     static arg_names = [];
     static arg_types = [];
     constructor() {
@@ -39,6 +39,6 @@ export default class TestHalfScreenShader extends PostProcess {
         super(v_shader, f_shader);
     }
     draw() {
-        $gl.drawArrays($gl.TRIANGLES, 0, 6);
+        engine.$gl.drawArrays($gl.TRIANGLES, 0, 6);
     }
 }

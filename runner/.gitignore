@@ -2,6 +2,7 @@
 
 # Compiled output
 /dist
+/dist-webpack
 /tmp
 /out-tsc
 /bazel-out

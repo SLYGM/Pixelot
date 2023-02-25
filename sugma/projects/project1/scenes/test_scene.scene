@@ -6,13 +6,13 @@
       "class": "Player",
       "args": [
         0,
-        false
+        "false"
       ],
       "components": [
         {
           "component_name": "Position",
           "args": [
-            "100",
+            "10",
             "100"
           ]
         },
@@ -32,6 +32,15 @@
           ]
         }
       ]
+    },
+    {
+      "name": "test",
+      "class": "Player",
+      "args": [
+        0,
+        false
+      ],
+      "components": []
     }
   ]
 }

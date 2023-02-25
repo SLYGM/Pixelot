@@ -7,7 +7,5 @@ import { enableProdMode } from '@angular/core';
 
 (window as any).engine = engine;
 
-enableProdMode();
-
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.error(err));

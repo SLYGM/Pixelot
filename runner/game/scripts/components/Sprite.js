@@ -1,4 +1,4 @@
-import * as engine from 'retro-engine';
+// import * as engine from 'retro-engine';
 import Position from "./Position.js";
 
 export default class Sprite extends engine.Component {

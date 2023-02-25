@@ -6,12 +6,13 @@
   "license": "ISC",
   "dependencies": {
     "@types/offscreencanvas": "^2019.7.0",
-    "retro-engine": "file:../engine",
-    "avl": "^1.5.3"
+    "avl": "^1.5.3",
+    "retro-engine": "file:../engine"
   },
   "devDependencies": {
     "nw": "^0.73.0",
     "nwjs-builder-phoenix": "^1.15.0",
+    "terser-webpack-plugin": "^5.3.6",
     "ts-loader": "^9.4.2",
     "tslint": "^6.1.3",
     "typescript": "^4.8.4",
@@ -24,9 +25,12 @@
   ],
   "typings": "./lib/index.d.ts",
   "scripts": {
-    "build": "webpack --mode development",
-    "build-prod": "webpack --mode production",
+    "clean": "rimraf ./dist-webpack",
+    "build": "npm run clean && webpack --mode development",
+    "build-prod": "npm run clean && webpack --mode production",
     "dist": "build --concurrent --tasks win-x86,win-x64,linux-x86,linux-x64,mac-x64 --mirror https://dl.nwjs.io/ .",
+    "dist:windows": "build --concurrent --tasks win-x86,win-x64 --mirror https://dl.nwjs.io/ .",
+    "dist:mac": "build --concurrent --tasks mac-x64 --mirror https://dl.nwjs.io/ .",
     "dist:linux": "build --tasks linux-x64 --mirror https://dl.nwjs.io/ .",
     "start": "nw .",
     "lint": "tslint -c tslint.json src/**/*.ts",
@@ -34,6 +38,25 @@
   },
   "build": {
     "nwVersion": "0.73.0",
-    "nwFlavor": "sdk"
+    "nwFlavor": "sdk",
+    "files": [
+      "**/*"
+    ],
+    "excludes": [
+      "src/**/*",
+      "node_modules/**/*",
+      ".gitignore",
+      "package-lock.json",
+      "tsconfig.json",
+      "tslint.json",
+      "webpack.config.js"
+    ],
+    "strippedProperties": [
+      "ManifestComments",
+      "node-remote",
+      "scripts",
+      "devDependencies",
+      "build"
+    ]
   }
 }

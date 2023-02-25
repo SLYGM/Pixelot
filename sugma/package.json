@@ -5,10 +5,12 @@
     "ng": "ng",
     "start": "ng serve",
     "nw": "concurrently \"ng serve --port=8964\" \"nw .\"",
-    "build": "npm run clean && ng build --configuration=production --output-path ./dist-ng",
+    "build": "npm run clean && ng build --configuration=production --output-path ./dist-ng --index=/src/index.html",
     "clean": "rimraf ./dist-ng",
     "watch": "ng build --watch --configuration development",
     "dist": "build --concurrent --tasks win-x86,win-x64,linux-x86,linux-x64,mac-x64 --mirror https://dl.nwjs.io/ .",
+    "dist:windows": "build --tasks win-x86,win-x64 --mirror https://dl.nwjs.io/ .",
+    "dist:mac": "build --tasks mac-x64 --mirror https://dl.nwjs.io/ .",
     "dist:linux": "build --tasks linux-x64 --mirror https://dl.nwjs.io/ .",
     "test": "ng test"
   },
