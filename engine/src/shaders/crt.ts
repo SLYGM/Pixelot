@@ -1,6 +1,5 @@
 import { $gl } from '../renderer/gl.js';
-
-import { PostProcess } from "../engineExport.js";
+import { PostProcess } from '../renderer/post_process.js';
 
 
 //TODO: this looks terrible

@@ -1,7 +1,8 @@
 import { GameObjectBase, System } from "./ecs.js";
 import { Scene } from "./scene.js";
 import { ImportManager } from "./importManager.js";
-import { FileUtils } from "./engineExport.js";
+import { FileUtils } from "./utils/baseutils.js";
+import { Renderer, SpriteLayer } from "./renderer/renderer.js";
 
 const nw = (window as any).nw;
 let fs;
@@ -127,9 +128,14 @@ export class SceneManager {
         // parse JSON object
         const loadedSceneJson = JSON.parse(data.toString());
         const loadedEntities = loadedSceneJson["entities"];
+        const loadedLayers = loadedSceneJson["layers"];
 
         // construct Scene object from json data and add to sceneManager
         const scene = new Scene(loadedSceneJson["name"]);
+
+        for (const layer of loadedLayers) {
+            Renderer.addLayer(new SpriteLayer(), layer, scene);
+        }
 
         // construct each entity in the scene
         for (const entity of loadedEntities) {
@@ -147,7 +153,7 @@ export class SceneManager {
             scene.addEntity(toAdd, ent_args);
         }
 
-        return scene
+        return scene;
     }
 
     /**

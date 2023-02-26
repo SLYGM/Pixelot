@@ -28,19 +28,12 @@ export class FileExplorerComponent {
   @Output() navigatedDown = new EventEmitter<FileElement>()
   @Output() navigatedUp = new EventEmitter()
 
-  constructor(public dialog: MatDialog, public fileService: FileService) {
-    this.directory_path = fileService.path;
+  constructor(public dialog: MatDialog, public fileService: FileService) { }
+
+  ngOnInit() {
+    this.directory_path = this.fileService.path;
     this.listDirectory(this.directory_path);
-  }
-
-  onInit() {
-    console.log(this.directory_path);
-  }
-
-  onDirectorySelected(event) {
-    const selectedFile = event.target.files[0];
-    console.log(selectedFile.path)
-    this.listDirectory(selectedFile.path);
+    this.fileElements = [];
   }
 
   listDirectory(directory_path: string) {
@@ -53,7 +46,6 @@ export class FileExplorerComponent {
         return;
       }
 
-      this.fileElements = [];
       files.forEach(file => {
         if (fs.statSync(directory_path + file).isDirectory()) {
           this.folderAdded.emit({ name: file });
@@ -67,11 +59,43 @@ export class FileExplorerComponent {
 
   deleteElement(element: FileElement) {
     this.elementRemoved.emit(element);
+    const nw = (window as any).nw;
+    const fs = nw.require('fs');
+    fs.unlink(this.directory_path + element.name, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log('File successfully deleted.');
+      }
+    });
   }
 
   navigate(element: FileElement) {
     if (element.isFolder) {
       this.navigatedDown.emit(element);
+
+      const nw = (window as any).nw;
+      const fs = nw.require('fs');
+      fs.readdir(this.directory_path + element.name, (err: any, files: any[]) => {
+        if (err) {
+          console.error('Error reading directory:', err);
+          return;
+        }
+
+        files.forEach(file => {
+          if (fs.statSync(this.directory_path + file).isDirectory()) {
+            this.folderAdded.emit({ name: file });
+          }
+          else {
+            this.fileAdded.emit({ name: file });
+          }
+        });
+      });
+    }
+    else {
+      const nw = (window as any).nw;
+      const open = nw.require('open');
+      open(this.directory_path + element.name);
     }
   }
 
@@ -81,6 +105,15 @@ export class FileExplorerComponent {
 
   moveElement(element: FileElement, moveTo: FileElement) {
     this.elementMoved.emit({ element: element, moveTo: moveTo });
+    const nw = (window as any).nw;
+    const fs = nw.require('fs');
+    fs.rename(this.directory_path + element.name, this.directory_path + '/' + moveTo.name + '/' + element.name, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log('File successfully moved.');
+      }
+    });
   }
 
   openNewFolderDialog() {
@@ -107,6 +140,20 @@ export class FileExplorerComponent {
     let dialogRef = this.dialog.open(NewFileDialogComponent);
     dialogRef.afterClosed().subscribe(res => {
       if (res) this.fileAdded.emit({ name: res });
+      const filePath = this.fileService.path + res;
+      const content = '';
+      const nw = (window as any).nw;
+      const fs = nw.require('fs');
+      fs.writeFile(filePath, content, err => {
+        if (err) {
+          console.error(`An error occurred while writing to the file: ${err}`);
+          return;
+        }
+        console.log(`File ${filePath} created successfully.`);
+        const nw = (window as any).nw;
+        const open = nw.require('open');
+        open(this.fileService.path + res);
+      });
     });
   }
 
@@ -114,8 +161,19 @@ export class FileExplorerComponent {
     let dialogRef = this.dialog.open(RenameDialogComponent);
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
+        let prev_name = element.name;
         element.name = res;
         this.elementRenamed.emit(element);
+
+        const nw = (window as any).nw;
+        const fs = nw.require('fs');
+        fs.rename(this.directory_path + prev_name, this.directory_path + element.name, (err) => {
+          if (err) {
+            console.error(err);
+          } else {
+            console.log('File successfully renamed.');
+          }
+        });
       }
     });
   }

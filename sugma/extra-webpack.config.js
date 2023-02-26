@@ -1,7 +1,7 @@
 // const TerserPlugin = require("terser-webpack-plugin");
 console.log("extra-webpack.config.js");
 
-// module.exports = {
+module.exports = {
   // module: {
     // rules: [
       // {
@@ -25,4 +25,10 @@ console.log("extra-webpack.config.js");
       // }
     // }
   // },
-// };
+  resolve: {
+    fallback: {
+      "fs": false,
+      "path": false
+    }
+  }
+};

@@ -1,6 +1,6 @@
 {
     "name": "test_prefab",
-    "base": "Player",
+    "class": "Player",
     "components": [
         {
           "component_name": "Position",

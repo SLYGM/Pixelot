@@ -45,3 +45,17 @@ export class FileUtils {
         return null;
     }
 }
+
+// AutoMap: Map extension that automatically creates new entries when accessing a non-existing key
+export class AutoMap<K, V> extends Map<K, V> {
+    constructor(private factory: (key: K) => V) {
+        super();
+    }
+
+    override get(key: K): V {
+        if (!this.has(key)) {
+            this.set(key, this.factory(key));
+        }
+        return super.get(key);
+    }
+}

@@ -4,6 +4,9 @@ import { $gl, $canvas, loadGL, $rendering_offscreen, $offscreen_canvas, $canvas_
 import { GLUtils } from "./webglutils.js";
 import { PostProcessing } from "./post_process.js";
 import { Texture, Updatable } from "../types.js";
+import { AutoMap } from "../utils/baseutils.js";
+import { Scene } from "../scene.js";
+import { SceneManager } from "../sceneManager.js";
 
 const { glMatrix, mat4, vec3 } = require("gl-matrix");
 
@@ -106,8 +109,8 @@ export class Renderer {
     static vao: WebGLVertexArrayObject;
     static time: number;
     static textures: Map<string, Texture>;
-    static layerAliases: Map<string, number>;
-    static layers: RenderLayer[];
+    static layerAliases: AutoMap<Scene, Map<string, number>>;
+    static layers: AutoMap<Scene, RenderLayer[]>;
     static backgroundColor: [r:number, g:number, b:number, a:number];
 
     static init(offscreen: boolean = false) {
@@ -150,8 +153,8 @@ export class Renderer {
 
         this.textures = new Map<string, Texture>();
 
-        this.layers = [];
-        this.layerAliases = new Map<string, number>();
+        this.layers = new AutoMap<Scene, RenderLayer[]>((key) => []);
+        this.layerAliases = new AutoMap<Scene, Map<string, number>>((key) => new Map<string, number>());
         this.backgroundColor = [1, 1, 1, 1];
 
         PostProcessing.init();
@@ -193,9 +196,12 @@ export class Renderer {
         );
         $gl.uniformMatrix4fv(this.shader.proj_loc, false, proj_matrix);
 
-        this.layers.forEach((l) => {
-            l.render();
-        })
+        const scene = SceneManager.currentScene;
+        if (scene) {
+            this.layers.get(scene).forEach((l) => {
+                l.render();
+            })    
+        }
         PostProcessing.apply();
         
         // if rendering offscreen, the image needs to be copied onto the on-screen canvas
@@ -206,24 +212,31 @@ export class Renderer {
     }
 
     //layers should be added in a bottom-up fashion i.e. the first one added will be rendered first.
-    static addLayer(layer: RenderLayer, alias: string) {
-        const index = this.layers.push(layer) - 1;
-        this.layerAliases.set(alias, index);
+    static addLayer(layer: RenderLayer, alias: string, scene: Scene = SceneManager.currentScene) {
+        if (!scene)
+            throw new Error("No scene to add layer to.");
+        const index = this.layers.get(scene).push(layer) - 1;
+        this.layerAliases.get(scene).set(alias, index);
     }
 
-    static getLayer(alias: string) : RenderLayer {
-        return this.layers[this.layerAliases.get(alias)];
+    static getLayer(alias: string, scene: Scene = SceneManager.currentScene) : RenderLayer {
+        if (!scene)
+            throw new Error("No scene to get layer from.");
+        return this.layers.get(scene)[this.layerAliases.get(scene).get(alias)];
     }
 
-    static removeLayer(alias: string) {
-        const index = this.layerAliases.get(alias); //get index of item to be removed
+    static removeLayer(alias: string, scene: Scene = SceneManager.currentScene) {
+        if (!scene)
+            throw new Error("No scene to remove layer from.");
+        const layerAliases = this.layerAliases.get(scene);
+        const index = layerAliases.get(alias); //get index of item to be removed
         if (!index) return;
         //update stored indexes of layers that are after this layer in the array (decrease them by 1)
-        for (const [k, v] of this.layerAliases) {
-            if (v > index) this.layerAliases.set(k, v - 1);
+        for (const [k, v] of layerAliases) {
+            if (v > index) layerAliases.set(k, v - 1);
         }
-        this.layers.splice(index, 1); //remove the layer from the array at the index
-        this.layerAliases.delete(alias);
+        this.layers.get(scene).splice(index, 1); //remove the layer from the array at the index
+        layerAliases.delete(alias);
     }
 
     static loadTexture(path: string, alias: string): string {

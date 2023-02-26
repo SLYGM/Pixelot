@@ -49,8 +49,7 @@ export class SceneTabComponent {
       
       // connect the canvas to the engine
       engine.connectCanvas();
-      this.layerNames = Array.from(engine.Renderer.layerAliases.keys());
-
+      
       this.route.params.subscribe(params => {
         this.sceneName = params['sceneName'];
       });
@@ -59,6 +58,7 @@ export class SceneTabComponent {
         console.log("Loading scene " + this.sceneName);
         engine.SceneManager.switchToScene(this.sceneName, false);
         this.scene = engine.SceneManager.currentScene;
+        this.layerNames = Array.from(engine.Renderer.layerAliases.get(this.scene).keys());
       } else {
         // The scene doesn't exist, so redirect home
         console.log("Scene doesn't exist, redirecting home");

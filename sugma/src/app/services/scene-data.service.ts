@@ -18,6 +18,7 @@ export type Entity = {
 export class Scene {
   name: string;
   entities: Entity[];
+  layers: string[];
 
   constructor(name: string) {
     this.name = name;
@@ -173,6 +174,28 @@ export class SceneDataService {
         entity.components = entity.components.filter(c => c.component_name !== componentName);
       }
     }
+  }
+
+  addLayer(sceneName: string, layerName: string) {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      scene.layers.push(layerName);
+    }
+  }
+
+  removeLayer(sceneName: string, layerName: string) {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      scene.entities.forEach(entity => {
+        const sprite = entity.components.find(c => c.component_name === 'Sprite');
+        if (sprite) {
+          if (sprite.args[1] === layerName) {
+            sprite.args[1] = 'default';
+          }
+        }
+      });
+    }
+    scene.layers = scene.layers.filter(l => l != layerName);
   }
 
 }

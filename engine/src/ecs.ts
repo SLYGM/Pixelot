@@ -1,3 +1,5 @@
+import { Scene } from "./scene";
+
 export abstract class Component {
     /**
      * The list of components that this component depends on.
@@ -10,10 +12,16 @@ export abstract class Component {
         this.owner = owner;
     }
 
+    _create() {
+        this.onCreate();
+    }
+
     _delete() {
         this.owner = null;
         this.onDelete();
     }
+
+    onCreate() {}
 
     onDelete() {}
 }
@@ -44,6 +52,7 @@ export abstract class GameObjectBase {
     // Mapping from component name to component instance
     private component_map: Map<string, Component> = new Map();
     public name: string;
+    public scene: Scene = null;
 
     /**
      * Constructor which wraps the object in a proxy.
@@ -61,12 +70,23 @@ export abstract class GameObjectBase {
         });
     }
 
+    setScene(scene: Scene) {
+        this.scene = scene;
+    }
+
     _delete() {
         this.onDelete();
         for (const component of this.component_map.values()) {
             component._delete();
         }
         this.component_map.clear();
+    }
+
+    _create(...args: any[]) {
+        for (const component of this.component_map.values()) {
+            component._create();
+        }
+        this.onCreate(...args);
     }
 
     /**
@@ -161,6 +181,9 @@ export abstract class GameObjectBase {
     }
 
     public removeByName(name: string) {
+        const component = this.component_map.get(name);
+        if (component)
+            this.component_map.get(name)._delete();
         this.component_map.delete(name);
     }
 }

@@ -6,6 +6,7 @@ import {
     SystemNode,
 } from "./ecs.js";
 import { ImportManager } from "./importManager.js";
+import { PrefabFactory } from "./prefabs.js";
 
 export class Scene {
     // The list of entities in the scene
@@ -52,6 +53,7 @@ export class Scene {
 
     // Add an entity to the Scene
     addEntity<T extends GameObjectBase>(entity: T, args: any[] = []) {
+        entity.setScene(this);
         //check that the system for this component is in the scene
         for (const comp_name of entity.getAllComponents()){
             if (ImportManager.hasSystem(comp_name)) {
@@ -65,13 +67,21 @@ export class Scene {
         
 
         this.entities.set(entity.name, entity);
-        entity.onCreate(...args);
+        entity._create(...args);
 
         // Add the entity to the systems that require it
         for (const system_node of this.systems) {
             if (entity.has(system_node.system.component)) {
                 system_node.entities.add(entity);
             }
+        }
+    }
+
+    // Spawn an instance of a prefab into the scene
+    spawnPrefab(prefab_name: string, args: any[]) {
+        const entity = PrefabFactory.create(prefab_name);
+        if (entity) {
+            this.addEntity(entity, args);
         }
     }
 
