@@ -8,7 +8,12 @@ import { Texture, Updatable } from "../types.js";
 const { glMatrix, mat4, vec3 } = require("gl-matrix");
 
 const nw = (window as any).nw;
-const AVLTree = nw.require('avl');
+let AVLTree;
+if (nw) {
+    AVLTree = nw.require("avl");
+} else {
+    AVLTree = require("avl");
+}
 type AVLTree = InstanceType<typeof AVLTree>;
 
 

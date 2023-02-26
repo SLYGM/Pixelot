@@ -4,7 +4,12 @@ import { TypedConstructor } from "./typedConstructor.js";
 import { StringUtils } from "./utils/baseutils.js";
 
 const nw = (window as any).nw;
-const fs = nw.require("fs");
+let fs;
+if (nw) {
+    fs = nw.require("fs");
+} else {
+    fs = require("fs");
+}
 
 class ProjectFiles {
     project: string;

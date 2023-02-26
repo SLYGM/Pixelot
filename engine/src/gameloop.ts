@@ -5,6 +5,12 @@ import { ImportManager } from "./importManager.js";
 import { PostProcessing } from "./engineExport.js";
 
 const nw = (window as any).nw;
+let fs;
+if (nw) {
+    fs = nw.require("fs");
+} else {
+    fs = require("fs");
+}
 
 export class Game {
     static updateQueue: Updatable[];
@@ -50,8 +56,6 @@ export class Game {
      * Required for projects loaded via the UI, but not for built projects.
      */
     static loadGame(project_dir?: string) {
-        const fs = nw.require("fs");
-
         let project_file_path: string;
         if (project_dir) {
             SceneManager.project_dir = project_dir;
@@ -94,6 +98,8 @@ export class Game {
 
     static stop() {
         this.running = false;
-        nw.App.closeAllWindows();
+        if (nw) {
+            nw.App.closeAllWindows();
+        }
     }
 }

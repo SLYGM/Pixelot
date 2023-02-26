@@ -1,6 +1,13 @@
 const nw = (window as any).nw;
-const fs = nw.require('fs');
-const path = nw.require('path');
+let fs, path;
+if (nw) {
+    fs = nw.require("fs");
+    path = nw.require("path");
+} else {
+    fs = require("fs");
+    path = require("path");
+}
+
 export class StringUtils {
     static isPostfix(str1: string, str2: string): boolean {
         const idx = str1.indexOf(str2);

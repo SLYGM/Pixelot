@@ -4,6 +4,12 @@ import { ImportManager } from "./importManager.js";
 import { FileUtils } from "./engineExport.js";
 
 const nw = (window as any).nw;
+let fs;
+if (nw) {
+    fs = nw.require("fs");
+} else {
+    fs = require("fs");
+}
 
 export class SceneManager {
     static loaded_scenes: Map<string, Scene>;
@@ -115,8 +121,6 @@ export class SceneManager {
      * @returns the loaded scene
      */
     static loadScene(path: string): Scene {
-        const fs = nw.require("fs");
-
         // read JSON object from file
         const data = fs.readFileSync(path, "utf8");
 
@@ -184,8 +188,6 @@ export class SceneManager {
     * @returns boolean which indicates success of operation
     */
     static createScene(sceneName: string, path: string) {
-        const fs = nw.require("fs");
-        
         // make sure that the scene doesn't already exist
         if (fs.existsSync(path + sceneName + ".scene")) {
             console.log(`Warning: trying to create scene: ${sceneName} which already exists`);

@@ -3,7 +3,12 @@ import { ImportManager } from "./importManager";
 import { Component, GameObjectBase } from "./ecs";
 
 const nw = (window as any).nw;
-const fs = nw.require("fs");
+let fs: { readFileSync: (arg0: string) => string; };
+if (nw) {
+    fs = nw.require("fs");
+} else {
+    fs = require("fs");
+}
 
 
 class ComponentWithArgs {
