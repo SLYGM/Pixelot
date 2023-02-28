@@ -34,6 +34,7 @@ import { NewFileDialogComponent } from './file-explorer/modals/new-file-dialog/n
 import { LandingComponent } from './landing/landing.component';
 import { OpenProjectDialogComponent } from './open-project-dialog/open-project-dialog.component';
 import { NewProjectDialogComponent } from './new-project-dialog/new-project-dialog.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -78,7 +79,8 @@ import { NewProjectDialogComponent } from './new-project-dialog/new-project-dial
     MatGridListModule,
     MatMenuModule,
     MatCardModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    DragDropModule
   ],
   providers: [],
   bootstrap: [AppComponent]

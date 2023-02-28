@@ -13,3 +13,12 @@
   margin: 20px auto 0 auto;
   display: block;
 }
+
+.entity-list {
+  min-height: 35px;
+  border: 2px dotted #ccc;
+
+  button {
+    background-color: #eee;
+  }
+}

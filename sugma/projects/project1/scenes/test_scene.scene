@@ -25,8 +25,40 @@
           "component_name": "Sprite",
           "args": [
             "frog",
-            "foreground",
+            "background",
             0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test",
+      "class": "Player",
+      "args": [
+        0,
+        false
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "-100",
+            "-100"
+          ]
+        },
+        {
+          "component_name": "Velocity",
+          "args": [
+            "1",
+            "1"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "cog",
+            "foreground",
+            "0"
           ]
         }
       ]

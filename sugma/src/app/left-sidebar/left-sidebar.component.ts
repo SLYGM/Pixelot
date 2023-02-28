@@ -88,6 +88,26 @@ export class LeftSidebarComponent {
     this.sceneData.saveScene(this.scene.name);
   }
 
+  // Entity has been dragged and dropped to a new layer
+  drop(event: any) {
+    console.log(event);
+    if (event.previousContainer === event.container) {
+      console.log('same container');
+      return;
+    } else {
+      const entity = engine.SceneManager.currentScene.getEntity(event.item.data);
+      console.log(entity);
+      if (entity) {
+        // Update layer in scene data
+        this.sceneData.setEntityLayer(this.scene.name, entity.name, event.container.id);
+        this.update();
+        this.sceneData.saveScene(this.scene.name);
+        // Update layer in engine
+        (entity.getByName('Sprite') as any).lr = event.container.id;
+      }
+    }
+  }
+
   openEntityDialog(): void {
     const dialogRef = this.dialog.open(AddEntityDialog, {
       width: '500px',
