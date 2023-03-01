@@ -21,7 +21,7 @@ export class OpenProjectDialogComponent {
   ngOnInit() {
     let basePath: string;
     if (isDevMode()) {
-      basePath = "../sugma/projects/";
+      basePath = "../pixelot/projects/";
     } else {
       basePath = "./projects/";
     }
@@ -51,7 +51,7 @@ export class OpenProjectDialogComponent {
     this.dialogRef.close();
     let projectPath: string;
     if (isDevMode()) {
-      projectPath = "../sugma/projects/" + project + "/";
+      projectPath = "../pixelot/projects/" + project + "/";
     } else {
       projectPath = "./projects/" + project + "/";
     }

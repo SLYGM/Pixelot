@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "sugma": {
+    "pixelot": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
-            "outputPath": "dist/sugma",
+            "outputPath": "dist/pixelot",
             "index": "src/index-dev.html",
             "main": "src/main.ts",
             "customWebpackConfig": {
@@ -76,10 +76,10 @@
           "builder": "@angular-builders/custom-webpack:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "sugma:build:production"
+              "browserTarget": "pixelot:build:production"
             },
             "development": {
-              "browserTarget": "sugma:build:development"
+              "browserTarget": "pixelot:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -87,7 +87,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "sugma:build"
+            "browserTarget": "pixelot:build"
           }
         },
         "test": {

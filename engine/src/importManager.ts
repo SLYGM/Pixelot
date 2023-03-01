@@ -114,7 +114,7 @@ export class ImportManager {
             // dynamic imports must have a static string beginning in order for webpack to load them
             let a;
             if (isDevMode) {
-                a = await import(`../../sugma/projects/${project}/${script}.js`);
+                a = await import(`../../pixelot/projects/${project}/${script}.js`);
             } else {
                 a = await import(/* webpackIgnore: true */ `../projects/${project}/${script}.js`);
             }
@@ -208,7 +208,7 @@ export class ImportManager {
 
 /**
 * Import user scripts for given project name. For use in app context only, for built game imports, see `doGameImports()`.   
-* **NOTE:** This function assumes the relative path of the project to the engine source will be `../../sugma/projects/<project>`
+* **NOTE:** This function assumes the relative path of the project to the engine source will be `../../pixelot/projects/<project>`
 */
 export async function doProjectImports(project: string, isDevMode = true) {
     await ImportManager.importProjectScripts(project, isDevMode);
