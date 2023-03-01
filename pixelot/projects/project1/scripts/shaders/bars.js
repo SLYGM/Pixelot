@@ -1,6 +1,7 @@
-import { $gl } from "retro-engine";
-import { PostProcess } from "retro-engine";
-export default class BarShader extends PostProcess {
+// import { $gl } from "retro-engine";
+// import { PostProcess } from "retro-engine";
+
+export default class BarShader extends engine.PostProcess {
     static arg_names = [];
     static arg_types = [];
     constructor() {
@@ -41,7 +42,7 @@ export default class BarShader extends PostProcess {
         super(v_shader, f_shader);
     }
     draw() {
-        $gl.uniform1f($gl.getUniformLocation(this.program, "time"), performance.now() / 1000);
-        $gl.drawArrays($gl.TRIANGLES, 0, 6);
+        engine.$gl.uniform1f(engine.$gl.getUniformLocation(this.program, "time"), performance.now() / 1000);
+        engine.$gl.drawArrays(engine.$gl.TRIANGLES, 0, 6);
     }
 }

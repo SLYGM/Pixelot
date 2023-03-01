@@ -6,6 +6,7 @@ import * as engine from 'retro-engine';
 import { Subscription } from 'rxjs';
 import { Scene } from 'retro-engine';
 import { LeftSidebarComponent } from 'app/left-sidebar/left-sidebar.component';
+import { RightSidebarComponent } from 'app/right-sidebar/right-sidebar.component';
 
 @Component({
   selector: 'scene-tab',
@@ -14,6 +15,7 @@ import { LeftSidebarComponent } from 'app/left-sidebar/left-sidebar.component';
 })
 export class SceneTabComponent {
   @ViewChild(LeftSidebarComponent) leftSidebar: LeftSidebarComponent;
+  @ViewChild(RightSidebarComponent) rightSidebar: RightSidebarComponent;
 
   // add mouse listeners to the document so that we can pan the viewport
   @HostListener('document:mousemove', ['$event']) 
@@ -88,5 +90,17 @@ export class SceneTabComponent {
   
   handleMouseUp(event: MouseEvent) {
     this.mouseDown = false;
+  }
+
+  playScene() {
+    engine.Game.render_only = false;
+  }
+
+  stopScene() {
+    engine.Game.render_only = true;
+    // reload the current scene
+    engine.SceneManager.switchToScene(this.sceneName);
+    // since the selected entity is recreated, we need to refresh the sidebar
+    this.rightSidebar.update();
   }
 }

@@ -5,7 +5,12 @@ import { TypedConstructor } from "./typedConstructor.js";
 import { StringUtils } from "./utils/baseutils.js";
 
 const nw = (window as any).nw;
-const fs = nw.require("fs");
+let fs;
+if (nw) {
+    fs = nw.require("fs");
+} else {
+    fs = require("fs");
+}
 
 class ProjectFiles {
     project: string;
@@ -35,10 +40,9 @@ export class ImportManager {
     private static shaders = new Map<string, TypedConstructor<PostProcess>>();
     
     static getFilePaths(srcPath: string) {
-        
         function getScripts(srcPath: string, relPath: string) {
             const files = fs.readdirSync(srcPath + relPath) as string[];
-            let projFiles = new ProjectFiles();
+            const projFiles = new ProjectFiles();
 
             files.forEach((file) => {
                 // if its a folder, recursively search it for scripts
@@ -92,7 +96,7 @@ export class ImportManager {
             return undefined;
     }
     
-    static async importProjectScripts(project: string) {
+    static async importProjectScripts(project: string, isDevMode = true) {
         let scripts: string[];
         let projFiles: ProjectFiles;
         try {
@@ -108,7 +112,12 @@ export class ImportManager {
         // dynamically import the default exports of the script
         for (const script of scripts) {
             // dynamic imports must have a static string beginning in order for webpack to load them
-            const a = await import(`../../pixelot/projects/${project}/${script}.js`);
+            let a;
+            if (isDevMode) {
+                a = await import(`../../pixelot/projects/${project}/${script}.js`);
+            } else {
+                a = await import(/* webpackIgnore: true */ `../projects/${project}/${script}.js`);
+            }
             const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
             // work out what kind of script this is (component, system, etc.)
             const map = this.getMapFromImport(a.default);
@@ -121,6 +130,35 @@ export class ImportManager {
         // load prefabs once all scripts have been loaded
         for (const prefab of projFiles.prefabs) {
             PrefabFactory.loadPrefab(`./projects/${project}/` + prefab + ".prefab");
+        }
+    }
+
+    static async importGameScripts() {
+        let scripts: string[];
+        let projFiles: ProjectFiles;
+        try {
+            projFiles = this.getFilePaths("./game/");
+            scripts = projFiles.scripts;
+        } catch (e) {
+            console.trace(e);
+            return;
+        }
+
+        // dynamically import the default exports of the script
+        for (const script of scripts) {
+            const a = await import(/* webpackIgnore: true */ `../game/${script}.js`);
+            const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
+            // work out what kind of script this is (component, system, etc.)
+            const map = this.getMapFromImport(a.default);
+            if (map) {
+                // we know the types are correct here if map exists (see getMapFromImport), so we can use map as any
+                (map as any).set(a.default.name, typed_constr);
+            }
+        }
+
+        // load prefabs once all scripts have been loaded
+        for (const prefab of projFiles.prefabs) {
+            PrefabFactory.loadPrefab(`./game/` + prefab + ".prefab");
         }
     }
 
@@ -172,12 +210,13 @@ export class ImportManager {
 * Import user scripts for given project name. For use in app context only, for built game imports, see `doGameImports()`.   
 * **NOTE:** This function assumes the relative path of the project to the engine source will be `../../pixelot/projects/<project>`
 */
-export async function doProjectImports(project: string) {
-    await ImportManager.importProjectScripts(project);
+export async function doProjectImports(project: string, isDevMode = true) {
+    await ImportManager.importProjectScripts(project, isDevMode);
 }
 
-
+/**
+ * Import all scripts for the game. For use in built game context only, for app imports, see `doProjectImports()`.
+ */
 export async function doGameImports() {
-    // TODO:
-    console.log("The `doGameImports()` function hasn't been implemented");
+    await ImportManager.importGameScripts();
 }

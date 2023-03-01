@@ -37,23 +37,6 @@
           ]
         }
       ]
-    },
-    {
-      "name": "test",
-      "class": "Player",
-      "args": [
-        0,
-        false
-      ],
-      "components": [
-        {
-          "component_name": "Position",
-          "args": [
-            0,
-            0
-          ]
-        }
-      ]
     }
   ]
 }
