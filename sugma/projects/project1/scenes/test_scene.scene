@@ -45,7 +45,15 @@
         0,
         false
       ],
-      "components": []
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            0,
+            0
+          ]
+        }
+      ]
     }
   ]
 }
