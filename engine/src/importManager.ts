@@ -108,7 +108,7 @@ export class ImportManager {
         // dynamically import the default exports of the script
         for (const script of scripts) {
             // dynamic imports must have a static string beginning in order for webpack to load them
-            const a = await import(`../../sugma/projects/${project}/${script}.js`);
+            const a = await import(`../../pixelot/projects/${project}/${script}.js`);
             const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
             // work out what kind of script this is (component, system, etc.)
             const map = this.getMapFromImport(a.default);
@@ -170,7 +170,7 @@ export class ImportManager {
 
 /**
 * Import user scripts for given project name. For use in app context only, for built game imports, see `doGameImports()`.   
-* **NOTE:** This function assumes the relative path of the project to the engine source will be `../../sugma/projects/<project>`
+* **NOTE:** This function assumes the relative path of the project to the engine source will be `../../pixelot/projects/<project>`
 */
 export async function doProjectImports(project: string) {
     await ImportManager.importProjectScripts(project);

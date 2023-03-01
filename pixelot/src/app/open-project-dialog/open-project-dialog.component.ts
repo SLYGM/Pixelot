@@ -19,15 +19,15 @@ export class OpenProjectDialogComponent {
   constructor(public dialogRef: MatDialogRef<OpenProjectDialogComponent>, private router: Router, private sceneData: SceneDataService, public fileService: FileService) {}
 
   ngOnInit() {
-    fs.readdir("../sugma/projects", (err: any, files: any[]) => {
+    fs.readdir("../pixelot/projects", (err: any, files: any[]) => {
       if (err) {
         console.log(err);
       } else {
         files.forEach(file => {
           // make sure we only get directories
-          if (fs.statSync("../sugma/projects/" + file).isDirectory()) {
+          if (fs.statSync("../pixelot/projects/" + file).isDirectory()) {
             // make sure the directory has a project.json
-            const projectFiles = engine.ImportManager.getFilePaths("../sugma/projects/" + file + "/");
+            const projectFiles = engine.ImportManager.getFilePaths("../pixelot/projects/" + file + "/");
             if (projectFiles.project) {
               this.projects.push(file);
             }
@@ -43,7 +43,7 @@ export class OpenProjectDialogComponent {
 
   async projectSelected(project: string) {
     this.dialogRef.close();
-    const projectPath = "../sugma/projects/" + project + "/";
+    const projectPath = "../pixelot/projects/" + project + "/";
     this.fileService.path = projectPath;
     const projectFiles = engine.ImportManager.getFilePaths(projectPath);
     const projJSONPath = projectPath + projectFiles.project + ".proj";

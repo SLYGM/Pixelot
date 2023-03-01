@@ -9,7 +9,7 @@ import * as engine from 'retro-engine';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'sugma';
+  title = 'pixelot';
   
   constructor() {
     // initialise the engine renderer
