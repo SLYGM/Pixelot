@@ -2,6 +2,7 @@
     min-width: 200px;
     border-right: 1px solid #ccc;
     resize: horizontal;
+    overflow: auto;
 }
 
 #add-entity-button {
@@ -15,10 +16,15 @@
 }
 
 .entity-list {
-  min-height: 35px;
-  border: 2px dotted #ccc;
 
   button {
     background-color: #eee;
+    width: 100%;
+    margin: 2px 0;
   }
+}
+
+.dragging {
+  min-height: 35px;
+  border: 2px dashed #ccc;
 }

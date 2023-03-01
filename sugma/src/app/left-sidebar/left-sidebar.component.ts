@@ -19,7 +19,6 @@ import { FileUtils } from 'retro-engine';
   styleUrls: ['./left-sidebar.component.scss']
 })
 export class LeftSidebarComponent {
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @Input() scene?: Scene;
   @Input() layerNames: string[];
   @Output() entitySelected = new EventEmitter<string>();
@@ -37,7 +36,7 @@ export class LeftSidebarComponent {
   update() {
     if (this.scene) {
       this.layerEntities = [];
-        let newLayerNames = Array.from(engine.Renderer.layerAliases.get(this.scene).keys());
+        let newLayerNames: string[] = Array.from(engine.Renderer.layerAliases.get(this.scene).keys());
         if (JSON.stringify(this.layerNames) != JSON.stringify(newLayerNames)) {
           this.layerNames = newLayerNames;
         }
@@ -75,9 +74,9 @@ export class LeftSidebarComponent {
     this.entitySelected.emit(entity);
   }
 
-  handleEntityRightclick(event: Event) {
+  handleEntityRightclick(event: Event, trigger: MatMenuTrigger) {
     event.preventDefault();
-    this.trigger.openMenu();
+    trigger.openMenu();
   }
 
   deleteEntity(entity: string) {
@@ -88,22 +87,41 @@ export class LeftSidebarComponent {
     this.sceneData.saveScene(this.scene.name);
   }
 
+  onDragStarted() {
+    let areas = document.querySelectorAll('.entity-list');
+    areas.forEach((area) => {
+      area.classList.add('dragging');
+    });
+  }
+
+  onDragReleased() {
+    const areas = document.querySelectorAll('.entity-list');
+    areas.forEach((area) => {
+      area.classList.remove('dragging');
+    });
+  }
+
   // Entity has been dragged and dropped to a new layer
   drop(event: any) {
-    console.log(event);
     if (event.previousContainer === event.container) {
-      console.log('same container');
       return;
     } else {
       const entity = engine.SceneManager.currentScene.getEntity(event.item.data);
-      console.log(entity);
       if (entity) {
         // Update layer in scene data
         this.sceneData.setEntityLayer(this.scene.name, entity.name, event.container.id);
+
+        // remove and re-add component to update it
+        entity.removeByName('Sprite');
+
+        const component_constr = engine.ImportManager.getComponent('Sprite');
+        const comp_args = component_constr.parseArgs(this.sceneData.getComponentArgs(this.scene.name, entity.name, 'Sprite'));
+        const updated_component = new component_constr.constr(...comp_args);
+        entity.add(updated_component);
+        updated_component._create();
+
         this.update();
         this.sceneData.saveScene(this.scene.name);
-        // Update layer in engine
-        (entity.getByName('Sprite') as any).lr = event.container.id;
       }
     }
   }

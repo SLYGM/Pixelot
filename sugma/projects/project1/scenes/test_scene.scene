@@ -25,8 +25,8 @@
           "component_name": "Sprite",
           "args": [
             "frog",
-            "background",
-            0
+            "foreground",
+            "1"
           ]
         }
       ]
@@ -57,7 +57,7 @@
           "component_name": "Sprite",
           "args": [
             "cog",
-            "foreground",
+            "ui",
             "0"
           ]
         }

@@ -8,17 +8,17 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div class="entity-list" cdkDropList [id]="layer" (cdkDropListDropped)="drop($event)" [cdkDropListData]="layer">
-        <div *ngFor="let entity of layerEntities[i]" cdkDrag [cdkDragData]="entity">
-          <span
-            [matMenuTriggerFor]="menu"
-            [matMenuTriggerData]="{ entity: entity }"
-            #menuTrigger="matMenuTrigger"
-          >
-          </span>
-          <button mat-button (click)="selectEntity(entity)" (contextmenu)="handleEntityRightclick($event)">
-            {{entity}}
-          </button>
-        </div>
+          <div *ngFor="let entity of layerEntities[i]" cdkDrag (cdkDragStarted)="onDragStarted()" (cdkDragReleased)="onDragReleased()" [cdkDragData]="entity">
+            <span
+              [matMenuTriggerFor]="menu"
+              [matMenuTriggerData]="{ entity: entity }"
+              #menuTrigger="matMenuTrigger"
+            >
+            </span>
+            <button mat-button (click)="selectEntity(entity)" (contextmenu)="handleEntityRightclick($event, menuTrigger)">
+              {{entity}}
+            </button>
+          </div>
         </div>
         <mat-action-row>
           <button *ngIf="layer!='default'" mat-stroked-button color="warn" (click)="removeLayer(layer)">Remove Layer</button>
