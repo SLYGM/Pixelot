@@ -1,6 +1,6 @@
-// import { $gl } from 'retro-engine';
+// import { $gl } from "retro-engine";
 // import { PostProcess } from "retro-engine";
-export default class TestHalfScreenShader extends engine.PostProcess {
+export default class BarShader extends engine.PostProcess {
     static arg_names = [];
     static arg_types = [];
     constructor() {
@@ -23,22 +23,25 @@ export default class TestHalfScreenShader extends engine.PostProcess {
     precision highp float;
 
     uniform sampler2D u_texture;
+    uniform float time;
     in vec2 v_texcoord;
 
     out vec4 outColor;
 
     void main()
     {
-        if (v_texcoord.x > 0.5) {
-            outColor = texture(u_texture, v_texcoord);
-        } else {
-            outColor = vec4(1.0, 0.0, 0.0, 1.0);
-        }
+      vec3 color = texture(u_texture, v_texcoord).rgb;
+
+      color -= abs(sin(v_texcoord.y * 100.0 + time * 5.0)) * 0.08;
+      color -= abs(sin(v_texcoord.y * 300.0 - time * 10.0)) * 0.05;
+
+      outColor = vec4(color, 1.0).rgba;
     }
     `;
         super(v_shader, f_shader);
     }
     draw() {
-        engine.$gl.drawArrays($gl.TRIANGLES, 0, 6);
+        engine.$gl.uniform1f(engine.$gl.getUniformLocation(this.program, "time"), performance.now() / 1000);
+        engine.$gl.drawArrays(engine.$gl.TRIANGLES, 0, 6);
     }
 }
