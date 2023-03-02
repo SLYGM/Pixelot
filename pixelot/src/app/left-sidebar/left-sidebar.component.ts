@@ -36,6 +36,7 @@ export class LeftSidebarComponent {
   update() {
     if (this.scene) {
       this.layerEntities = [];
+      this.otherEntities = [];
         let newLayerNames: string[] = Array.from(engine.Renderer.layerAliases.get(this.scene).keys());
         if (JSON.stringify(this.layerNames) != JSON.stringify(newLayerNames)) {
           this.layerNames = newLayerNames;

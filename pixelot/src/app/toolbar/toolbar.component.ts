@@ -49,7 +49,7 @@ export class ToolbarComponent {
       game.append(new nw.MenuItem({
         label: 'Run',
         click: () => {
-          engine.Game.start(false);
+          engine.Game.render_only = false;
         }
       }));
       game.append(new nw.MenuItem({ label: 'Build' }));

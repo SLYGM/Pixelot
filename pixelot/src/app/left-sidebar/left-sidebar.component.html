@@ -15,7 +15,7 @@
               #menuTrigger="matMenuTrigger"
             >
             </span>
-            <button mat-button (click)="selectEntity(entity)" (contextmenu)="handleEntityRightclick($event, menuTrigger)">
+            <button mat-button class="entity-button" (click)="selectEntity(entity)" (contextmenu)="handleEntityRightclick($event, menuTrigger)">
               {{entity}}
             </button>
           </div>
@@ -32,11 +32,17 @@
           No Layer
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <ng-container *ngFor="let entity of otherEntities">
-        <button mat-button (click)="selectEntity(entity)">
+      <div *ngFor="let entity of otherEntities" (cdkDragStarted)="onDragStarted()">
+            <span
+              [matMenuTriggerFor]="menu"
+              [matMenuTriggerData]="{ entity: entity }"
+              #menuTrigger="matMenuTrigger"
+            >
+            </span>
+        <button mat-button class="entity-button" (click)="selectEntity(entity)" (contextmenu)="handleEntityRightclick($event, menuTrigger)">
           {{entity}}
         </button>
-      </ng-container>
+      </div>
     </mat-expansion-panel>
   </mat-accordion>
   <button mat-raised-button id="add-entity-button" (click)="openEntityDialog()" >Add Entity</button>
