@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, Optional, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Inject, Input, Optional, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -29,9 +29,9 @@ export class RightSidebarComponent {
   stringType = engine.Types.String;
   numberType = engine.Types.Number;
   booleanType = engine.Types.Boolean;
+  isResizing = false;
 
-  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, public sceneData: SceneDataService, @Optional() public parentComponent?: SceneTabComponent) {
-    this.parentComponent = parentComponent;
+  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, public sceneData: SceneDataService, private hostRef: ElementRef, @Optional() private parentComponent?: SceneTabComponent) {
     this.update();
   }
 
@@ -158,6 +158,30 @@ export class RightSidebarComponent {
     fs.writeFileSync(ent_path, JSON.stringify(ent));
     // load the newly created prefab
     engine.PrefabFactory.loadPrefab(ent_path);
+  }
+
+  onResizeBarMouseDown(event: MouseEvent) {
+    this.isResizing = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    const startX = event.clientX;
+    const startWidth = this.hostRef.nativeElement.clientWidth;
+
+    const onMouseMove = (event: MouseEvent) => {
+      const newWidth = startWidth + (startX - event.clientX);
+      this.hostRef.nativeElement.style.width = newWidth + 'px';
+    }
+
+    const onMouseUp = (event: MouseEvent) => {
+      this.isResizing = false;
+      document.body.style.cursor = 'default';
+      document.body.style.userSelect = 'auto';
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   }
 }
 

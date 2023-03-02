@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -24,8 +24,9 @@ export class LeftSidebarComponent {
   @Output() entitySelected = new EventEmitter<string>();
   layerEntities?: string[][];
   otherEntities: string[] = [];
+  isResizing = false;
 
-  constructor(public dialog: MatDialog, private sceneData: SceneDataService, private _snackBar: MatSnackBar) {
+  constructor(public dialog: MatDialog, private sceneData: SceneDataService, private _snackBar: MatSnackBar, private hostRef: ElementRef) {
     this.update();
   }
 
@@ -125,6 +126,30 @@ export class LeftSidebarComponent {
         this.sceneData.saveScene(this.scene.name);
       }
     }
+  }
+
+  onResizeBarMouseDown(event: MouseEvent) {
+    this.isResizing = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    const startX = event.clientX;
+    const startWidth = this.hostRef.nativeElement.clientWidth;
+
+    const onMouseMove = (event: MouseEvent) => {
+      const newWidth = startWidth + (event.clientX - startX);
+      this.hostRef.nativeElement.style.width = newWidth + 'px';
+    }
+
+    const onMouseUp = (event: MouseEvent) => {
+      this.isResizing = false;
+      document.body.style.cursor = 'default';
+      document.body.style.userSelect = 'auto';
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   }
 
   openEntityDialog(): void {
