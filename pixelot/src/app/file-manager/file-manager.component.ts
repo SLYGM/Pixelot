@@ -4,6 +4,7 @@ import { FileElement } from 'app/file-explorer/model/file-element';
 import { FileService } from 'app/services/file.service';
 import { Observable, of } from 'rxjs';
 import { toArray } from 'rxjs/operators';
+import { ViewChild } from '@angular/core';
 import { v4 } from 'uuid';
 
 @Component({
@@ -16,11 +17,27 @@ export class FileManagerComponent {
   currentRoot!: FileElement | null;
   currentPath!: string;
   canNavigateUp = false;
+  @ViewChild('fileExplorer') fileExplorer: FileExplorerComponent;
 
   constructor(public fileService: FileService) { }
 
   ngOnInit(): void {
     this.currentPath = this.fileService.path;
+    this.setupFileWatcher();
+  }
+
+  
+  //watch for changes in the directory
+  setupFileWatcher() {
+    const nw = (window as any).nw;
+    const fs = nw.require('fs');
+
+    fs.watch(this.currentPath, { recursive: true }, (eventType: string, filename: string) => {
+      console.log(eventType, filename);
+      this.fileService.reset();
+      this.fileExplorer.listDirectory(this.currentPath);
+      this.updateFileElementQuery();
+    });
   }
 
   addFolder(folder: { name: string }) {

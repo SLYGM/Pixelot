@@ -109,22 +109,9 @@ export class ImportManager {
             return;
         }
         
-        // dynamically import the default exports of the script
+        // dynamically import the default exports of each script
         for (const script of scripts) {
-            // dynamic imports must have a static string beginning in order for webpack to load them
-            let a;
-            if (isDevMode) {
-                a = await import(`../../pixelot/projects/${project}/${script}.js`);
-            } else {
-                a = await import(/* webpackIgnore: true */ `../projects/${project}/${script}.js`);
-            }
-            const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
-            // work out what kind of script this is (component, system, etc.)
-            const map = this.getMapFromImport(a.default);
-            if (map) {
-                // we know the types are correct here if map exists (see getMapFromImport), so we can use map as any
-                (map as any).set(a.default.name, typed_constr);
-            }
+            this.importScript(project, script, isDevMode);
         }
 
         // load prefabs once all scripts have been loaded
@@ -132,6 +119,23 @@ export class ImportManager {
             PrefabFactory.loadPrefab(`./projects/${project}/` + prefab + ".prefab");
         }
     }
+
+    static async importScript(project: string, script: string, isDevMode = true) {
+        let a: any;
+        if (isDevMode) {
+            a = await import(`../../pixelot/projects/${project}/${script}.js`);
+        } else {
+            a = await import(/* webpackIgnore: true */ `../projects/${project}/${script}.js`);
+        }
+        const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
+        // work out what kind of script this is (component, system, etc.)
+        const map = this.getMapFromImport(a.default);
+        if (map) {
+            // we know the types are correct here if map exists (see getMapFromImport), so we can use map as any
+            (map as any).set(a.default.name, typed_constr);
+        }
+    }
+
 
     static async importGameScripts() {
         let scripts: string[];

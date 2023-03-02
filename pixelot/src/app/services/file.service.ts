@@ -74,4 +74,9 @@ export class FileService implements IFileService {
   clone(element: FileElement) {
     return JSON.parse(JSON.stringify(element))
   }
+
+  reset() {
+    this.map.clear();
+    this.querySubject?.next([]);
+  }
 }
