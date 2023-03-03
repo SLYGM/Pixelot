@@ -108,11 +108,9 @@ export class ImportManager {
             console.trace(e);
             return;
         }
-        
-        // dynamically import the default exports of each script
-        for (const script of scripts) {
-            this.importScript(project, script, isDevMode);
-        }
+
+        // await the import of all scripts before loading prefabs
+        await Promise.all(scripts.map((script) => this.importScript(project, script, isDevMode)));
 
         // load prefabs once all scripts have been loaded
         for (const prefab of projFiles.prefabs) {
