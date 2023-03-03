@@ -33,11 +33,29 @@ class ProjectFiles {
     }
 }
 
+type ImportType = Component | System | GameObjectBase | PostProcess;
+
+class ImportRecord {
+    path: string;
+    map: Map<string, TypedConstructor<ImportType>>;
+
+    constructor(path: string, map: Map<string, TypedConstructor<ImportType>>) {
+        this.path = path;
+        this.map = map;
+    }
+
+    remove() {
+        this.map.delete(this.path);
+    }
+}
+
 export class ImportManager {
     private static components = new Map<string, TypedConstructor<Component>>();
     private static systems = new Map<string, TypedConstructor<System>>();
     private static entities = new Map<string, TypedConstructor<GameObjectBase>>();
     private static shaders = new Map<string, TypedConstructor<PostProcess>>();
+
+    private static cached_imports = new Map<string, ImportRecord>();
     
     static getFilePaths(srcPath: string) {
         function getScripts(srcPath: string, relPath: string) {
@@ -131,7 +149,17 @@ export class ImportManager {
         if (map) {
             // we know the types are correct here if map exists (see getMapFromImport), so we can use map as any
             (map as any).set(a.default.name, typed_constr);
+            const record = new ImportRecord(script, map);
+            this.cached_imports.set(script, record);
         }
+    }
+
+    static removeScript(script: string) {
+        const record = this.cached_imports.get(script);
+        if (record) {
+            record.remove();
+        }
+        this.cached_imports.delete(script);
     }
 
 

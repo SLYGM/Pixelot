@@ -4,8 +4,10 @@ import { FileElement } from 'app/file-explorer/model/file-element';
 import { FileService } from 'app/services/file.service';
 import { Observable, of } from 'rxjs';
 import { toArray } from 'rxjs/operators';
-import { ViewChild } from '@angular/core';
+import { ViewChild, isDevMode } from '@angular/core';
 import { v4 } from 'uuid';
+
+import * as engine from 'retro-engine';
 
 @Component({
   selector: 'app-file-manager',
@@ -31,9 +33,25 @@ export class FileManagerComponent {
   setupFileWatcher() {
     const nw = (window as any).nw;
     const fs = nw.require('fs');
+    const path = nw.require('path');
 
     fs.watch(this.currentPath, { recursive: true }, (eventType: string, filename: string) => {
-      console.log(eventType, filename);
+      //change the backslashes to forward slashes
+      filename = filename.split(path.sep).join('/');
+      const file = path.parse(filename);
+
+      if (eventType === 'rename') {
+        // if the file no longer exists, then it has been deleted
+        if (!fs.existsSync(path.join(this.currentPath, file.dir, file.base))) {
+          if (file.ext === '.js') {
+            engine.ImportManager.removeScript(path.join(file.dir, file.name));
+          }
+        }
+        // otherwise it is newly created
+        else {
+          engine.ImportManager.importScript(this.fileService.proj_name, path.join(file.dir, file.name), false);
+        }
+      }
       this.fileService.reset();
       this.fileExplorer.listDirectory(this.currentPath);
       this.updateFileElementQuery();
