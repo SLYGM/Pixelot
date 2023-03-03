@@ -36,16 +36,16 @@ class ProjectFiles {
 type ImportType = Component | System | GameObjectBase | PostProcess;
 
 class ImportRecord {
-    path: string;
+    name: string;
     map: Map<string, TypedConstructor<ImportType>>;
 
-    constructor(path: string, map: Map<string, TypedConstructor<ImportType>>) {
-        this.path = path;
+    constructor(name: string, map: Map<string, TypedConstructor<ImportType>>) {
+        this.name = name;
         this.map = map;
     }
 
     remove() {
-        this.map.delete(this.path);
+        this.map.delete(this.name);
     }
 }
 
@@ -141,7 +141,7 @@ export class ImportManager {
         if (isDevMode) {
             a = await import(`../../pixelot/projects/${project}/${script}.js`);
         } else {
-            a = await import(/* webpackIgnore: true */ `../projects/${project}/${script}.js`);
+            a = await import(/* webpackIgnore: true */ `../projects/${project}/${script}.js?${Date.now()}`);
         }
         const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
         // work out what kind of script this is (component, system, etc.)
@@ -149,7 +149,7 @@ export class ImportManager {
         if (map) {
             // we know the types are correct here if map exists (see getMapFromImport), so we can use map as any
             (map as any).set(a.default.name, typed_constr);
-            const record = new ImportRecord(script, map);
+            const record = new ImportRecord(a.default.name, map);
             this.cached_imports.set(script, record);
         }
     }

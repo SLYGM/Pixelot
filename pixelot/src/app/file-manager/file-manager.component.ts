@@ -52,6 +52,14 @@ export class FileManagerComponent {
           engine.ImportManager.importScript(this.fileService.proj_name, path.join(file.dir, file.name), false);
         }
       }
+      // if the file has been changed, then reimport it (if it is a script)
+      else if (eventType === 'change') {
+        if (file.ext === '.js') {
+          const script_name = filename.split('.')[0];
+          engine.ImportManager.removeScript(script_name);
+          engine.ImportManager.importScript(this.fileService.proj_name, script_name, false);
+        }
+      }
       this.fileService.reset();
       this.fileExplorer.listDirectory(this.currentPath);
       this.updateFileElementQuery();
