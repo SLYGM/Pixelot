@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "nw": "concurrently \"ng serve --port=8964\" \"nw .\"",
+    "nw-no-reload": "concurrently \"ng serve --port=8964 --live-reload=false\" \"nw .\"",
     "build": "npm run clean && ng build --configuration=production --output-path ./dist-ng --index=/src/index.html",
     "clean": "rimraf ./dist-ng",
     "watch": "ng build --watch --configuration development",
