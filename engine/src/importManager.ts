@@ -141,6 +141,9 @@ export class ImportManager {
         if (isDevMode) {
             a = await import(`../../pixelot/projects/${project}/${script}.js`);
         } else {
+            /* adding a query string to the end of the import path forces the browser to reload the script
+            this is necessary because the browser caches scripts, so if you change a script and reload the page,
+            the browser will still use the cached version of the script */
             a = await import(/* webpackIgnore: true */ `../projects/${project}/${script}.js?${Date.now()}`);
         }
         const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
