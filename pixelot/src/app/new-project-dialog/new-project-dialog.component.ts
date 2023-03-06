@@ -39,7 +39,7 @@ export class NewProjectDialogComponent {
       });
       return;
     }
-    const projectPath = "../sugma/projects/" + this.projectName;
+    const projectPath = "../pixelot/projects/" + this.projectName;
 
     // make sure the project doesn't already exist
     if (fs.existsSync(projectPath)) {
