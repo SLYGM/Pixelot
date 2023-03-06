@@ -1,6 +1,6 @@
-import { PostProcess } from "retro-engine";
+// import { PostProcess } from "retro-engine";
 
-export default class BarrelShader extends PostProcess {
+export default class BarrelShader extends engine.PostProcess {
     static arg_names = [];
     static arg_types = [];
     constructor() {

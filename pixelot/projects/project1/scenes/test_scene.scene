@@ -25,13 +25,13 @@
       "class": "Player",
       "args": [
         0,
-        false
+        "false"
       ],
       "components": [
         {
           "component_name": "Position",
           "args": [
-            "100",
+            "10",
             "100"
           ]
         },
@@ -42,8 +42,38 @@
             "foreground",
             0
           ]
+        },
+        {
+          "component_name": "Velocity",
+          "args": [
+            "0.1",
+            0
+          ]
+        }
+      ]
+<<<<<<< HEAD
+    }
+  ]
+}
+=======
+    },
+    {
+      "name": "test",
+      "class": "Player",
+      "args": [
+        0,
+        false
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            0,
+            0
+          ]
         }
       ]
     }
   ]
 }
+>>>>>>> app-ui

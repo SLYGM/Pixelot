@@ -5,6 +5,12 @@ import { ImportManager } from "./importManager.js";
 import { PostProcessing } from "./renderer/post_process.js";
 
 const nw = (window as any).nw;
+let fs;
+if (nw) {
+    fs = nw.require("fs");
+} else {
+    fs = require("fs");
+}
 
 export class Game {
     static updateQueue: Updatable[];
@@ -46,13 +52,17 @@ export class Game {
     /**
      * Load a project from a project json file
      * 
-     * @param project_dir The path to the root of the project (containing the .proj file)
+     * @param project_dir (optional) The path to the root of the project (containing the .proj file).
+     * Required for projects loaded via the UI, but not for built projects.
      */
-    static loadGame(project_dir: string) {
-        const fs = nw.require("fs");
-
-        SceneManager.project_dir = project_dir;
-        const project_file_path = project_dir + "/project.proj";
+    static loadGame(project_dir?: string) {
+        let project_file_path: string;
+        if (project_dir) {
+            SceneManager.project_dir = project_dir;
+            project_file_path = project_dir + "/project.proj";
+        } else {
+            project_file_path = "./game/project.proj";
+        }
 
         // load the project json which contains all info needed to initialise the game
         const data = fs.readFileSync(project_file_path, {encoding: "utf-8"});
@@ -81,6 +91,8 @@ export class Game {
 
     static stop() {
         this.running = false;
-        nw.App.closeAllWindows();
+        if (nw) {
+            nw.App.closeAllWindows();
+        }
     }
 }
