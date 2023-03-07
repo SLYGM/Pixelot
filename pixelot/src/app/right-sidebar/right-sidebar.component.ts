@@ -35,7 +35,7 @@ export class RightSidebarComponent {
   assets = [];
   selectedAsset:string;
 
-  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, public sceneData: SceneDataService, public fileService: FileService, @Optional() public parentComponent?: SceneTabComponent) {
+  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, public sceneData: SceneDataService, public fileService: FileService,  private hostRef: ElementRef, @Optional() public parentComponent?: SceneTabComponent) {
     this.parentComponent = parentComponent;
     this.assets = [...engine.Renderer.textures.keys()];    
     this.update();
