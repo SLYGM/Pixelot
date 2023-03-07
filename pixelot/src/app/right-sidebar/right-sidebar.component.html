@@ -32,8 +32,17 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
         <ng-container *ngFor="let property of importManager.getComponent(component).arg_names; index as i">
+          <!-- if component is sprite and property is a string(for assets): -->
+          <mat-form-field *ngIf="importManager.getComponent(component).arg_types[i] == stringType && (property == 'texAlias')" [style.width.%]="100">
+            <mat-label color="primary">{{property}}</mat-label>
+            <mat-select [(value)]="selectedAsset" (selectionChange)="handleComponentChange($event, component, i)">
+              <mat-option *ngFor="let asset of assets" [value]="asset">
+                {{asset}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
           <!-- if property is a string: -->
-          <mat-form-field *ngIf="importManager.getComponent(component).arg_types[i] == stringType" [style.width.%]="100">
+          <mat-form-field *ngIf="importManager.getComponent(component).arg_types[i] == stringType && (property != 'texAlias')" [style.width.%]="100">
             <mat-label color="primary">{{property}}</mat-label>
             <input matInput value={{sceneData.getComponentArgs(currentSceneName,entity.name,component)[i]}} (change)="handleComponentChange($event, component, i)">
           </mat-form-field>
@@ -48,6 +57,7 @@
           </mat-slide-toggle>
         </ng-container>
         <mat-action-row>
+          <button *ngIf="(component == 'Sprite')" mat-raised-button color="accent" (click)="addNewAsset()" >Add asset</button>
           <button mat-stroked-button color="warn" (click)="removeComponent(component)">Remove Component</button>
         </mat-action-row>
       </mat-expansion-panel>

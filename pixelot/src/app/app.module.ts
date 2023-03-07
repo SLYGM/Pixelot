@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { AddEntityDialog, AddLayerDialog, LeftSidebarComponent } from './left-sidebar/left-sidebar.component';
-import { AddComponentDialog, RightSidebarComponent } from './right-sidebar/right-sidebar.component';
+import { AddComponentDialog, RightSidebarComponent, AddAssetDialog } from './right-sidebar/right-sidebar.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SceneTabComponent } from './scene-tab/scene-tab.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -35,6 +35,7 @@ import { LandingComponent } from './landing/landing.component';
 import { OpenProjectDialogComponent } from './open-project-dialog/open-project-dialog.component';
 import { NewProjectDialogComponent } from './new-project-dialog/new-project-dialog.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     LeftSidebarComponent,
     RightSidebarComponent,
     AddComponentDialog,
+    AddAssetDialog,
     AddEntityDialog,
     AddLayerDialog,
     NavbarComponent,
@@ -61,6 +63,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
   ],
   imports: [
     BrowserModule,
+    MatSelectModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
