@@ -7,6 +7,7 @@ import { Texture, Updatable } from "../types.js";
 import { AutoMap } from "../utils/baseutils.js";
 import { Scene } from "../scene.js";
 import { SceneManager } from "../sceneManager.js";
+import { TextRenderer } from "./textRenderer.js";
 
 const { glMatrix, mat4, vec3 } = require("gl-matrix");
 
@@ -50,6 +51,7 @@ export class SpriteLayer extends RenderLayer {
     }
 
     render() {
+        $gl.useProgram(Renderer.shader.prog);
         this.sprites.forEach((node) => {
             const sprite = node.key;
             const pos = sprite.getPos();
@@ -158,6 +160,7 @@ export class Renderer {
         this.backgroundColor = [1, 1, 1, 1];
 
         PostProcessing.init();
+        TextRenderer.init();
     }
 
     static setResolution(x: number, y: number) {
@@ -202,6 +205,7 @@ export class Renderer {
                 l.render();
             })    
         }
+        TextRenderer.render();
         PostProcessing.apply();
         
         // if rendering offscreen, the image needs to be copied onto the on-screen canvas
