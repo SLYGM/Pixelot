@@ -60,9 +60,6 @@ export class FileManagerComponent {
           engine.ImportManager.importScript(this.fileService.proj_name, script_name, false);
         }
       }
-      this.fileService.reset();
-      this.fileExplorer.listDirectory(this.currentPath);
-      this.updateFileElementQuery();
     });
   }
 

@@ -140,7 +140,7 @@ export class FileExplorerComponent {
     let dialogRef = this.dialog.open(NewFileDialogComponent);
     dialogRef.afterClosed().subscribe(res => {
       if (res) this.fileAdded.emit({ name: res });
-      const filePath = this.fileService.path + res;
+      const filePath = this.directory_path + res;
       const content = this.getScriptTemplate(type, res);
       const nw = (window as any).nw;
       const fs = nw.require('fs');
