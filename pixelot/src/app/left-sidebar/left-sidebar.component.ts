@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -19,14 +19,14 @@ import { FileUtils } from 'retro-engine';
   styleUrls: ['./left-sidebar.component.scss']
 })
 export class LeftSidebarComponent {
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @Input() scene?: Scene;
   @Input() layerNames: string[];
   @Output() entitySelected = new EventEmitter<string>();
   layerEntities?: string[][];
   otherEntities: string[] = [];
+  isResizing = false;
 
-  constructor(public dialog: MatDialog, private sceneData: SceneDataService, private _snackBar: MatSnackBar) {
+  constructor(public dialog: MatDialog, private sceneData: SceneDataService, private _snackBar: MatSnackBar, private hostRef: ElementRef) {
     this.update();
   }
 
@@ -37,7 +37,8 @@ export class LeftSidebarComponent {
   update() {
     if (this.scene) {
       this.layerEntities = [];
-        let newLayerNames = Array.from(engine.Renderer.layerAliases.get(this.scene).keys());
+      this.otherEntities = [];
+        let newLayerNames: string[] = Array.from(engine.Renderer.layerAliases.get(this.scene).keys());
         if (JSON.stringify(this.layerNames) != JSON.stringify(newLayerNames)) {
           this.layerNames = newLayerNames;
         }
@@ -75,9 +76,9 @@ export class LeftSidebarComponent {
     this.entitySelected.emit(entity);
   }
 
-  handleEntityRightclick(event: Event) {
+  handleEntityRightclick(event: Event, trigger: MatMenuTrigger) {
     event.preventDefault();
-    this.trigger.openMenu();
+    trigger.openMenu();
   }
 
   deleteEntity(entity: string) {
@@ -86,6 +87,69 @@ export class LeftSidebarComponent {
     this.entitySelected.emit(null);
     this.update();
     this.sceneData.saveScene(this.scene.name);
+  }
+
+  onDragStarted() {
+    let areas = document.querySelectorAll('.entity-list');
+    areas.forEach((area) => {
+      area.classList.add('dragging');
+    });
+  }
+
+  onDragReleased() {
+    const areas = document.querySelectorAll('.entity-list');
+    areas.forEach((area) => {
+      area.classList.remove('dragging');
+    });
+  }
+
+  // Entity has been dragged and dropped to a new layer
+  drop(event: any) {
+    if (event.previousContainer === event.container) {
+      return;
+    } else {
+      const entity = engine.SceneManager.currentScene.getEntity(event.item.data);
+      if (entity) {
+        // Update layer in scene data
+        this.sceneData.setEntityLayer(this.scene.name, entity.name, event.container.id);
+
+        // remove and re-add component to update it
+        entity.removeByName('Sprite');
+
+        const component_constr = engine.ImportManager.getComponent('Sprite');
+        const comp_args = component_constr.parseArgs(this.sceneData.getComponentArgs(this.scene.name, entity.name, 'Sprite'));
+        const updated_component = new component_constr.constr(...comp_args);
+        entity.add(updated_component);
+        updated_component._create();
+
+        this.update();
+        this.sceneData.saveScene(this.scene.name);
+      }
+    }
+  }
+
+  onResizeBarMouseDown(event: MouseEvent) {
+    this.isResizing = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    const startX = event.clientX;
+    const startWidth = this.hostRef.nativeElement.clientWidth;
+
+    const onMouseMove = (event: MouseEvent) => {
+      const newWidth = startWidth + (event.clientX - startX);
+      this.hostRef.nativeElement.style.width = newWidth + 'px';
+    }
+
+    const onMouseUp = (event: MouseEvent) => {
+      this.isResizing = false;
+      document.body.style.cursor = 'default';
+      document.body.style.userSelect = 'auto';
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   }
 
   openEntityDialog(): void {

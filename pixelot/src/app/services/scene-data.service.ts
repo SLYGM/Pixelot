@@ -126,6 +126,19 @@ export class SceneDataService {
     return '';
   }
 
+  setEntityLayer(sceneName: string, entityName: string, layerName: string) {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      const entity = scene.entities.find(e => e.name === entityName);
+      if (entity) {
+        const sprite = entity.components.find(c => c.component_name === 'Sprite');
+        if (sprite) {
+          sprite.args[1] = layerName;
+        }
+      }
+    }
+  }
+
   updateEntityName(sceneName: string, entityName: string, newName: string) {
     const scene = this.scenes.get(sceneName);
     if (scene) {
