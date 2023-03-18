@@ -239,20 +239,27 @@ export class LeftSidebarComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (!result)
         return;
-      
-      console.log(result);
 
       let new_layer: engine.RenderLayer;
 
       if (type == 'tilemap') {
+        // make sure the path is valid
         if (result.path == '') {
           this._snackBar.open('Please enter a path', 'Close', {
             duration: 5000
           });
           return;
         }
-
-        new_layer = engine.TileMapJSONParser.parse(result.path);
+        
+        // attempt to parse the tilemap
+        try {
+          new_layer = engine.TileMapJSONParser.parse(result.path);
+        } catch (e) {
+          this._snackBar.open('Error parsing tilemap', 'Close', {
+            duration: 5000
+          });
+          return;
+        }
       }
       else if (type == 'sprite') {
         new_layer = new engine.SpriteLayer();
@@ -372,7 +379,12 @@ export class AddLayerDialog {
   onAddClick(): void {
     const name = this.nameForm.value;
     if (this.path_required) {
-      const path = this.file.path;
+      let path;
+      if (!this.file) {
+        path = '';
+      } else {
+        path = this.file.path;
+      }
       this.dialogRef.close({name, path});
       return;
     }
