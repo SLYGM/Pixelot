@@ -51,31 +51,6 @@
           ]
         }
       ]
-    },
-    {
-      "name": "cog",
-      "class": "Player",
-      "args": [
-        0,
-        false
-      ],
-      "components": [
-        {
-          "component_name": "Position",
-          "args": [
-            "-100",
-            "-100"
-          ]
-        },
-        {
-          "component_name": "Sprite",
-          "args": [
-            "cog",
-            "foreground",
-            "0"
-          ]
-        }
-      ]
     }
   ]
 }
