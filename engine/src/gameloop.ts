@@ -77,7 +77,7 @@ export class Game {
     
     private static loadTextures(textures: {name: string, path: string}[]) {
         for (const texture of textures) {
-            Renderer.loadTexture(texture["path"], texture["name"]);
+            Renderer.loadTextureWithAlias(texture["path"], texture["name"]);
         }
     }
     

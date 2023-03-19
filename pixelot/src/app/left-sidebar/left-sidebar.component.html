@@ -46,7 +46,11 @@
     </mat-expansion-panel>
   </mat-accordion>
   <button mat-raised-button id="add-entity-button" (click)="openEntityDialog()" >Add Entity</button>
-  <button mat-raised-button id="add-layer-button" (click)="openLayerDialog()" >Add Layer</button>
+  <button mat-raised-button id="add-layer-button" [matMenuTriggerFor]="layermenu">Add Layer</button>
+  <mat-menu #layermenu="matMenu">
+    <button mat-menu-item id="add-layer-button" (click)="openLayerDialog('sprite')">Sprite Layer</button>
+    <button mat-menu-item id="add-layer-button" (click)="openLayerDialog('tilemap')">Tile Layer</button>
+  </mat-menu>
 </div>
 <div id="left-sidebar-resizer" (mousedown)="onResizeBarMouseDown($event)"></div>
 
