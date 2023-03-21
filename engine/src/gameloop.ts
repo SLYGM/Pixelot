@@ -79,13 +79,13 @@ export class Game {
         if (project_dir) {
             for (const texture of textures) {
                 const tex_path = '/projects/' + project_dir.split('/projects')[1] + texture["path"];
-                Renderer.loadTexture(tex_path, texture["name"]);
+                Renderer.loadTextureWithAlias(tex_path, texture["name"]);
             }
         }
         // if project_dir is not provided, assume that the textures are in the same path relative to the project root
         else {
             for (const texture of textures) {
-                Renderer.loadTexture(texture["path"], texture["name"]);
+                Renderer.loadTextureWithAlias(texture["path"], texture["name"]);
             }
         }
     }

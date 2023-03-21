@@ -1,9 +1,23 @@
 {
   "name": "test_scene",
   "layers": [
-    "background",
-    "foreground",
-    "ui"
+    {
+      "name": "tilemap_layer",
+      "type": "tilemap",
+      "source": "./projects/project1/tilemap.json"
+    },
+    {
+      "name": "background",
+      "type": "sprite"
+    },
+    {
+      "name": "foreground",
+      "type": "sprite"
+    },
+    {
+      "name": "ui",
+      "type": "sprite"
+    }
   ],
   "entities": [
     {
@@ -34,31 +48,6 @@
           "args": [
             "0.1",
             0
-          ]
-        }
-      ]
-    },
-    {
-      "name": "cog",
-      "class": "Player",
-      "args": [
-        0,
-        false
-      ],
-      "components": [
-        {
-          "component_name": "Position",
-          "args": [
-            "-100",
-            "-100"
-          ]
-        },
-        {
-          "component_name": "Sprite",
-          "args": [
-            "cog",
-            "foreground",
-            "0"
           ]
         }
       ]
