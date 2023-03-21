@@ -27,6 +27,7 @@ export class FileExplorerComponent {
   }>()
   @Output() navigatedDown = new EventEmitter<FileElement>()
   @Output() navigatedUp = new EventEmitter()
+  @Output() resetEvent = new EventEmitter()
 
   constructor(public dialog: MatDialog, public fileService: FileService) { }
 
@@ -155,6 +156,11 @@ export class FileExplorerComponent {
         open(this.fileService.path + res);
       });
     });
+  }
+
+  reset() {
+    this.resetEvent.emit();
+    this.ngOnInit();
   }
 
 

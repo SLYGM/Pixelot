@@ -3,13 +3,22 @@
     arrow_back
   </mat-icon>
   <div class="path-wrapper"><span>{{ "&lrm;" + directory_path + "&lrm;" || "Files" }}</span></div>
-  <mat-icon class="pointer" (click)="openNewFolderDialog()">
-    create_new_folder
-  </mat-icon>
+  <button mat-icon-button
+    class="pointer"
+    style="margin-left: 5px"
+    (click)="reset()">
+    <mat-icon>loop</mat-icon>
+  </button>
+  <button mat-icon-button
+    class="pointer"
+    style="margin-left: 5px"
+    (click)="openNewFolderDialog()">
+    <mat-icon>create_new_folder</mat-icon>
+  </button>
   
   <button mat-icon-button
     class="pointer"
-    style="margin-left: 8px"
+    style="margin-left: 5px"
     [matMenuTriggerFor]="menu"
   >
     <mat-icon>insert_drive_file</mat-icon>

@@ -129,4 +129,10 @@ export class FileManagerComponent {
     p = split.join('/');
     return p;
   }
+
+  reset() {
+    this.fileService.reset();
+    this.currentPath = this.fileService.path;
+    this.updateFileElementQuery();
+  }
 }
