@@ -1,78 +1,101 @@
-import { expect, test } from "@jest/globals";
-import { Component, ComponentType, GameObjectBase, System } from "retro-engine";
+import { beforeAll, expect, test } from "@jest/globals";
+import { Component, ComponentType, GameObjectBase, ImportManager, System, doProjectImports } from "retro-engine";
 import { Scene } from "retro-engine/build/scene";
 
-class TestComponent extends Component {
-    counter = 0;
-}
-
-class TestComponent2 extends Component {
-    override dependencies = [TestComponent];
-}
-
-class TestEntity extends GameObjectBase {
-    counter = 0;
-    onCreateRun = false;
-
-    onCreate(): void {
-        this.onCreateRun = !this.onCreateRun;
-    }
-
-    update(): void {
-        this.counter++;
-    }
-}
-
-class TestSystem extends System {
-    component: ComponentType<Component> = TestComponent;
-
-    update(entities: Set<GameObjectBase>): void {
-        for (const entity of entities) {
-            entity.get(TestComponent).counter++;
-        }
-    }
-}
+beforeAll(async () => {
+    console.log("Importing project scripts...");
+    await doProjectImports("test_project", "test");
+});
 
 test("Game Object Functionality", () => {
     const scene = new Scene("");
 
-    const testEntity = new TestEntity("test");
+    const TestEntity = ImportManager.getEntity("TestEntity");
+    const testEntity: any = new TestEntity.constr("test");
     scene.addEntity(testEntity);
     scene.update();
     scene.update();
 
     expect(testEntity.counter).toBe(2);
     expect(testEntity.onCreateRun).toBe(true);
+    expect(testEntity.onDeleteRun).toBe(false);
+    scene.deleteEntity("test");
+    expect(testEntity.onDeleteRun).toBe(true);
 });
 
 test("System Functionality", () => {
     const scene = new Scene("");
 
-    const testEntity = new TestEntity("test");
-    testEntity.add(new TestComponent());
+    const TestEntity = ImportManager.getEntity("TestEntity");
+    const testEntity: any = new TestEntity.constr("test");
+    const Counter = ImportManager.getComponent("Counter");
+    testEntity.add(new Counter.constr());
     scene.addEntity(testEntity);
-    scene.addSystem(new TestSystem(), 0);
     scene.update();
     scene.update();
 
     expect(testEntity.counter).toBe(2);
-    expect(testEntity.get(TestComponent).counter).toBe(2);
-    expect(testEntity.getAllComponents()).toEqual(["TestComponent"]);
+    expect(testEntity.getByName("Counter").counter).toBe(2);
+    expect(testEntity.getAllComponents()).toEqual(["Counter"]);
+});
+
+// test("System Priority", () => {
+    // const scene = new Scene("");
+
+    // const testEntity = new TestEntity("test");
+    // testEntity.add(new TestComponent());
+    // scene.addEntity(testEntity);
+    // const system1 = new TestSystem();
+    // const system2 = new TestSystem2();
+    // scene.addSystem(system1, 0);
+    // scene.addSystem(system2, 1);
+    // scene.update();
+
+    // expect(testEntity.get(TestComponent).counter).toBe(0);
+
+    // scene.removeSystem(system1);
+    // scene.removeSystem(system2);
+    // scene.addSystem(system2, 0);
+    // scene.addSystem(system1, 1);
+    // scene.update();
+
+    // expect(testEntity.get(TestComponent).counter).toBe(1);
+// });
+
+test("Component Functionality", () => {
+    const TestEntity = ImportManager.getEntity("TestEntity");
+    const testEntity: any = new TestEntity.constr("test");
+    const Counter = ImportManager.getComponent("Counter");
+
+    testEntity.add(new Counter.constr());
+
+    const counter = testEntity.getByName("Counter");
+
+    expect(counter.onCreateRun).toBe(true);
+    expect(counter.onDeleteRun).toBe(false);
+
+    testEntity.removeByName("Counter");
+
+    expect(testEntity.getByName("Counter")).toBe(undefined);
+    expect(counter.onDeleteRun).toBe(true);
 });
 
 test("Component Dependencies", () => {
     const scene = new Scene("");
 
-    const testEntity = new TestEntity("test");
-    expect(() => testEntity.add(new TestComponent2)).toThrowError('Component \'TestComponent2\' requires \'TestComponent\'');
-    testEntity.add(new TestComponent());
-    testEntity.add(new TestComponent2());
+    const TestEntity = ImportManager.getEntity("TestEntity");
+    const testEntity: any = new TestEntity.constr("test");
+    const Counter = ImportManager.getComponent("Counter");
+    const DependencyTest = ImportManager.getComponent("DependencyTest");
+
+    expect(() => testEntity.add(new DependencyTest.constr())).toThrowError('Component \'DependencyTest\' requires \'Counter\'');
+    testEntity.add(new Counter.constr());
+    testEntity.add(new DependencyTest.constr());
     scene.addEntity(testEntity);
-    scene.addSystem(new TestSystem(), 0);
     scene.update();
     scene.update();
 
-    expect(testEntity.hasAll([TestComponent, TestComponent2])).toBe(true);
+    expect(testEntity.hasAll([Counter, DependencyTest])).toBe(true);
     expect(testEntity.counter).toBe(2);
-    expect(testEntity.get(TestComponent).counter).toBe(2);
+    expect(testEntity.get(Counter).counter).toBe(2);
 });

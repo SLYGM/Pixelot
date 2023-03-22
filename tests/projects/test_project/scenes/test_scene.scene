@@ -1,0 +1,67 @@
+{
+  "name": "test_scene",
+  "layers": [
+    "background",
+    "foreground",
+    "ui"
+  ],
+  "entities": [
+    {
+      "name": "frog",
+      "class": "Player",
+      "args": [
+        0,
+        "false"
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "100",
+            "100"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "frog",
+            "background",
+            0
+          ]
+        },
+        {
+          "component_name": "Velocity",
+          "args": [
+            "0.1",
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cog",
+      "class": "Player",
+      "args": [
+        0,
+        false
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "-100",
+            "-100"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "cog",
+            "foreground",
+            "0"
+          ]
+        }
+      ]
+    }
+  ]
+}

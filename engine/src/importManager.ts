@@ -96,7 +96,7 @@ export class ImportManager {
             return undefined;
     }
     
-    static async importProjectScripts(project: string, isDevMode = true) {
+    static async importProjectScripts(project: string, mode = "dev") {
         let scripts: string[];
         let projFiles: ProjectFiles;
         try {
@@ -113,10 +113,15 @@ export class ImportManager {
         for (const script of scripts) {
             // dynamic imports must have a static string beginning in order for webpack to load them
             let a;
-            if (isDevMode) {
+            if (mode === "dev") {
                 a = await import(`../../pixelot/projects/${project}/${script}.js`);
-            } else {
+            } else if (mode === "built") {
                 a = await import(/* webpackIgnore: true */ `../projects/${project}/${script}.js`);
+            } else if (mode === "test") {
+                a = await import(`../../tests/projects/${project}/${script}.js`);
+            } else {
+                console.trace(`Error: invalid mode '${mode}'`);
+                return;
             }
             const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
             // work out what kind of script this is (component, system, etc.)
@@ -210,8 +215,8 @@ export class ImportManager {
 * Import user scripts for given project name. For use in app context only, for built game imports, see `doGameImports()`.   
 * **NOTE:** This function assumes the relative path of the project to the engine source will be `../../pixelot/projects/<project>`
 */
-export async function doProjectImports(project: string, isDevMode = true) {
-    await ImportManager.importProjectScripts(project, isDevMode);
+export async function doProjectImports(project: string, mode = "dev") {
+    await ImportManager.importProjectScripts(project, mode);
 }
 
 /**
