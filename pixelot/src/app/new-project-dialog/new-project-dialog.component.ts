@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FileService } from 'app/services/file.service';
 import { Scene } from 'app/services/scene-data.service';
 
 const nw = (window as any).nw;
@@ -25,7 +26,7 @@ export class NewProjectDialogComponent {
   width: number = 426;
   height: number = 240;
 
-  constructor(private dialogRef: MatDialogRef<NewProjectDialogComponent>, private snackBar: MatSnackBar) {}
+  constructor(private dialogRef: MatDialogRef<NewProjectDialogComponent>, private snackBar: MatSnackBar, private fileService: FileService) {}
 
   onCancelClick() {
     this.dialogRef.close();
@@ -82,7 +83,7 @@ export class NewProjectDialogComponent {
         });
       }
     });
-
+    this.fileService.proj_name = this.projectName;
     this.dialogRef.close();
   }
 

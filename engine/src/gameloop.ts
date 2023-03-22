@@ -69,15 +69,24 @@ export class Game {
         const game_data = JSON.parse(data.toString());
     
         Renderer.setResolution(game_data["resolution"][0], game_data["resolution"][1]);
-        this.loadTextures(game_data["textures"]);
+        this.loadTextures(game_data["textures"], project_dir);
         this.loadShaders(game_data["shaders"]);
 
         this.start_scene = game_data["start_scene"];
     }
     
-    private static loadTextures(textures: {name: string, path: string}[]) {
-        for (const texture of textures) {
-            Renderer.loadTextureWithAlias(texture["path"], texture["name"]);
+    private static loadTextures(textures: {name: string, path: string}[], project_dir?: string) {
+        if (project_dir) {
+            for (const texture of textures) {
+                const tex_path = '/projects/' + project_dir.split('/projects')[1] + texture["path"];
+                Renderer.loadTextureWithAlias(tex_path, texture["name"]);
+            }
+        }
+        // if project_dir is not provided, assume that the textures are in the same path relative to the project root
+        else {
+            for (const texture of textures) {
+                Renderer.loadTextureWithAlias(texture["path"], texture["name"]);
+            }
         }
     }
     
