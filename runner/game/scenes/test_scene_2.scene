@@ -17,7 +17,7 @@
                 },
                 {
                     "component_name": "Sprite",
-                    "args": ["frog", "foreground", 0]
+                    "args": ["frog", "foreground", 0, 0, 0.5, 0.5]
                 }
             ]
         },
@@ -32,7 +32,7 @@
                 },
                 {
                     "component_name": "Sprite",
-                    "args": ["cog", "background", 0]
+                    "args": ["cog", "background", 0, 0, 0.5, 0.5]
                 }
             ]
         },
@@ -47,7 +47,7 @@
                 },
                 {
                     "component_name": "Sprite",
-                    "args": ["tile", "ui", 0]
+                    "args": ["tile", "ui", 0, 0, 0.5, 0.5]
                 }
             ]
         }
