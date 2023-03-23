@@ -1,11 +1,10 @@
 :host {
+  position: relative;
   width : 23%;
   min-width: 150px;
-  max-width: 300px;
   border-left: 1px solid #ccc;
   background-color: #fafafa;
   padding: 10px;
-  resize: horizontal;
 }
 
 #add-component-button {
@@ -21,4 +20,15 @@
 #right-sidebar{
   height: 100%;
   overflow-y: auto;
+}
+
+#right-sidebar-resizer {
+  position: absolute;
+  top: 0;
+  left: -2px;
+  width: 5px;
+  height: 100%;
+  z-index: 100;
+  cursor: col-resize;
+  background-color: #ccc;
 }

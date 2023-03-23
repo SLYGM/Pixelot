@@ -1,9 +1,23 @@
 {
   "name": "test_scene",
   "layers": [
-    "background",
-    "foreground",
-    "ui"
+    {
+      "name": "tilemap_layer",
+      "type": "tilemap",
+      "source": "./projects/project1/tilemap.json"
+    },
+    {
+      "name": "background",
+      "type": "sprite"
+    },
+    {
+      "name": "foreground",
+      "type": "sprite"
+    },
+    {
+      "name": "ui",
+      "type": "sprite"
+    }
   ],
   "entities": [
     {
@@ -17,7 +31,7 @@
         {
           "component_name": "Position",
           "args": [
-            "10",
+            "100",
             "100"
           ]
         },
@@ -25,31 +39,17 @@
           "component_name": "Sprite",
           "args": [
             "frog",
-            "foreground",
-            0
+            "background",
+            0,
+            1,
+            0.5,
+            0.5
           ]
         },
         {
           "component_name": "Velocity",
           "args": [
             "0.1",
-            0
-          ]
-        }
-      ]
-    },
-    {
-      "name": "test",
-      "class": "Player",
-      "args": [
-        0,
-        false
-      ],
-      "components": [
-        {
-          "component_name": "Position",
-          "args": [
-            0,
             0
           ]
         }

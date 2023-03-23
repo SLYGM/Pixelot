@@ -19,6 +19,7 @@ export class FileService implements IFileService {
   private map = new Map<string, FileElement>();
   private querySubject?: BehaviorSubject<FileElement[]>
   public path?: string
+  public proj_name?: string
 
   constructor() { }
 
@@ -73,5 +74,10 @@ export class FileService implements IFileService {
 
   clone(element: FileElement) {
     return JSON.parse(JSON.stringify(element))
+  }
+
+  reset() {
+    this.map.clear();
+    this.querySubject?.next([]);
   }
 }

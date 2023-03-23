@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "nw": "concurrently \"ng serve --port=8964\" \"nw .\"",
+    "nw-no-reload": "concurrently \"ng serve --port=8964 --live-reload=false\" \"nw .\"",
     "build": "npm run clean && ng build --configuration=production --output-path ./dist-ng --index=/src/index.html",
     "clean": "rimraf ./dist-ng",
     "watch": "ng build --watch --configuration development",
@@ -73,6 +74,9 @@
     "tslib": "^2.3.0",
     "uuid": "^9.0.0",
     "zone.js": "~0.12.0"
+  },
+  "webkit": {
+    "page-cache":false
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "^15.0.0",

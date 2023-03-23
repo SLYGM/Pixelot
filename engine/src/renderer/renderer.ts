@@ -3,13 +3,13 @@ import Sprite from "../components/Sprite.js";
 import { $gl, $canvas, loadGL, $rendering_offscreen, $offscreen_canvas, $canvas_bitmap_context } from "./gl.js";
 import { GLUtils } from "./webglutils.js";
 import { PostProcessing } from "./post_process.js";
-import { Texture, Updatable } from "../types.js";
+import { Texture } from "../types.js";
 import { AutoMap } from "../utils/baseutils.js";
 import { Scene } from "../scene.js";
 import { SceneManager } from "../sceneManager.js";
 import { TextRenderer } from "./textRenderer.js";
 
-const { glMatrix, mat4, vec3 } = require("gl-matrix");
+const { mat4, vec3 } = require("gl-matrix");
 
 const nw = (window as any).nw;
 let AVLTree;
@@ -53,9 +53,9 @@ export class SpriteLayer extends RenderLayer {
     render() {
         $gl.useProgram(Renderer.shader.prog);
         this.sprites.forEach((node) => {
-            const sprite = node.key;
+            const sprite = node.key as Sprite;
             const pos = sprite.getPos();
-            Renderer.drawImage(sprite.tex, pos.x, pos.y);
+            Renderer.drawImage(sprite.tex, pos.x, pos.y, sprite.rotation, sprite.anchor.x, sprite.anchor.y);
         })
     }
 }
@@ -65,7 +65,6 @@ export class Renderer {
     private static vert_source = `#version 300 es
 
         in vec4 a_position;
-        in vec2 a_texcoord;
         
         uniform mat4 u_projection;
         uniform mat4 u_matrix;
@@ -73,8 +72,9 @@ export class Renderer {
         out vec2 v_texcoord;
         
         void main() {
-            gl_Position = u_projection * u_matrix * a_position;
-            v_texcoord = a_texcoord;
+            gl_Position = u_projection * u_matrix * a_position; 
+            // the texture coordinates are the same as the vertex coordinates
+            v_texcoord = a_position.xy;
         }
     `;
     //GLSL Fragment Shader
@@ -243,7 +243,7 @@ export class Renderer {
         layerAliases.delete(alias);
     }
 
-    static loadTexture(path: string, alias: string): string {
+    static loadTexture(path: string): Texture {
         const tex = $gl.createTexture();
         $gl.bindTexture($gl.TEXTURE_2D, tex);
         $gl.texImage2D(
@@ -293,11 +293,16 @@ export class Renderer {
             );
         });
 
-        this.textures.set(alias, tex_info);
-        return alias;
+        return tex_info;
     }
 
-    static drawImage(alias: string, x: number, y: number) {
+    static loadTextureWithAlias(path:string, alias:string) {
+        const tex_info = this.loadTexture(path);
+        this.textures.set(alias, tex_info);
+        return tex_info;
+    }
+
+    static drawImage(alias: string, x: number, y: number, rotation: number = 0, anchorX: number = 0.5, anchorY: number = 0.5) {
         const tex = this.textures.get(alias);
         if (tex === undefined) {
             console.warn("Texture not found: " + alias);
@@ -320,6 +325,15 @@ export class Renderer {
             img_matrix,
             vec3.fromValues(tex.width, tex.height, 1)
         );
+        //rotate around the center of the image
+        mat4.translate(img_matrix, img_matrix, vec3.fromValues(anchorX, anchorY, 0));
+        mat4.rotate(
+            img_matrix,
+            img_matrix,
+            rotation,
+            vec3.fromValues(0, 0, 1)
+        );
+        mat4.translate(img_matrix, img_matrix, vec3.fromValues(-anchorX, -anchorY, 0));
         $gl.uniformMatrix4fv(this.shader.mat_loc, false, img_matrix);
 
         const offset = 0;
@@ -331,10 +345,6 @@ export class Renderer {
         const pos_attr_loc = $gl.getAttribLocation(
             this.shader.prog,
             "a_position"
-        );
-        const texcoord_attr_loc = $gl.getAttribLocation(
-            this.shader.prog,
-            "a_texcoord"
         );
 
         const pos_buffer = $gl.createBuffer();
@@ -349,24 +359,6 @@ export class Renderer {
         $gl.enableVertexAttribArray(pos_attr_loc);
         $gl.vertexAttribPointer(
             pos_attr_loc,
-            2, // size
-            $gl.FLOAT, // type
-            false, // normalise
-            0, // stride
-            0 // offset
-        );
-
-        const tex_coord_buffer = $gl.createBuffer();
-        $gl.bindBuffer($gl.ARRAY_BUFFER, tex_coord_buffer);
-        const texcoords = [0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1];
-        $gl.bufferData(
-            $gl.ARRAY_BUFFER,
-            new Float32Array(texcoords),
-            $gl.STATIC_DRAW
-        );
-        $gl.enableVertexAttribArray(texcoord_attr_loc);
-        $gl.vertexAttribPointer(
-            texcoord_attr_loc,
             2, // size
             $gl.FLOAT, // type
             false, // normalise

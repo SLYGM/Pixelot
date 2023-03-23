@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -19,14 +19,14 @@ import { FileUtils } from 'retro-engine';
   styleUrls: ['./left-sidebar.component.scss']
 })
 export class LeftSidebarComponent {
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @Input() scene?: Scene;
   @Input() layerNames: string[];
   @Output() entitySelected = new EventEmitter<string>();
   layerEntities?: string[][];
   otherEntities: string[] = [];
+  isResizing = false;
 
-  constructor(public dialog: MatDialog, private sceneData: SceneDataService, private _snackBar: MatSnackBar) {
+  constructor(public dialog: MatDialog, private sceneData: SceneDataService, private _snackBar: MatSnackBar, private hostRef: ElementRef) {
     this.update();
   }
 
@@ -37,7 +37,8 @@ export class LeftSidebarComponent {
   update() {
     if (this.scene) {
       this.layerEntities = [];
-        let newLayerNames = Array.from(engine.Renderer.layerAliases.get(this.scene).keys());
+      this.otherEntities = [];
+        let newLayerNames: string[] = Array.from(engine.Renderer.layerAliases.get(this.scene).keys());
         if (JSON.stringify(this.layerNames) != JSON.stringify(newLayerNames)) {
           this.layerNames = newLayerNames;
         }
@@ -75,9 +76,9 @@ export class LeftSidebarComponent {
     this.entitySelected.emit(entity);
   }
 
-  handleEntityRightclick(event: Event) {
+  handleEntityRightclick(event: Event, trigger: MatMenuTrigger) {
     event.preventDefault();
-    this.trigger.openMenu();
+    trigger.openMenu();
   }
 
   deleteEntity(entity: string) {
@@ -86,6 +87,69 @@ export class LeftSidebarComponent {
     this.entitySelected.emit(null);
     this.update();
     this.sceneData.saveScene(this.scene.name);
+  }
+
+  onDragStarted() {
+    let areas = document.querySelectorAll('.entity-list');
+    areas.forEach((area) => {
+      area.classList.add('dragging');
+    });
+  }
+
+  onDragReleased() {
+    const areas = document.querySelectorAll('.entity-list');
+    areas.forEach((area) => {
+      area.classList.remove('dragging');
+    });
+  }
+
+  // Entity has been dragged and dropped to a new layer
+  drop(event: any) {
+    if (event.previousContainer === event.container) {
+      return;
+    } else {
+      const entity = engine.SceneManager.currentScene.getEntity(event.item.data);
+      if (entity) {
+        // Update layer in scene data
+        this.sceneData.setEntityLayer(this.scene.name, entity.name, event.container.id);
+
+        // remove and re-add component to update it
+        entity.removeByName('Sprite');
+
+        const component_constr = engine.ImportManager.getComponent('Sprite');
+        const comp_args = component_constr.parseArgs(this.sceneData.getComponentArgs(this.scene.name, entity.name, 'Sprite'));
+        const updated_component = new component_constr.constr(...comp_args);
+        entity.add(updated_component);
+        updated_component._create();
+
+        this.update();
+        this.sceneData.saveScene(this.scene.name);
+      }
+    }
+  }
+
+  onResizeBarMouseDown(event: MouseEvent) {
+    this.isResizing = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    const startX = event.clientX;
+    const startWidth = this.hostRef.nativeElement.clientWidth;
+
+    const onMouseMove = (event: MouseEvent) => {
+      const newWidth = startWidth + (event.clientX - startX);
+      this.hostRef.nativeElement.style.width = newWidth + 'px';
+    }
+
+    const onMouseUp = (event: MouseEvent) => {
+      this.isResizing = false;
+      document.body.style.cursor = 'default';
+      document.body.style.userSelect = 'auto';
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   }
 
   openEntityDialog(): void {
@@ -163,17 +227,46 @@ export class LeftSidebarComponent {
 
   }
 
-  openLayerDialog(): void {
+  openLayerDialog(type: string): void {
     const dialogRef = this.dialog.open(AddLayerDialog, {
       width: '500px',
     });
+
+    if (type == 'tilemap') {
+      dialogRef.componentInstance.path_required = true;
+    }
 
     dialogRef.afterClosed().subscribe(result => {
       if (!result)
         return;
 
-      engine.Renderer.addLayer(new engine.SpriteLayer(), result, engine.SceneManager.currentScene);
-      this.sceneData.addLayer(this.scene.name, result);
+      let new_layer: engine.RenderLayer;
+
+      if (type == 'tilemap') {
+        // make sure the path is valid
+        if (result.path == '') {
+          this._snackBar.open('Please enter a path', 'Close', {
+            duration: 5000
+          });
+          return;
+        }
+        
+        // attempt to parse the tilemap
+        try {
+          new_layer = engine.TileMapJSONParser.parse(result.path);
+        } catch (e) {
+          this._snackBar.open('Error parsing tilemap', 'Close', {
+            duration: 5000
+          });
+          return;
+        }
+      }
+      else if (type == 'sprite') {
+        new_layer = new engine.SpriteLayer();
+      }
+
+      engine.Renderer.addLayer(new_layer, result.name, engine.SceneManager.currentScene);
+      this.sceneData.addLayer(this.scene.name, result.name, type, result.path);
       this.update();
       this.sceneData.saveScene(this.scene.name);
     });
@@ -260,9 +353,13 @@ export class AddEntityDialog {
 @Component({
   selector: 'add-layer-dialog',
   templateUrl: 'add-layer-dialog.html',
+  styleUrls: ['./add-layer-dialog.scss']
 })
 export class AddLayerDialog {
   nameForm = new FormControl('');
+  pathForm = new FormControl('');
+  path_required = false;
+  file: any;
 
   constructor(
     public dialogRef: MatDialogRef<AddLayerDialog>,
@@ -272,8 +369,26 @@ export class AddLayerDialog {
     this.dialogRef.close();
   }
 
+  handleFileSelect(e: any) {
+    this.file = e.target.files[0];
+  
+    // update the path form
+    this.pathForm.setValue(this.file.name);
+  }
+
   onAddClick(): void {
     const name = this.nameForm.value;
-    this.dialogRef.close(name);
+    if (this.path_required) {
+      let path;
+      if (!this.file) {
+        path = '';
+      } else {
+        path = this.file.path;
+      }
+      this.dialogRef.close({name, path});
+      return;
+    }
+
+    this.dialogRef.close({name});
   }
 }

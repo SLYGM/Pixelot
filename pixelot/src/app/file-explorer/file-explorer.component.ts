@@ -27,6 +27,7 @@ export class FileExplorerComponent {
   }>()
   @Output() navigatedDown = new EventEmitter<FileElement>()
   @Output() navigatedUp = new EventEmitter()
+  @Output() resetEvent = new EventEmitter()
 
   constructor(public dialog: MatDialog, public fileService: FileService) { }
 
@@ -136,12 +137,12 @@ export class FileExplorerComponent {
     });
   }
 
-  openNewFileDialog() {
+  openNewFileDialog(type: string) {
     let dialogRef = this.dialog.open(NewFileDialogComponent);
     dialogRef.afterClosed().subscribe(res => {
       if (res) this.fileAdded.emit({ name: res });
-      const filePath = this.fileService.path + res;
-      const content = '';
+      const filePath = this.directory_path + res;
+      const content = this.getScriptTemplate(type, res);
       const nw = (window as any).nw;
       const fs = nw.require('fs');
       fs.writeFile(filePath, content, err => {
@@ -156,6 +157,126 @@ export class FileExplorerComponent {
       });
     });
   }
+
+  reset() {
+    this.resetEvent.emit();
+    this.ngOnInit();
+  }
+
+
+  getScriptTemplate(type: string, name: string) {
+    // remove the .js extension from the name
+    name = name.replace('.js', '');
+    
+    const entity_template = 
+    `
+    export default class ${name} extends engine.GameObjectBase {
+
+      // the arg_names and arg_types arrays are used to define the arguments that are passed to the onCreate() method.
+      // the following are some example arguments
+      static arg_names = ["hp", "invincible"];
+      static arg_types = [engine.Types.Number, engine.Types.Boolean];
+
+      // The onCreate() method is called when the object is created.
+      onCreate() {
+
+      }
+
+      // The update() method is called every frame.
+      update() {
+
+      }
+    }
+    `;
+
+    const component_template =
+    `
+    export default class ${name} extends engine.Component {
+      // the arg_names and arg_types arrays are used to define the arguments that are passed to the constructor.
+      // the following are some example arguments
+      static arg_names = ["x", "y"];
+      static arg_types = [engine.Types.Number, engine.Types.Number];
+
+      constructor(x, y) {
+          super();
+      }
+    }
+    `;
+
+    const system_template =
+    `
+    export default class ${name} extends engine.System {
+      // the component is the component class that this system will operate on.
+      component = VelocityComponent;
+
+      // the arg_names and arg_types arrays are used to define the arguments that are passed to the constructor method.
+      static arg_names = [];
+      static arg_types = [];
+
+      // The update method is called every frame. 
+      // The entities parameter is an array of all the entities that have the component that this system operates on.
+      update(entities) {
+
+      }
+    }
+    `;
+
+    const shader_template =
+    `
+    export default class ${name} extends engine.PostProcess {
+      // the arg_names and arg_types arrays are used to define the arguments that are passed to the constructor method.
+      static arg_names = [];
+      static arg_types = [];
+
+      constructor() {
+        const v_shader = \`#version 300 es
+  
+      in vec4 a_position;
+  
+  
+      void main() {
+        gl_Position = a_position;
+      }
+      \`;
+
+    
+        const f_shader = \`#version 300 es
+  
+      precision highp float;
+  
+      out vec4 outColor;
+  
+      void main()
+      {
+        outColor = vec4(1.0, 0.0, 0.0, 1.0);
+      }
+      \`;
+
+          // the super() method must be called with the vertex and fragment shaders as arguments
+          super(v_shader, f_shader);
+      }
+
+      // the draw method is called every frame before using the shader
+      draw() {
+          engine.$gl.drawArrays($gl.TRIANGLES, 0, 6);
+      }
+    }
+    `
+
+    switch (type) {
+      case 'entity':
+        return entity_template;
+      case 'component':
+        return component_template;
+      case 'system':
+        return system_template;
+      case 'shader':
+        return shader_template;
+      default:
+        return '';
+    }
+  }
+
 
   openRenameDialog(element: FileElement) {
     let dialogRef = this.dialog.open(RenameDialogComponent);
