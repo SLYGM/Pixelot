@@ -84,29 +84,72 @@ function initTextRendering() {
       0            // offset
   );
 
-  DefaultFont.load();
-
   initialised = true;
 }
 
 
-export class TextRenderer {
+class TextInstance {
+  text: string;
+  x: number;
+  y: number;
+  font: Font;
+  scale: number;
 
-  static texts : {
-    text: string,
-    x: number,
-    y: number,
-    font: Font
-    }[];
+  constructor(text: string, x: number, y: number, font: Font, scale: number) {
+    this.text = text;
+    this.x = x;
+    this.y = y;
+    this.font = font;
+    this.scale = scale;
+  }
+
+  delete() {
+    TextRenderer.removeTextInstance(this);
+  }
+
+  render() {
+    //render each character
+    let x_pos = this.x;
+    let y_pos = this.y;
+    for (let i = 0; i < this.text.length; i++) {
+      // TODO: currently the default font only has one case of letters
+      const char = this.text[i].toLowerCase();
+      if (char === ' ') {
+        x_pos += this.font.fontInfo.spaceWidth * this.scale;
+      }
+      else if (char === '\n') {
+        y_pos += this.font.fontInfo.letterHeight * this.scale;
+        x_pos = this.x;
+      }
+      else {
+        // try to render the character, if it fails, render a question mark in its place
+        try {
+          TextRenderer.renderCharacter(char, this.scale, x_pos, y_pos);
+          x_pos += this.font.fontInfo.glyphInfos[char].width * this.scale;
+        } catch (e) {
+          TextRenderer.renderCharacter('?', this.scale, x_pos, y_pos);
+          x_pos += this.font.fontInfo.glyphInfos['?'].width * this.scale;
+        }
+        
+      }
+    }
+  }
+}
+
+export class TextRenderer {
+  static currFont: Font = null;
+  static fontMap: Map<string, Font> = new Map();
+  static texts : TextInstance[] = [];
 
     static init() {
       initTextRendering();
+      this.addTextInstance(new TextInstance("Hello\nWorld!", 200, 50, this.fontMap.get("defaultFont"), 2));
     }
 
     static render() {
       $gl.useProgram(prog);
-      this.bindTextFontTextures();
       $gl.bindBuffer($gl.ARRAY_BUFFER, texcoord_buffer);
+      // setup reading from the texture coord buffer
       $gl.vertexAttribPointer(
         texcoord_loc,
         2,           // size
@@ -129,21 +172,47 @@ export class TextRenderer {
       );
       $gl.uniformMatrix4fv(proj_loc, false, proj_matrix);
 
-      this.renderBitmapText();
+      // render each text instance
+      for (const text of this.texts) {
+        // first bind the font texture
+        this.bindFontTexture(text.font);
+        text.render();
+      }
 
-    
-
+      this.currFont = null;
     }
 
-    private static renderBitmapText() {
-      $gl.uniform1i(tex_loc, 0);
-      const tex_coords = DefaultFont.getGlyphCoords('b');
-      $gl.bufferData($gl.ARRAY_BUFFER, new Float32Array(tex_coords), $gl.STATIC_DRAW);
+    static addTextInstance(instance: TextInstance) {
+      this.texts.push(instance);
+    }
 
-      const x_pos = 5;
-      const y_pos = 5;
+    static removeTextInstance(instance: TextInstance) {
+      const index = this.texts.indexOf(instance);
+      if (index != -1) {
+        this.texts.splice(index, 1);
+      }
+    }
+
+    private static bindFontTexture(font: Font) {
+      // if the font is already bound, don't bother doing it again
+      if (this.currFont == font) return;
+
+      const tex = font.getTexture().texture;
+      $gl.activeTexture($gl.TEXTURE0);
+      $gl.bindTexture($gl.TEXTURE_2D, tex);
+      $gl.uniform1i(tex_loc, 0);
+      this.currFont = font;
+    }
+
+    static renderCharacter(char: string, scale: number, x: number, y: number) {
+      // retrieve the texture coordinates for the character
+      $gl.uniform1i(tex_loc, 0);
+      const tex_coords = this.currFont.getGlyphCoords(char);
+      $gl.bufferData($gl.ARRAY_BUFFER, new Float32Array(tex_coords), $gl.STATIC_DRAW);
+      
+      // translate and scale the character to the correct position
       const img_matrix = mat4.create();
-      mat4.translate(img_matrix, img_matrix, vec3.fromValues(x_pos, y_pos, 0));
+      mat4.translate(img_matrix, img_matrix, vec3.fromValues(x, y, 0));
       mat4.translate(
           img_matrix,
           img_matrix,
@@ -153,28 +222,24 @@ export class TextRenderer {
       mat4.scale(
           img_matrix,
           img_matrix,
-          vec3.fromValues(DefaultFont.fontInfo.glyphInfos['b'].width*10, DefaultFont.fontInfo.letterHeight*10, 1)
+          vec3.fromValues(
+            this.currFont.fontInfo.glyphInfos[char].width*scale, 
+            this.currFont.fontInfo.letterHeight*scale, 1
+          )
       );
       $gl.uniformMatrix4fv(mat_loc, false, img_matrix);
 
+      // draw the character
       $gl.drawArrays($gl.TRIANGLES, 0, 6);
     }
-
-    private static bindTextFontTextures() {
-        $gl.activeTexture($gl.TEXTURE0);
-        $gl.bindTexture($gl.TEXTURE_2D, DefaultFont.getTexture().texture);
-
-    }
-      
 }
 
 
 export class Font {
-    static loaded: boolean = false;
     static fontName: string;
-    static src: string;
-    private static texture: Texture = null;
-    static fontInfo: {
+    src: string;
+    texture: Texture = null;
+    fontInfo: {
         letterHeight: number,
         spaceWidth: number,
         spacing: number,
@@ -183,21 +248,22 @@ export class Font {
         glyphInfos: object
     };
 
-    static load() {
-        if (this.loaded) return;
-        Renderer.loadTextureWithAlias(this.src, this.fontName);
-        this.loaded = true;
+    static init() {
+      const font = new this;
+      TextRenderer.fontMap.set(this.fontName, font);
     }
 
-    static getTexture() {
-        if (!this.loaded) return null;
-        if (!this.texture) this.texture = Renderer.textures.get(this.fontName);
+    getTexture() {
+        // load the texture if it hasn't been loaded yet (lazy loading)
+        if (!this.texture) this.texture = Renderer.loadTexture(this.src);
         return this.texture;
     }
 
-    static getGlyphCoords(glyph: string) {
+    getGlyphCoords(glyph: string) {
       const glyphInfo = this.fontInfo.glyphInfos[glyph];
-      if (!glyphInfo) return null;
+      /* throw an error if the glyph doesn't exist
+       (can't directly access the fontname here, as it is a static property, so this is a workaround) */
+      if (!glyphInfo) throw new Error(`Glyph '${glyph}' not found in font '${(this.constructor as any).fontName}'`);
 
       const maxX = this.fontInfo.textureWidth;
       const maxY = this.fontInfo.textureHeight;
@@ -208,20 +274,20 @@ export class Font {
       const v2 = glyphInfo.y / maxY;
 
       return [
+        u1, v2,
         u1, v1,
-        u1, v2,
-        u2, v1,
-        u2, v1,
-        u1, v2,
-        u2, v2
+        u2, v2,
+        u2, v2,
+        u1, v1,
+        u2, v1
       ];
     }
 }
 
 export class DefaultFont extends Font {
     static override fontName: string = 'defaultFont';
-    static override src: string = '/projects/project1/assets/fonts/default font.png';
-    static override fontInfo = {
+    override src: string = '/projects/project1/assets/fonts/default font.png';
+    override fontInfo = {
         letterHeight: 8,
         spaceWidth: 8,
         spacing: -1,
@@ -270,5 +336,10 @@ export class DefaultFont extends Font {
           '?': { x: 56, y: 32, width: 8, },
         },
       };
+
+      // initialise an instance of this font in the font map
+      static {
+        this.init();
+      }
 
 }
