@@ -8,6 +8,8 @@ export * from './renderer/tilemap.js'
 
 export * from './utils/baseutils.js'
 
+export * from './audio.js'
+
 export * from './ecs.js';
 export * from './gameloop.js';
 export * from './scene.js';

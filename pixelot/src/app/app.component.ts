@@ -12,9 +12,10 @@ export class AppComponent {
   title = 'pixelot';
   
   constructor() {
-    // initialise the engine renderer
+    // initialise the engine renderer and audio
     (async function() {
       engine.Renderer.init(true);
+      engine.initAudio();
     })();
     
   }
