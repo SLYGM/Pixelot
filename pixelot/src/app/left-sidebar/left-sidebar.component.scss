@@ -1,0 +1,37 @@
+:host {
+  position: relative;
+  min-width: 200px;
+  border-right: 1px solid #ccc;
+}
+
+#add-entity-button {
+  margin: 20px auto 0 auto;
+  display: block;
+}
+
+#add-layer-button {
+  margin: 20px auto 0 auto;
+  display: block;
+}
+
+.entity-button {
+  background-color: #eee;
+  width: 100%;
+  margin: 2px 0;
+}
+
+.dragging {
+  min-height: 35px;
+  border: 2px dashed #ccc;
+}
+
+#left-sidebar-resizer {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  width: 5px;
+  height: 100%;
+  z-index: 100;
+  cursor: col-resize;
+  background-color: #ccc;
+}

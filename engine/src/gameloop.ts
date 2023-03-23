@@ -5,6 +5,12 @@ import { ImportManager } from "./importManager.js";
 import { PostProcessing } from "./renderer/post_process.js";
 
 const nw = (window as any).nw;
+let fs;
+if (nw) {
+    fs = nw.require("fs");
+} else {
+    fs = require("fs");
+}
 
 export class Game {
     static updateQueue: Updatable[];
@@ -46,28 +52,41 @@ export class Game {
     /**
      * Load a project from a project json file
      * 
-     * @param project_dir The path to the root of the project (containing the .proj file)
+     * @param project_dir (optional) The path to the root of the project (containing the .proj file).
+     * Required for projects loaded via the UI, but not for built projects.
      */
-    static loadGame(project_dir: string) {
-        const fs = nw.require("fs");
-
-        SceneManager.project_dir = project_dir;
-        const project_file_path = project_dir + "/project.proj";
+    static loadGame(project_dir?: string) {
+        let project_file_path: string;
+        if (project_dir) {
+            SceneManager.project_dir = project_dir;
+            project_file_path = project_dir + "/project.proj";
+        } else {
+            project_file_path = "./game/project.proj";
+        }
 
         // load the project json which contains all info needed to initialise the game
         const data = fs.readFileSync(project_file_path, {encoding: "utf-8"});
         const game_data = JSON.parse(data.toString());
     
         Renderer.setResolution(game_data["resolution"][0], game_data["resolution"][1]);
-        this.loadTextures(game_data["textures"]);
+        this.loadTextures(game_data["textures"], project_dir);
         this.loadShaders(game_data["shaders"]);
 
         this.start_scene = game_data["start_scene"];
     }
     
-    private static loadTextures(textures: {name: string, path: string}[]) {
-        for (const texture of textures) {
-            Renderer.loadTexture(texture["path"], texture["name"]);
+    private static loadTextures(textures: {name: string, path: string}[], project_dir?: string) {
+        if (project_dir) {
+            for (const texture of textures) {
+                const tex_path = '/projects/' + project_dir.split('/projects')[1] + texture["path"];
+                Renderer.loadTextureWithAlias(tex_path, texture["name"]);
+            }
+        }
+        // if project_dir is not provided, assume that the textures are in the same path relative to the project root
+        else {
+            for (const texture of textures) {
+                Renderer.loadTextureWithAlias(texture["path"], texture["name"]);
+            }
         }
     }
     
@@ -81,6 +100,8 @@ export class Game {
 
     static stop() {
         this.running = false;
-        nw.App.closeAllWindows();
+        if (nw) {
+            nw.App.closeAllWindows();
+        }
     }
 }

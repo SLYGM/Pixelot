@@ -1,0 +1,16 @@
+<mat-card style="height: 100%; box-sizing: border-box; padding:0">
+    <app-file-explorer #fileExplorer
+    [fileElements]="fileElements | async"
+    [directory_path]="currentPath"
+    [canNavigateUp]="canNavigateUp"
+    (fileAdded)="addFile($event)"
+    (folderAdded)="addFolder($event)"
+    (elementRemoved)="removeElement($event)"
+    (navigatedDown)="navigateToFolder($event)"
+    (navigatedUp)="navigateUp()"
+    (elementRenamed)="renameElement($event)"
+    (elementMoved)="moveElement($event)"
+    (resetEvent)="reset()"
+    >
+    </app-file-explorer>
+</mat-card>

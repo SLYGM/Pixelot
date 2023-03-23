@@ -3,13 +3,20 @@ import { Scene } from "./scene.js";
 import { ImportManager } from "./importManager.js";
 import { FileUtils } from "./utils/baseutils.js";
 import { Renderer, SpriteLayer } from "./renderer/renderer.js";
+import { TileMapJSONParser } from "./engineExport.js";
 
 const nw = (window as any).nw;
+let fs;
+if (nw) {
+    fs = nw.require("fs");
+} else {
+    fs = require("fs");
+}
 
 export class SceneManager {
     static loaded_scenes: Map<string, Scene>;
     static currentScene: Scene;
-    static project_dir: string;
+    static project_dir?: string;
 
     static {
         this.loaded_scenes = new Map();
@@ -42,9 +49,16 @@ export class SceneManager {
         if (this.loaded_scenes.has(scene_name)) {
             this.currentScene = this.loaded_scenes.get(scene_name);
         } else {
-            const path = FileUtils.findFile(scene_name + ".scene", this.project_dir);
-            if (!path) {
-                throw new Error("No scene found with name " + scene_name);
+            let path: string;
+            if (this.project_dir) {
+                path = FileUtils.findFile(scene_name + ".scene", this.project_dir);
+                console.log("Loading scene from " + path);
+                if (!path) {
+                    throw new Error("No scene found with name " + scene_name);
+                }
+            } else {
+                // If the project_dir is not set, we are running a built project, so the path is known
+                path = "./game/scenes/" + scene_name + ".scene";
             }
             this.currentScene = this.loadScene(path);
             this.loaded_scenes.set(scene_name, this.currentScene);
@@ -59,9 +73,16 @@ export class SceneManager {
      */
     static preLoadScene(scene_name: string) {
         if (!this.loaded_scenes.has(scene_name)) {
-            const path = FileUtils.findFile(scene_name + ".scene", this.project_dir);
-            if (!path) {
-                throw new Error("No scene found with name " + scene_name);
+            let path: string;
+            if (this.project_dir) {
+                path = FileUtils.findFile(scene_name + ".scene", this.project_dir);
+                console.log("Loading scene from " + path);
+                if (!path) {
+                    throw new Error("No scene found with name " + scene_name);
+                }
+            } else {
+                // If the project_dir is not set, we are running a built project, so the path is known
+                path = "./game/scenes/" + scene_name + ".scene";
             }
             this.loaded_scenes.set(scene_name, this.loadScene(path));
         } else {
@@ -102,8 +123,6 @@ export class SceneManager {
      * @returns the loaded scene
      */
     static loadScene(path: string): Scene {
-        const fs = nw.require("fs");
-
         // read JSON object from file
         const data = fs.readFileSync(path, "utf8");
 
@@ -115,8 +134,23 @@ export class SceneManager {
         // construct Scene object from json data and add to sceneManager
         const scene = new Scene(loadedSceneJson["name"]);
 
+        // construct each layer in the scene
         for (const layer of loadedLayers) {
-            Renderer.addLayer(new SpriteLayer(), layer, scene);
+            const type = layer["type"];
+            const name = layer["name"];
+
+            if (type == "sprite") {
+                Renderer.addLayer(new SpriteLayer(), name, scene);
+            }
+            else if (type == "tilemap") {
+                const source = layer["source"];
+                const tileLayer = TileMapJSONParser.parse(source);
+                Renderer.addLayer(tileLayer, name, scene);
+            }
+            else {
+                console.trace("Unknown layer type: " + type);
+                continue
+            }
         }
 
         // construct each entity in the scene
@@ -176,8 +210,6 @@ export class SceneManager {
     * @returns boolean which indicates success of operation
     */
     static createScene(sceneName: string, path: string) {
-        const fs = nw.require("fs");
-        
         // make sure that the scene doesn't already exist
         if (fs.existsSync(path + sceneName + ".scene")) {
             console.log(`Warning: trying to create scene: ${sceneName} which already exists`);
@@ -233,6 +265,4 @@ export class SceneManager {
     //         console.log("saving json");
     //     });
     // }
-
-    static saveAllScenes() {}
 }

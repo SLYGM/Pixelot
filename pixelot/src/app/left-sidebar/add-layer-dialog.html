@@ -1,0 +1,20 @@
+<h1 mat-dialog-title>New Layer</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Layer Name</mat-label>
+    <input type="text" matInput [formControl]="nameForm">
+  </mat-form-field>
+  <!-- if this is a tilemap, include the path to the json also-->
+  <mat-form-field *ngIf="path_required">
+    <mat-label>Path</mat-label>
+    <button mat-icon-button matPrefix (click)="f_input.click()">
+      <mat-icon>attach_file</mat-icon>
+    </button>
+    <input type="text" readonly matInput [formControl]="pathForm">
+    <input type="file" hidden #f_input (change)="handleFileSelect($event)">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-raised-button (click)="onCancelClick()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onAddClick()" cdkFocusInitial>Add</button>
+</div>

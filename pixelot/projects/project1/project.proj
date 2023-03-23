@@ -1,0 +1,28 @@
+{
+    "resolution": [426, 240],
+    "start_scene": "test_scene",
+    "textures": [
+        {
+            "name": "frog",
+            "path": "assets/frog.png"
+        },
+        {
+            "name": "cog",
+            "path": "assets/cog.png"
+        },
+        {
+            "name": "tile",
+            "path": "assets/tile.png"
+        }
+    ],
+    "shaders": [
+        {
+            "name": "BarrelShader",
+            "args": []
+        },
+        {
+            "name": "BarShader",
+            "args": []
+        }
+    ]
+}

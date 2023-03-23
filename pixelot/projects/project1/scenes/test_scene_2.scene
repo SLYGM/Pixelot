@@ -1,0 +1,68 @@
+{
+    "name": "test_scene_2",
+    "layers": [
+        {
+        "name": "background",
+        "type": "sprite"
+        },
+        {
+        "name": "foreground",
+        "type": "sprite"
+        },
+        {
+        "name": "ui",
+        "type": "sprite"
+        }
+    ],
+    "entities": [
+        {
+            "name": "foreground frog",
+            "class": "Player",
+            "args": ["10", "true"],
+            "components": [
+                {
+                    "component_name": "Position",
+                    "args": ["3", "1"]
+                },
+                {
+                    "component_name": "Velocity",
+                    "args": ["0", "0"]
+                },
+                {
+                    "component_name": "Sprite",
+                    "args": ["frog", "foreground", 0]
+                }
+            ]
+        },
+        {
+            "name": "background cog",
+            "class": "Player",
+            "args": ["15", "false"],
+            "components": [
+                {
+                    "component_name": "Position",
+                    "args": ["-200", "-200"]
+                },
+                {
+                    "component_name": "Sprite",
+                    "args": ["cog", "background", 0]
+                }
+            ]
+        },
+        {
+            "name": "UI tile",
+            "class": "Player",
+            "args": ["15", "false"],
+            "components": [
+                {
+                    "component_name": "Position",
+                    "args": ["20", "20"]
+                },
+                {
+                    "component_name": "Sprite",
+                    "args": ["tile", "ui", 0]
+                }
+            ]
+        }
+    ]
+}
