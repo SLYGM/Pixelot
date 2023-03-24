@@ -384,6 +384,8 @@ export class AddLayerDialog {
         path = '';
       } else {
         path = this.file.path;
+        // truncate the path so that it is relative to the project directory
+        path = path.substring(path.indexOf(engine.Game.project_name))
       }
       this.dialogRef.close({name, path});
       return;
