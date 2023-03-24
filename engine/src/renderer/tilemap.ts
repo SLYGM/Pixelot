@@ -2,6 +2,7 @@ import { GLUtils } from "./webglutils";
 import { $gl } from "./gl";
 import { Texture } from "../types";
 import { Renderer, RenderLayer } from "./renderer";
+import { PathUtils } from "../engineExport";
 
 const { mat4, vec3 } = require("gl-matrix");
 const nw = (window as any).nw;
@@ -256,6 +257,7 @@ export class TileMapJSONParser {
      * @returns a new TileMapLayer object, if the json file is valid
      */
     static parse(json_path: string): TileMapLayer {
+        json_path = PathUtils.assetPath(json_path);
         const file = fs.readFileSync(json_path, 'utf8');
         const data = JSON.parse(file);
         let tile_layers = [];
