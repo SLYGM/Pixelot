@@ -4,7 +4,7 @@
     {
       "name": "tilemap_layer",
       "type": "tilemap",
-      "source": "./projects/project1/tilemap.json"
+      "source": "./tilemap.json"
     },
     {
       "name": "background",
@@ -31,7 +31,7 @@
         {
           "component_name": "Position",
           "args": [
-            "10",
+            "100",
             "100"
           ]
         },
@@ -39,40 +39,11 @@
           "component_name": "Sprite",
           "args": [
             "frog",
-            "foreground",
-            "1"
-          ]
-        }
-      ]
-    },
-    {
-      "name": "test",
-      "class": "Player",
-      "args": [
-        0,
-        false
-      ],
-      "components": [
-        {
-          "component_name": "Position",
-          "args": [
-            "-100",
-            "-100"
-          ]
-        },
-        {
-          "component_name": "Velocity",
-          "args": [
-            "1",
-            "1"
-          ]
-        },
-        {
-          "component_name": "Sprite",
-          "args": [
-            "cog",
-            "ui",
-            "0"
+            "background",
+            0,
+            1,
+            0.5,
+            0.5
           ]
         },
         {
