@@ -1,3 +1,5 @@
+import { Game } from "../gameloop.js";
+
 const nw = (window as any).nw;
 let fs, path;
 if (nw) {
@@ -57,5 +59,18 @@ export class AutoMap<K, V> extends Map<K, V> {
             this.set(key, this.factory(key));
         }
         return super.get(key);
+    }
+}
+
+export class PathUtils {
+
+    /* expand a project asset path to a full path (e.g. './assets/texture.png' -> '/projects/project1/assets/texture.png')
+    Expansion will vary depending on whether the game is in dev mode or not */
+    static assetPath(filepath: string): string {
+        if (Game.isDevMode) {
+            return path.resolve(`./projects/${Game.project_name}/`, filepath);
+        } else {
+            return path.resolve('./game/assets/', filepath);
+        }
     }
 }

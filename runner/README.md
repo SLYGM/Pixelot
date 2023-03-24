@@ -22,6 +22,7 @@ The `assets/` directory then needs to be copied into `dist/runner-1.0.0-[OS]/` f
 Built games must have the following directory structure:
 ```
 game/
+├── assets/
 ├── prefabs/
 ├── scenes/
 ├── scripts/
@@ -31,3 +32,4 @@ game/
 │   ├── systems/
 └── project.proj
 ```
+> Note: assets folder should be structured internally the same way as the assets are located in the project
