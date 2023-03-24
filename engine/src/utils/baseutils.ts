@@ -68,9 +68,9 @@ export class PathUtils {
     Expansion will vary depending on whether the game is in dev mode or not */
     static assetPath(filepath: string): string {
         if (Game.isDevMode) {
-            return path.resolve(`./projects/${Game.project_name}/`, filepath);
+            return path.join(`./projects/${Game.project_name}/`, filepath);
         } else {
-            return path.resolve('./game/assets/', filepath);
+            return path.join('./game/assets/', filepath);
         }
     }
 }
