@@ -7,6 +7,7 @@ import { Texture } from "../types.js";
 import { AutoMap } from "../utils/baseutils.js";
 import { Scene } from "../scene.js";
 import { SceneManager } from "../sceneManager.js";
+import { TextRenderer } from "./textRenderer.js";
 
 const { mat4, vec3 } = require("gl-matrix");
 
@@ -159,6 +160,7 @@ export class Renderer {
         this.backgroundColor = [1, 1, 1, 1];
 
         PostProcessing.init();
+        TextRenderer.init();
     }
 
     static setResolution(x: number, y: number) {
@@ -203,6 +205,7 @@ export class Renderer {
                 l.render();
             })    
         }
+        TextRenderer.render();
         PostProcessing.apply();
         
         // if rendering offscreen, the image needs to be copied onto the on-screen canvas
