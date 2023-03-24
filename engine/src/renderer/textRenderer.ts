@@ -2,6 +2,7 @@ import { GLUtils } from "./webglutils.js";
 import { $gl } from "./gl.js";
 import { Texture } from "../types.js";
 import { Renderer, RenderLayer } from "./renderer.js";
+import Text from '../components/Text';
 
 const { mat4, vec3 } = require("gl-matrix");
 const nw = (window as any).nw;
@@ -87,63 +88,13 @@ function initTextRendering() {
   initialised = true;
 }
 
-
-class TextInstance {
-  text: string;
-  x: number;
-  y: number;
-  font: Font;
-  scale: number;
-
-  constructor(text: string, x: number, y: number, font: Font, scale: number) {
-    this.text = text;
-    this.x = x;
-    this.y = y;
-    this.font = font;
-    this.scale = scale;
-  }
-
-  delete() {
-    TextRenderer.removeTextInstance(this);
-  }
-
-  render() {
-    //render each character
-    let x_pos = this.x;
-    let y_pos = this.y;
-    for (let i = 0; i < this.text.length; i++) {
-      // TODO: currently the default font only has one case of letters
-      const char = this.text[i].toLowerCase();
-      if (char === ' ') {
-        x_pos += this.font.fontInfo.spaceWidth * this.scale;
-      }
-      else if (char === '\n') {
-        y_pos += this.font.fontInfo.letterHeight * this.scale;
-        x_pos = this.x;
-      }
-      else {
-        // try to render the character, if it fails, render a question mark in its place
-        try {
-          TextRenderer.renderCharacter(char, this.scale, x_pos, y_pos);
-          x_pos += this.font.fontInfo.glyphInfos[char].width * this.scale;
-        } catch (e) {
-          TextRenderer.renderCharacter('?', this.scale, x_pos, y_pos);
-          x_pos += this.font.fontInfo.glyphInfos['?'].width * this.scale;
-        }
-        
-      }
-    }
-  }
-}
-
 export class TextRenderer {
   static currFont: Font = null;
   static fontMap: Map<string, Font> = new Map();
-  static texts : TextInstance[] = [];
+  static texts : Text[] = [];
 
     static init() {
       initTextRendering();
-      this.addTextInstance(new TextInstance("Hello\nWorld!", 200, 50, this.fontMap.get("defaultFont"), 2));
     }
 
     static render() {
@@ -174,19 +125,48 @@ export class TextRenderer {
 
       // render each text instance
       for (const text of this.texts) {
+        if (!text.visible) continue;
         // first bind the font texture
         this.bindFontTexture(text.font);
-        text.render();
+        this.renderTextInstance(text);
       }
 
       this.currFont = null;
     }
 
-    static addTextInstance(instance: TextInstance) {
+    private static renderTextInstance(instance: Text) {
+      //render each character
+      let x_pos = instance.getPos().x;
+      let y_pos = instance.getPos().y;
+      for (let i = 0; i < instance.text.length; i++) {
+        // TODO: currently the default font only has one case of letters
+        const char = instance.text[i].toLowerCase();
+        if (char === ' ') {
+          x_pos += instance.font.fontInfo.spaceWidth * instance.scale;
+        }
+        else if (char === '\n') {
+          y_pos += instance.font.fontInfo.letterHeight * instance.scale;
+          x_pos = instance.getPos().x;
+        }
+        else {
+          // try to render the character, if it fails, render a question mark in its place
+          try {
+            this.renderCharacter(char, instance.scale, x_pos, y_pos);
+            x_pos += instance.font.fontInfo.glyphInfos[char].width * instance.scale;
+          } catch (e) {
+            this.renderCharacter('?', instance.scale, x_pos, y_pos);
+            x_pos += instance.font.fontInfo.glyphInfos['?'].width * instance.scale;
+          }
+          
+        }
+      }
+    }
+
+    static addTextInstance(instance: Text) {
       this.texts.push(instance);
     }
 
-    static removeTextInstance(instance: TextInstance) {
+    static removeTextInstance(instance: Text) {
       const index = this.texts.indexOf(instance);
       if (index != -1) {
         this.texts.splice(index, 1);
@@ -285,7 +265,7 @@ export class Font {
 }
 
 export class DefaultFont extends Font {
-    static override fontName: string = 'defaultFont';
+    static override fontName: string = 'default';
     override src: string = '/projects/project1/assets/fonts/default font.png';
     override fontInfo = {
         letterHeight: 8,
