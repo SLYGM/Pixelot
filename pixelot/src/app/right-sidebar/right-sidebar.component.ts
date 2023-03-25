@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Inject, Input, Optional, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {MatSelectModule} from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
@@ -8,7 +9,7 @@ import * as engine from 'retro-engine';
 import { GameObjectBase } from 'retro-engine';
 import { SceneDataService } from 'app/services/scene-data.service';
 import { SceneTabComponent } from 'app/scene-tab/scene-tab.component';
-
+import { FileService } from 'app/services/file.service';
 
 const nw = (window as any).nw;
 const fs = nw.require('fs');
@@ -30,14 +31,35 @@ export class RightSidebarComponent {
   numberType = engine.Types.Number;
   booleanType = engine.Types.Boolean;
   isResizing = false;
+  assetOptions = [];
+  assets = [];
+  selectedAsset:string;
 
-  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, public sceneData: SceneDataService, private hostRef: ElementRef, @Optional() private parentComponent?: SceneTabComponent) {
+  constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, public sceneData: SceneDataService, public fileService: FileService,  private hostRef: ElementRef, @Optional() public parentComponent?: SceneTabComponent) {
+    this.parentComponent = parentComponent;
+    this.assets = [...engine.Renderer.textures.keys()];    
     this.update();
   }
 
+  ngOnInit() {
+    //TODO change to make use of project assets folder
+    fs.readdir("../engine/images", (err: any, files: any[]) => {
+      if (err) {
+        console.log(err); 
+      } else {
+        files.forEach(file => {
+          this.assetOptions.push(file);
+        });
+      }
+    });
+  }
 
   ngOnChanges() {
     this.update();
+    if(this.entity){
+      this.selectedAsset = this.sceneData.getComponentArgs(this.currentSceneName,this.entity.name,'Sprite')[0];
+    }
+    console.log(this.selectedAsset);
   }
 
   update() {
@@ -132,9 +154,12 @@ export class RightSidebarComponent {
     if (event.target) {
       // textbox event
       this.sceneData.updateComponentArg(this.currentSceneName, this.entityName, component, index, event.target.value);
-    } else {
+    } else if(event.checked) {
       // checkbox event
       this.sceneData.updateComponentArg(this.currentSceneName, this.entityName, component, index, event.checked.toString());
+    } else{
+      // dropdown event
+      this.sceneData.updateComponentArg(this.currentSceneName, this.entityName, component, index, event.value);
     }
     // remove and re-add component to update it
     this.entity.removeByName(component);
@@ -182,6 +207,59 @@ export class RightSidebarComponent {
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+  }
+  
+  addNewAsset() {
+    const dialogRef = this.dialog.open(AddAssetDialog, {
+      width: '500px',
+      data: this.assetOptions,
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result){
+        // Add texture to engine
+        const path = './assets/images/' + result + '.png';
+        engine.Renderer.loadTexture(path, result);
+        this.assets = [...engine.Renderer.textures.keys()];
+
+        // Add texture to project.json
+        const projectPath = this.fileService.path;
+        const projectFiles = engine.ImportManager.getFilePaths(projectPath);
+        const projJSONPath = projectPath + projectFiles.project + ".proj";
+        const projectJson = JSON.parse(fs.readFileSync(projJSONPath, "utf8"));
+        projectJson.textures.push({name: result, path: './assets/images/' + result + '.png'});
+        const jsonData = JSON.stringify(projectJson);
+        fs.writeFile(projJSONPath, jsonData, (err) => {
+          if (err) throw err;
+          console.log('Data written to file');
+        });
+      }
+    });
+  }
+}
+
+@Component({
+  selector: 'add-asset-dialog',
+  templateUrl: 'add-asset-dialog.html',
+})
+export class AddAssetDialog {
+  formControl = new FormControl('');
+  filteredOptions = [];
+  engineAssets = [...engine.Renderer.textures.keys()];   
+
+  constructor(
+    public dialogRef: MatDialogRef<AddAssetDialog>,
+    @Inject(MAT_DIALOG_DATA) public options:string[],
+  ) {
+    this.filteredOptions = options;
+    this.filteredOptions = this.filteredOptions.map((option) => option.replace(/\.[^/.]+$/, ''));
+    this.filteredOptions = this.filteredOptions.filter(item => !this.engineAssets.includes(item));  
+  }
+
+  onCancelClick(): void {}
+
+  onAddClick(): void {
+    const asset = this.formControl.value;
+    this.dialogRef.close(asset);
   }
 }
 
