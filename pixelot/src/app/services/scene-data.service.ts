@@ -23,6 +23,7 @@ export class Scene {
   constructor(name: string) {
     this.name = name;
     this.entities = [];
+    this.layers = [];
   }
 };
 
