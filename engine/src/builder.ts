@@ -25,6 +25,9 @@ export class Builder {
             fs.renameSync(path.join(destination, 'runner.app'), path.join(destination, `${Game.project_name}.app`));
         }
         
+        // copy over the engine assets
+        fs.cpSync('./engine_assets', path.join(destination, './engine_assets'), { overwrite: true, recursive: true });
+        
         // only copy the files into assets that aren't scripts/scenes/prefabs/project.json
         const copy_filter = (src: string, dest: string) => {
             // if the file ending is .js, .proj, .scene, or .prefab, don't copy it
