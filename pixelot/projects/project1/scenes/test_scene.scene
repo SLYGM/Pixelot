@@ -54,6 +54,32 @@
           ]
         }
       ]
+    },
+    {
+      "name": "TextEntity",
+      "class": "Player",
+      "args": [
+        "0",
+        "false"
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "150",
+            "50"
+          ]
+        },
+        {
+          "component_name": "Text",
+          "args": [
+            "Hello There!",
+            "default",
+            "2",
+            "true"
+          ]
+        }
+      ]
     }
   ]
 }

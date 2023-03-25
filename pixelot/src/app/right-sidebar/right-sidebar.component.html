@@ -43,7 +43,7 @@
             <input matInput type="number" value={{sceneData.getComponentArgs(currentSceneName,entity.name,component)[i]}} (change)="handleComponentChange($event, component, i)">
           </mat-form-field>
           <!-- if property is a bool: -->
-          <mat-slide-toggle *ngIf="importManager.getComponent(component).arg_types[i] == booleanType" [style.width.%]="100" [checked]="sceneData.getComponentArgs(currentSceneName,entity.name,component)[i]">
+          <mat-slide-toggle *ngIf="importManager.getComponent(component).arg_types[i] == booleanType" [style.width.%]="100" [checked]="sceneData.getComponentArgs(currentSceneName,entity.name,component)[i]" (change)="handleComponentChange($event, component, i)">
             {{property}}
           </mat-slide-toggle>
         </ng-container>

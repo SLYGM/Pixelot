@@ -376,6 +376,14 @@ class TileMapLayer extends RenderLayer {
         $gl.useProgram(prog);
         this.bindTextures();
         $gl.bindBuffer($gl.ARRAY_BUFFER, texcoord_buffer);
+        $gl.vertexAttribPointer(
+            texcoord_loc,
+            2,           // size
+            $gl.FLOAT,   // type
+            false,       // normalise
+            0,           // stride
+            0            // offset
+        );
 
         // use orthographic projection to scale coords to -1->1 (calculate once per frame to account for viewport changes)
         const proj_matrix = mat4.create();
