@@ -266,7 +266,7 @@ export class Font {
 
 export class DefaultFont extends Font {
     static override fontName: string = 'default';
-    override src: string = '/projects/project1/assets/fonts/default font.png';
+    override src: string = '/engine_assets/fonts/default font.png';
     override fontInfo = {
         letterHeight: 8,
         spaceWidth: 8,
