@@ -4,7 +4,7 @@
     {
       "name": "tilemap_layer",
       "type": "tilemap",
-      "source": "./projects/project1/tilemap.json"
+      "source": "./tilemap.json"
     },
     {
       "name": "background",

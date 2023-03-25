@@ -8,7 +8,7 @@ export default class Player extends engine.GameObjectBase {
         this.hp = hp;
         this.invincible = invincible;
         this.keyPressed
-        this.sound = new engine.Sound('/projects/project1/assets/sound/aeuuuh.wav');
+        this.sound = new engine.Sound('./assets/sound/aeuuuh.wav');
     }
     update() {
         if (engine.KeyStates.isPressed("a")) {

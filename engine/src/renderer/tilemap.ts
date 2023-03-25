@@ -2,10 +2,12 @@ import { GLUtils } from "./webglutils";
 import { $gl } from "./gl";
 import { Texture } from "../types";
 import { Renderer, RenderLayer } from "./renderer";
+import { PathUtils } from "../engineExport";
 
 const { mat4, vec3 } = require("gl-matrix");
 const nw = (window as any).nw;
 const fs = nw.require("fs");
+const path = nw.require("path");
 
 const vert_source = `#version 300 es
 
@@ -255,6 +257,7 @@ export class TileMapJSONParser {
      * @returns a new TileMapLayer object, if the json file is valid
      */
     static parse(json_path: string): TileMapLayer {
+        json_path = PathUtils.assetPath(json_path);
         const file = fs.readFileSync(json_path, 'utf8');
         const data = JSON.parse(file);
         let tile_layers = [];
@@ -279,7 +282,7 @@ export class TileMapJSONParser {
 
         // parse tilesets
         for (const tileset of data.tilesets) {
-            tilesets.push(this.parseTileSet(tileset));
+            tilesets.push(this.parseTileSet(tileset, json_path));
         }
         
         // create the tilemap layer
@@ -323,9 +326,12 @@ export class TileMapJSONParser {
         return new TileMapObjectLayer(layer.name, objects);
     }
 
-    private static parseTileSet(tileset: any): TileSet {
+    private static parseTileSet(tileset: any, json_path: string): TileSet {
         const firstgid = tileset.firstgid;
-        const texture = Renderer.loadTexture(tileset.image);
+        // the path to the tileset image is relative to the json file
+        const path_to_json = path.parse(json_path).dir;
+        const tex_path = path.join(path_to_json, './'+tileset.image);
+        const texture = Renderer.loadTexture(tex_path);
         const columns = tileset.columns;
         const tileWidth = tileset.tilewidth;
         const tileHeight = tileset.tileheight;

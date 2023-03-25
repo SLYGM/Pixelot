@@ -1,3 +1,5 @@
+import { PathUtils } from "./engineExport";
+
 export let $audio_context: AudioContext = null;
 
 export function initAudio() {
@@ -10,6 +12,7 @@ export class Sound {
     private panner: StereoPannerNode;
     
     constructor(filepath: string) {
+        filepath = PathUtils.assetPath(filepath);
         if ($audio_context) {
             this.gain = $audio_context.createGain();
             this.panner = $audio_context.createStereoPanner();

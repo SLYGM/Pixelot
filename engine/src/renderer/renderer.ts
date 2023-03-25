@@ -4,7 +4,7 @@ import { $gl, $canvas, loadGL, $rendering_offscreen, $offscreen_canvas, $canvas_
 import { GLUtils } from "./webglutils.js";
 import { PostProcessing } from "./post_process.js";
 import { Texture } from "../types.js";
-import { AutoMap } from "../utils/baseutils.js";
+import { AutoMap, PathUtils } from "../utils/baseutils.js";
 import { Scene } from "../scene.js";
 import { SceneManager } from "../sceneManager.js";
 import { TextRenderer } from "./textRenderer.js";
@@ -297,6 +297,8 @@ export class Renderer {
     }
 
     static loadTextureWithAlias(path:string, alias:string) {
+        // convert the path relative to project root to a path relative to the working directory
+        path = PathUtils.assetPath(path);
         const tex_info = this.loadTexture(path);
         this.textures.set(alias, tex_info);
         return tex_info;
