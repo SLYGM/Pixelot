@@ -23,4 +23,6 @@ export * from './importManager.js';
 
 export * from './prefabs.js';
 
+export * from './builder.js';
+
 export { Types, Type } from './argTypes.js';
