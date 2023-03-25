@@ -155,7 +155,7 @@ export class ImportManager {
     static async importScript(project: string, script: string, isDevMode = true) {
         let a: any;
         if (isDevMode) {
-            a = await import(`../../pixelot/projects/${project}/${script}.js`);
+            a = await import(/* webpackIgnore: true */`../../pixelot/projects/${project}/${script}.js`);
         } else {
             /* adding a query string to the end of the import path forces the browser to reload the script
             this is necessary because the browser caches scripts, so if you change a script and reload the page,
