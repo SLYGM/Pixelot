@@ -38,10 +38,12 @@ type ImportType = Component | System | GameObjectBase | PostProcess;
 class ImportRecord {
     name: string;
     map: Map<string, TypedConstructor<ImportType>>;
+    type: string;
 
-    constructor(name: string, map: Map<string, TypedConstructor<ImportType>>) {
+    constructor(name: string, map: Map<string, TypedConstructor<ImportType>>, type: string) {
         this.name = name;
         this.map = map;
+        this.type = type;
     }
 
     remove() {
@@ -113,6 +115,20 @@ export class ImportManager {
             console.trace(`Error importing ${imp.name}: invalid script class: ${imp.prototype.name}`);
             return undefined;
     }
+
+    static getScriptTypeFromImport(imp: any) {
+        if (imp.prototype instanceof Component)
+            return "component";
+        else if (imp.prototype instanceof System)
+            return "system";
+        else if (imp.prototype instanceof GameObjectBase)
+            return "entity";
+        else if (imp.prototype instanceof PostProcess)
+            return "shader";
+        else
+            console.trace(`Error importing ${imp.name}: invalid script class: ${imp.prototype.name}`);
+            return undefined;
+    }
     
     static async importProjectScripts(project: string, isDevMode = true) {
         let scripts: string[];
@@ -152,7 +168,7 @@ export class ImportManager {
         if (map) {
             // we know the types are correct here if map exists (see getMapFromImport), so we can use map as any
             (map as any).set(a.default.name, typed_constr);
-            const record = new ImportRecord(a.default.name, map);
+            const record = new ImportRecord(a.default.name, map, this.getScriptTypeFromImport(a.default));
             this.cached_imports.set(script, record);
         }
     }
@@ -163,6 +179,10 @@ export class ImportManager {
             record.remove();
         }
         this.cached_imports.delete(script);
+    }
+
+    static getRecord(script: string) {
+        return this.cached_imports.get(script);
     }
 
 

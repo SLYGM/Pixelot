@@ -52,7 +52,12 @@ export class ToolbarComponent {
           engine.Game.render_only = false;
         }
       }));
-      game.append(new nw.MenuItem({ label: 'Build' }));
+      game.append(new nw.MenuItem({ 
+        label: 'Build' ,
+        click: () => {
+          engine.Builder.build('../', 'Windows');
+        }
+      }));
       menu.append(new nw.MenuItem({ label: 'Game', submenu: game }));
 
       let help = new nw.Menu();
