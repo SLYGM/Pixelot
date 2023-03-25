@@ -1,5 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { BuildDialogueComponent } from 'app/build-dialogue/build-dialogue.component';
 import { NewProjectDialogComponent } from 'app/new-project-dialog/new-project-dialog.component';
 import { OpenProjectDialogComponent } from 'app/open-project-dialog/open-project-dialog.component';
 import * as engine from 'retro-engine';
@@ -55,7 +56,15 @@ export class ToolbarComponent {
       game.append(new nw.MenuItem({ 
         label: 'Build' ,
         click: () => {
-          engine.Builder.build('../', 'Windows');
+          const dialogRef = this.dialog.open(BuildDialogueComponent, {
+            width: '400px'
+          })
+
+          dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+              engine.Builder.build(result.path, result.target);
+            }
+          });
         }
       }));
       menu.append(new nw.MenuItem({ label: 'Game', submenu: game }));

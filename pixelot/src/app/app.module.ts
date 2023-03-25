@@ -35,6 +35,8 @@ import { LandingComponent } from './landing/landing.component';
 import { OpenProjectDialogComponent } from './open-project-dialog/open-project-dialog.component';
 import { NewProjectDialogComponent } from './new-project-dialog/new-project-dialog.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { BuildDialogueComponent } from './build-dialogue/build-dialogue.component';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -57,7 +59,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     NewFileDialogComponent,
     LandingComponent,
     OpenProjectDialogComponent,
-    NewProjectDialogComponent
+    NewProjectDialogComponent,
+    BuildDialogueComponent
   ],
   imports: [
     BrowserModule,
@@ -80,7 +83,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     MatMenuModule,
     MatCardModule,
     MatSlideToggleModule,
-    DragDropModule
+    DragDropModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

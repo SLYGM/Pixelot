@@ -17,7 +17,13 @@ export class Builder {
         fs.cpSync(`./runners/${target_platform}`, destination, { overwrite: true, recursive: true });
 
         // rename the runner.exe to the project name
-        fs.renameSync(path.join(destination, 'runner.exe'), path.join(destination, `${Game.project_name}.exe`));
+        if (target_platform === 'windows') {
+            fs.renameSync(path.join(destination, 'runner.exe'), path.join(destination, `${Game.project_name}.exe`));
+        } else if (target_platform === 'linux') {
+            fs.renameSync(path.join(destination, 'runner'), path.join(destination, `${Game.project_name}`));
+        } else if (target_platform === 'mac') {
+            fs.renameSync(path.join(destination, 'runner.app'), path.join(destination, `${Game.project_name}.app`));
+        }
         
         // only copy the files into assets that aren't scripts/scenes/prefabs/project.json
         const copy_filter = (src: string, dest: string) => {
