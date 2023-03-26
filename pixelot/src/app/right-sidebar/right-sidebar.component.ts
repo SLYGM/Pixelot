@@ -29,6 +29,7 @@ export class RightSidebarComponent {
   stringType = engine.Types.String;
   numberType = engine.Types.Number;
   booleanType = engine.Types.Boolean;
+  fileType = engine.Types.File;
   isResizing = false;
 
   constructor(public dialog: MatDialog, private _snackBar: MatSnackBar, public sceneData: SceneDataService, private hostRef: ElementRef, @Optional() private parentComponent?: SceneTabComponent) {
@@ -76,7 +77,7 @@ export class RightSidebarComponent {
           const component_constr = engine.ImportManager.getComponent(result);
           let default_args = [];
           for (const t of component_constr.arg_types) {
-            if (t === engine.Types.String) {
+            if (t === engine.Types.String || t === engine.Types.File) {
               default_args.push('');
             } else if (t === engine.Types.Number) {
               default_args.push(0);
@@ -113,6 +114,7 @@ export class RightSidebarComponent {
   }
 
   handleEntityChange(event: any, index: number) {
+    console.log(event);
     if (event.target) {
       // textbox event
       this.sceneData.updateEntityArg(this.currentSceneName, this.entityName, index, event.target.value);
@@ -126,6 +128,29 @@ export class RightSidebarComponent {
     // Save changes to file
     this.sceneData.saveScene(this.currentSceneName);
     this.updateLeftSidebar();
+  }
+
+  handleFileChange(event: any, component: string, index: number) {
+    const file_path = event.target.files[0].path;
+    // trim the path to be relative to the project directory
+    const project_dir = path.join(nw.App.startPath, 'projects', engine.Game.project_name);
+    const relative_path = path.relative(project_dir, file_path);
+    
+    // check if the file is in the project directory
+    if (relative_path.startsWith('..')) {
+      this._snackBar.open('File must be in project directory', 'Close', {
+        duration: 2000,
+      });
+      return;
+    }
+
+    // create a fake event to pass to handleComponentChange
+    const fake_event = {
+      target: {
+        value: relative_path
+      }
+    }
+    this.handleComponentChange(fake_event, component, index);
   }
 
   handleComponentChange(event: any, component: string, index: number) {

@@ -4,13 +4,15 @@ import { Component } from "../ecs.js";
 import Position from "./Position.js";
 
 import { Types } from "../argTypes.js";
+import { Texture } from "../types.js";
+import { PathUtils } from "../engineExport.js";
 
 export default class Sprite extends Component {
-    static arg_names = ["texAlias", "layer", "z-index", "rotation", "anchor x", "anchor y"];
-    static arg_types = [Types.String, Types.String, Types.Number, Types.Number, Types.Number, Types.Number];
+    static arg_names = ["texture", "layer", "z-index", "rotation", "anchor x", "anchor y"];
+    static arg_types = [Types.File, Types.String, Types.Number, Types.Number, Types.Number, Types.Number];
 
     override dependencies = [Position];
-    tex: string;
+    tex: Texture;
     layer: RenderLayer;
     zindex: number;
     lr: string;
@@ -18,9 +20,10 @@ export default class Sprite extends Component {
     anchor: {x: number, y: number};
 
     //sprites will be drawn above objects with a lower z index than their own
-    constructor(texAlias: string, lr: string, zi: number = 0, rotation: number = 0, anchorX: number = 0.5, anchorY: number = 0.5) {
+    constructor(tex_path: string, lr: string, zi: number = 0, rotation: number = 0, anchorX: number = 0.5, anchorY: number = 0.5) {
         super();
-        this.tex = texAlias;
+        const full_path = PathUtils.assetPath(tex_path);
+        this.tex = Renderer.loadTexture(tex_path);
         this.zindex = zi;
         this.lr = lr;
         this.rotation = rotation * Math.PI;
