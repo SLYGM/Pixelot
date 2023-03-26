@@ -8,7 +8,7 @@ export default class Sprite extends engine.Component {
     zindex;
     lr;
     rotation;
-    anchor = {x:0.5, y:0.5};
+    anchor;
     //sprites will be drawn above objects with a lower z index than their own
     constructor(tex_path, lr, zi = 0, rotation = 0, anchorX = 0.5, anchorY = 0.5) {
         super();
@@ -16,9 +16,8 @@ export default class Sprite extends engine.Component {
         this.tex = engine.Renderer.loadTexture(tex_path);
         this.zindex = zi;
         this.lr = lr;
-        this.rotation = rotation * Math.PI;
-        this.anchor.x = anchorX;
-        this.anchor.y = anchorY;
+        this.rotation = rotation * Math.PI/2;
+        this.anchor = { x: anchorX, y: anchorY };
     }
     onCreate() {
         const layer = engine.Renderer.getLayer(this.lr, this.owner.scene);
