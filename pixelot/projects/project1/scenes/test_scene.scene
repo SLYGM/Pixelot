@@ -24,7 +24,7 @@
       "name": "frog",
       "class": "Player",
       "args": [
-        0,
+        "1",
         "false"
       ],
       "components": [
@@ -38,10 +38,10 @@
         {
           "component_name": "Sprite",
           "args": [
-            "frog",
+            "assets\\frog.png",
             "background",
             0,
-            1,
+            "0",
             0.5,
             0.5
           ]

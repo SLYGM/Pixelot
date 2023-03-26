@@ -114,6 +114,7 @@ export class Renderer {
     static layerAliases: AutoMap<Scene, Map<string, number>>;
     static layers: AutoMap<Scene, RenderLayer[]>;
     static backgroundColor: [r:number, g:number, b:number, a:number];
+    static loaded_textures: Map<string, Texture>;
 
     static init(offscreen: boolean = false) {
         loadGL(offscreen);                     
@@ -244,6 +245,11 @@ export class Renderer {
     }
 
     static loadTexture(path: string): Texture {
+        // if the texture has already been loaded, return it
+        if (this.textures.has(path)) {
+            return this.textures.get(path);
+        }
+
         const tex = $gl.createTexture();
         $gl.bindTexture($gl.TEXTURE_2D, tex);
         $gl.texImage2D(
@@ -272,7 +278,7 @@ export class Renderer {
         $gl.texParameteri($gl.TEXTURE_2D, $gl.TEXTURE_MIN_FILTER, $gl.NEAREST);
         $gl.texParameteri($gl.TEXTURE_2D, $gl.TEXTURE_MAG_FILTER, $gl.NEAREST);
 
-        const tex_info = {
+        const tex_info: Texture = {
             width: 1, // we don't know the size until it loads
             height: 1,
             texture: tex,
@@ -293,6 +299,7 @@ export class Renderer {
             );
         });
 
+        this.textures.set(path, tex_info);
         return tex_info;
     }
 
@@ -304,12 +311,7 @@ export class Renderer {
         return tex_info;
     }
 
-    static drawImage(alias: string, x: number, y: number, rotation: number = 0, anchorX: number = 0.5, anchorY: number = 0.5) {
-        const tex = this.textures.get(alias);
-        if (tex === undefined) {
-            console.warn("Texture not found: " + alias);
-            return;
-        }
+    static drawImage(tex: Texture, x: number, y: number, rotation: number = 0, anchorX: number = 0.5, anchorY: number = 0.5) {
         const textureUnit = 0;
         $gl.uniform1i(this.shader.tex_loc, textureUnit);
         $gl.activeTexture($gl.TEXTURE0 + textureUnit);
