@@ -48,7 +48,7 @@
       "build"
     ],
     "overriddenProperties": {
-      "main": "dist-ng/index.html"
+      "main": "./index.html"
     }
   },
   "window": {
