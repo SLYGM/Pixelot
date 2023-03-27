@@ -1,6 +1,9 @@
 import { beforeAll, expect, test } from "@jest/globals";
 import { Component, ComponentType, GameObjectBase, ImportManager, System, doProjectImports } from "retro-engine";
 import { Scene } from "retro-engine/build/scene";
+import TestEntity from "../projects/test_project/scripts/entities/TestEntity.js";
+import Counter from "../projects/test_project/scripts/components/Counter.js";
+import DependencyTest from "../projects/test_project/scripts/components/DependencyTest.js";
 
 beforeAll(async () => {
     console.log("Importing project scripts...");
@@ -10,8 +13,9 @@ beforeAll(async () => {
 test("Game Object Functionality", () => {
     const scene = new Scene("");
 
-    const TestEntity = ImportManager.getEntity("TestEntity");
-    const testEntity: any = new TestEntity.constr("test");
+    // const TestEntity = ImportManager.getEntity("TestEntity");
+    // const testEntity: any = new TestEntity.constr("test");
+    const testEntity: any = new TestEntity("test");
     scene.addEntity(testEntity);
     scene.update();
     scene.update();
@@ -26,11 +30,11 @@ test("Game Object Functionality", () => {
 test("System Functionality", () => {
     const scene = new Scene("");
 
-    const TestEntity = ImportManager.getEntity("TestEntity");
-    const testEntity: any = new TestEntity.constr("test");
-    const Counter = ImportManager.getComponent("Counter");
-    testEntity.add(new Counter.constr());
+    const testEntity: any = new TestEntity("test");
+    testEntity.add(new Counter());
     scene.addEntity(testEntity);
+    console.log("TODO: test fails because systems are not being added properly");
+    console.log("systems", scene.systems);
     scene.update();
     scene.update();
 
@@ -63,11 +67,9 @@ test("System Functionality", () => {
 // });
 
 test("Component Functionality", () => {
-    const TestEntity = ImportManager.getEntity("TestEntity");
-    const testEntity: any = new TestEntity.constr("test");
-    const Counter = ImportManager.getComponent("Counter");
+    const testEntity: any = new TestEntity("test");
 
-    testEntity.add(new Counter.constr());
+    testEntity.add(new Counter());
 
     const counter = testEntity.getByName("Counter");
 
@@ -83,14 +85,11 @@ test("Component Functionality", () => {
 test("Component Dependencies", () => {
     const scene = new Scene("");
 
-    const TestEntity = ImportManager.getEntity("TestEntity");
-    const testEntity: any = new TestEntity.constr("test");
-    const Counter = ImportManager.getComponent("Counter");
-    const DependencyTest = ImportManager.getComponent("DependencyTest");
+    const testEntity: any = new TestEntity("test");
 
-    expect(() => testEntity.add(new DependencyTest.constr())).toThrowError('Component \'DependencyTest\' requires \'Counter\'');
-    testEntity.add(new Counter.constr());
-    testEntity.add(new DependencyTest.constr());
+    expect(() => testEntity.add(new DependencyTest())).toThrowError('Component \'DependencyTest\' requires \'Counter\'');
+    testEntity.add(new Counter());
+    testEntity.add(new DependencyTest());
     scene.addEntity(testEntity);
     scene.update();
     scene.update();
