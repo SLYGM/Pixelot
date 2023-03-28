@@ -1,0 +1,81 @@
+<div id="right-sidebar">
+  <div *ngIf="entity">
+    <mat-form-field appearance="fill" [style.width.%]="100">
+      <mat-label>Entity name</mat-label>
+      <input matInput type="text" value={{entity.name}} (change)="handleEntityNameChange($event)">
+    </mat-form-field>
+
+    <h2 class="mat-h2">Parameters</h2>
+    <ng-container *ngFor="let property of entityArgNames; index as i">
+      <!-- if property is a string: -->
+      <mat-form-field *ngIf="importManager.getEntity(sceneData.getEntityClass(currentSceneName, entityName)).arg_types[i] == stringType" [style.width.%]="100">
+        <mat-label color="primary">{{property}}</mat-label>
+        <input matInput value={{sceneData.getEntityArgs(currentSceneName,entity.name)[i]}} (change)="handleEntityChange($event, i)">
+      </mat-form-field>
+      <!-- if property is a number: -->
+      <mat-form-field *ngIf="importManager.getEntity(sceneData.getEntityClass(currentSceneName, entityName)).arg_types[i] == numberType" [style.width.%]="100">
+        <mat-label color="primary">{{property}}</mat-label>
+        <input matInput type="number" value={{sceneData.getEntityArgs(currentSceneName,entity.name)[i]}} (change)="handleEntityChange($event, i)">
+      </mat-form-field>
+      <!-- if property is a bool: -->
+      <mat-slide-toggle *ngIf="importManager.getEntity(sceneData.getEntityClass(currentSceneName, entityName)).arg_types[i] == booleanType" [style.width.%]="100" [checked]="sceneData.getEntityArgs(currentSceneName,entity.name)[i]" (change)="handleEntityChange($event, i)">
+        {{property}}
+      </mat-slide-toggle>
+      <!-- if property is a file: -->
+      <mat-form-field *ngIf="importManager.getEntity(sceneData.getEntityClass(currentSceneName, entityName)).arg_types[i] == fileType" [style.width.%]="100">
+        <mat-label color="primary">{{property}}</mat-label>
+        <button mat-icon-button matPrefix (click)="f_input.click()">
+          <mat-icon>attach_file</mat-icon>
+        </button>
+        <input type="text" readonly matInput value={{sceneData.getEntityArgs(currentSceneName,entity.name)[i]}}>
+        <input type="file" hidden #f_input (change)="handleEntityChange($event, i)">
+      </mat-form-field>
+    </ng-container>
+
+    <h2 class="mat-h2">Components</h2>
+    <mat-accordion multi>
+      <mat-expansion-panel *ngFor="let component of entity.getAllComponents()">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{component}}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-container *ngFor="let property of importManager.getComponent(component).arg_names; index as i">
+          <!-- if property is a string: -->
+          <mat-form-field *ngIf="importManager.getComponent(component).arg_types[i] == stringType" [style.width.%]="100">
+            <mat-label color="primary">{{property}}</mat-label>
+            <input matInput value={{sceneData.getComponentArgs(currentSceneName,entity.name,component)[i]}} (change)="handleComponentChange($event, component, i)">
+          </mat-form-field>
+          <!-- if property is a number: -->
+          <mat-form-field *ngIf="importManager.getComponent(component).arg_types[i] == numberType" [style.width.%]="100">
+            <mat-label color="primary">{{property}}</mat-label>
+            <input matInput type="number" value={{sceneData.getComponentArgs(currentSceneName,entity.name,component)[i]}} (change)="handleComponentChange($event, component, i)">
+          </mat-form-field>
+          <!-- if property is a bool: -->
+          <mat-slide-toggle *ngIf="importManager.getComponent(component).arg_types[i] == booleanType" [style.width.%]="100" [checked]="sceneData.getComponentArgs(currentSceneName,entity.name,component)[i]" (change)="handleComponentChange($event, component, i)">
+            {{property}}
+          </mat-slide-toggle>
+          <!-- if property is a file: -->
+          <mat-form-field *ngIf="importManager.getComponent(component).arg_types[i] == fileType" [style.width.%]="100">
+            <mat-label color="primary">{{property}}</mat-label>
+            <button mat-icon-button matPrefix (click)="f_input.click()">
+              <mat-icon>attach_file</mat-icon>
+            </button>
+            <input type="text" readonly matInput value={{sceneData.getComponentArgs(currentSceneName,entity.name,component)[i]}}>
+            <input type="file" hidden #f_input (change)="handleFileChange($event, component, i)">
+          </mat-form-field>
+        </ng-container>
+        <mat-action-row>
+          <button mat-stroked-button color="warn" (click)="removeComponent(component)">Remove Component</button>
+        </mat-action-row>
+      </mat-expansion-panel>
+    </mat-accordion>
+    <button mat-raised-button id="add-component-button" (click)="openDialog()" >Add Component</button>
+    <button mat-raised-button id="make-prefab-button" (click)="saveAsPrefab()">Save as Prefab</button>
+  </div>
+
+  <div *ngIf="!entity">
+    <h2 class="mat-h2">No entity selected</h2>
+  </div>
+</div>
+<div id="right-sidebar-resizer" (mousedown)="onResizeBarMouseDown($event)"></div>

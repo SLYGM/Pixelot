@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>Create a new project</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Project name</mat-label>
+    <input type="text" matInput cdkFocusInitial [(ngModel)]="projectName">
+  </mat-form-field>
+  <h3>Resolution</h3>
+  <div class="resolution">
+    <mat-form-field class="resolution-input">
+      <mat-label>Width</mat-label>
+      <input type="number" matInput [(ngModel)]="width">
+    </mat-form-field>
+    <mat-form-field class="resolution-input">
+      <mat-label>Height</mat-label>
+      <input type="number" matInput [(ngModel)]="height">
+    </mat-form-field>
+  </div>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-raised-button (click)="onCancelClick()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="projectName === '' || !width || !height" (click)="onCreateClick()">Create</button>
+</div>

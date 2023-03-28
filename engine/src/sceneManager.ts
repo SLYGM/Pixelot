@@ -1,63 +1,175 @@
 import { GameObjectBase, System } from "./ecs.js";
 import { Scene } from "./scene.js";
 import { ImportManager } from "./importManager.js";
+import { FileUtils } from "./utils/baseutils.js";
+import { Renderer, SpriteLayer } from "./renderer/renderer.js";
+import { TileMapJSONParser } from "./engineExport.js";
+
+const nw = (window as any).nw;
+let fs;
+if (nw) {
+    fs = nw.require("fs");
+} else {
+    fs = require("fs");
+}
 
 export class SceneManager {
-    static scenes: Map<string, Scene>;
+    static loaded_scenes: Map<string, Scene>;
     static currentScene: Scene;
-    static currentSceneName: string;
+    static project_dir?: string;
 
     static {
-        this.scenes = new Map<string, Scene>();
+        this.loaded_scenes = new Map();
+        this.currentScene = null;
     }
-
+    
     /**
-     * Add a scene to the Scene Manager
-     *
-     * @param name name of scene to be added
-     * @param scene scene object to be added
+    * Gets an array of loaded scene names
+    *
+    *@returns array of strings of scene names
+    */
+    static getSceneNames() {
+        return Array.from(this.loaded_scenes.keys());
+    }
+    
+    
+    /**
+     * Switches the current scene to the scene with the given name
+     * 
+     * @param scene_name The name of the scene to switch to
+     * @param unload_current Whether to unload the current scene
      */
-    static addScene(name: string, scene: Scene) {
-        this.scenes.set(name, scene);
-        if (!this.currentScene) {
-            this.currentScene = this.scenes.get(name);
-            this.currentSceneName = name;
+    static switchToScene(scene_name: string, unload_current = true) {
+        if (unload_current && this.currentScene) {
+            this.currentScene.destroy();
+            this.loaded_scenes.delete(this.currentScene.name);
         }
-    }
 
-    /**
-     * Remove a scene from the Scene Manager
-     *
-     * @param name name of scene to be removed
-     */
-    static removeScene(name: string) {
-        try {
-            if (this.currentSceneName == name) {
-                this.currentScene = null;
-                this.currentSceneName = null;
+        // check if the scene has been pre-loaded
+        if (this.loaded_scenes.has(scene_name)) {
+            this.currentScene = this.loaded_scenes.get(scene_name);
+        } else {
+            let path: string;
+            if (this.project_dir) {
+                path = FileUtils.findFile(scene_name + ".scene", this.project_dir);
+                console.log("Loading scene from " + path);
+                if (!path) {
+                    throw new Error("No scene found with name " + scene_name);
+                }
+            } else {
+                // If the project_dir is not set, we are running a built project, so the path is known
+                path = "./game/scenes/" + scene_name + ".scene";
             }
-            this.scenes.delete(name);
-            console.log("scene deleted");
-        } catch (error) {
-            throw new Error("Scene does not exist");
+            this.currentScene = this.loadScene(path);
+            this.loaded_scenes.set(scene_name, this.currentScene);
         }
     }
 
+
     /**
-     * Switch to another scene
-     *
-     * @param name name of scene to switch to
+     * Pre-load the scene with the given name, so that it can be quickly switched to later
+     * 
+     * @param scene_name The name of the scene to load
      */
-    static switchToScene(name: string) {
-        try {
-            const nextScene = this.scenes.get(name);
-            this.currentScene.onPause();
-            nextScene.onResume();
-            this.currentSceneName = name;
-            this.currentScene = nextScene;
-        } catch (error) {
-            throw new Error("Next scene does not exist");
+    static preLoadScene(scene_name: string) {
+        if (!this.loaded_scenes.has(scene_name)) {
+            let path: string;
+            if (this.project_dir) {
+                path = FileUtils.findFile(scene_name + ".scene", this.project_dir);
+                console.log("Loading scene from " + path);
+                if (!path) {
+                    throw new Error("No scene found with name " + scene_name);
+                }
+            } else {
+                // If the project_dir is not set, we are running a built project, so the path is known
+                path = "./game/scenes/" + scene_name + ".scene";
+            }
+            this.loaded_scenes.set(scene_name, this.loadScene(path));
+        } else {
+            console.log(`Warning: scene ${scene_name} has already been pre-loaded`);
         }
+    }
+
+
+    /**
+     * Unload the scene with the given name
+     * 
+     * @param scene_name name of the scene to unload
+     */
+    static unloadScene(scene_name: string) {
+        if (this.loaded_scenes.has(scene_name)) {
+            this.loaded_scenes.get(scene_name).destroy();
+            this.loaded_scenes.delete(scene_name);
+        } else {
+            throw new Error(`Scene ${scene_name} has not been loaded`);
+        }
+    }
+
+
+    /**
+     * Pre-load all scenes in the given list of scene names
+     * 
+     * @param scene_names The names of the scenes to load
+     */
+    // static batchLoadScenes(scene_names: string[]) {
+        // scene_names.forEach((scene_name) => { this.preLoadScene(scene_name); });
+    // }
+
+
+    /**
+     * Load a scene by name from a json file
+     * 
+     * @param path The path to the scene file
+     * @returns the loaded scene
+     */
+    static loadScene(path: string): Scene {
+        // read JSON object from file
+        const data = fs.readFileSync(path, "utf8");
+
+        // parse JSON object
+        const loadedSceneJson = JSON.parse(data.toString());
+        const loadedEntities = loadedSceneJson["entities"];
+        const loadedLayers = loadedSceneJson["layers"];
+
+        // construct Scene object from json data and add to sceneManager
+        const scene = new Scene(loadedSceneJson["name"]);
+
+        // construct each layer in the scene
+        for (const layer of loadedLayers) {
+            const type = layer["type"];
+            const name = layer["name"];
+
+            if (type == "sprite") {
+                Renderer.addLayer(new SpriteLayer(), name, scene);
+            }
+            else if (type == "tilemap") {
+                const source = layer["source"];
+                const tileLayer = TileMapJSONParser.parse(source);
+                Renderer.addLayer(tileLayer, name, scene);
+            }
+            else {
+                console.trace("Unknown layer type: " + type);
+                continue
+            }
+        }
+
+        // construct each entity in the scene
+        for (const entity of loadedEntities) {
+            const entity_constr = ImportManager.getEntity(entity["class"]);
+            const toAdd = new entity_constr.constr(entity["name"]);
+            const ent_args = entity_constr.parseArgs(entity["args"]);
+
+            // construct each component on the entity
+            for (const component of entity["components"]) {
+                const component_constr = ImportManager.getComponent(component["component_name"]);
+                const comp_args = component_constr.parseArgs(component["args"]);
+                toAdd.add(new component_constr.constr(...comp_args));
+            }
+
+            scene.addEntity(toAdd, ent_args);
+        }
+
+        return scene;
     }
 
     /**
@@ -76,7 +188,7 @@ export class SceneManager {
      * @param entity entity obect to be added
      */
     static addEntityToScene<T extends GameObjectBase>(sceneName: string, entity: T, args: any[] = []) {
-        this.scenes.get(sceneName).addEntity(entity, args);
+        this.loaded_scenes.get(sceneName).addEntity(entity, args);
     }
 
     /**
@@ -87,7 +199,32 @@ export class SceneManager {
      * @param priority priority of system to be added
      */
     static addSystemToScene(sceneName: string, system: System, priority: number) {
-        this.scenes.get(sceneName).addSystem(system, priority);
+        this.loaded_scenes.get(sceneName).addSystem(system, priority);
+    }
+    
+    /**
+    * Create a json for a new scene
+    *
+    * @param sceneName name of the scene
+    * @param path path to the where the scene will be saved
+    * @returns boolean which indicates success of operation
+    */
+    static createScene(sceneName: string, path: string) {
+        // make sure that the scene doesn't already exist
+        if (fs.existsSync(path + sceneName + ".scene")) {
+            console.log(`Warning: trying to create scene: ${sceneName} which already exists`);
+            return false;
+        }
+        
+        // template for scene JSONs
+        const template = 
+`{
+    "name": "${sceneName}",
+    "entities": []
+}`;
+        
+        fs.writeFileSync(path + sceneName + ".scene", template);
+        return true;
     }
 
     /**
@@ -128,125 +265,4 @@ export class SceneManager {
     //         console.log("saving json");
     //     });
     // }
-
-    static saveAllScenes() {}
-
-    /**
-     * Load a scene from a json file
-     *
-     * @param name name of file from which to load scene
-     */
-    static loadScene(name: string) {
-        const fs = require("fs");
-        // read JSON object from file
-        const data = fs.readFileSync(name + ".json", {encoding: "utf-8"});
-
-        // parse JSON object
-        const loadedSceneJson = JSON.parse(data.toString());
-        const loadedEntities = loadedSceneJson["entities"];
-
-        // construct Scene object from json data and add to sceneManager
-        const scene = new Scene();
-        scene.onCreate();
-
-        for (const entity of loadedEntities) {
-            const entity_constr = ImportManager.getEntity(entity["class"]);
-            const toAdd = new entity_constr.constr(entity["name"]);
-            const ent_args = entity_constr.parseArgs(entity["args"]);
-
-            for (const component of entity["components"]) {
-                const component_constr = ImportManager.getComponent(component["component_name"]);
-                const comp_args = component_constr.parseArgs(component["args"]);
-                toAdd.add(new component_constr.constr(...comp_args));
-            }
-
-            scene.addEntity(toAdd, ent_args);
-        }
-
-        this.addScene(loadedSceneJson["name"], scene);
-    }
-
-    /**
-     * load multiple scenes from json files
-     *
-     * @param scenes name of files from which to load scenes
-     */
-    static batchLoadScenes(scenes: string[]) {
-        for (const scene of scenes) {
-            this.loadScene(scene);
-        }
-    }
 }
-
-// example usage
-
-// class MovementSystem extends System {
-//     component = Velocity;
-
-//     update(entities: Set<GameObjectBase>) {
-//         for (const entity of entities) {
-//             console.log("Updating entity", entity);
-//             const position = entity.get(Position);
-//             const velocity = entity.get(Velocity);
-//             position.x += velocity.x * $scene.dt;
-//             position.y += velocity.y * $scene.dt;
-//         }
-//     }
-// }
-
-// // System used to test system priority
-// class PrintPositionSystem extends System {
-//     component = Position;
-
-//     update(entities: Set<GameObjectBase>) {
-//         for (const entity of entities) {
-//             // console.log("Entity position:", entity.get(Position));
-//         }
-//     }
-// }
-
-// class Player extends GameObjectBase {
-//     health: number;
-//     onCreate() {
-//         this.health = 10;
-//         // in practice these components would be added via the editor UI rather than in code like this
-//         this.add(new Position()).add(new Velocity(1, 1));
-//     }
-//     update() {
-//         if (this.health <= 0) {
-//             console.log("Player is dead");
-//             $scene.deleteEntity(this);
-//         }
-//     }
-//     takeDamage(amount: number) {
-//         this.health -= amount;
-//     }
-// }
-
-// const $component_map = new Map<string, Constructor<Component>>();
-// $component_map.set("Position", Position);
-// $component_map.set("Velocity", Velocity);
-
-// const $entity_map = new Map<string, Constructor<GameObjectBase>>();
-// $entity_map.set("player", Player);
-
-// const $system_map = new Map<number, System>();
-// $system_map.set(1, new PrintPositionSystem());
-// $system_map.set(2, new MovementSystem());
-
-// export const $scene = new Scene();
-// const $sceneManager = new SceneManager();
-// $sceneManager.addScene("test1", $scene);
-// const player = new Player("player");
-// $scene.addSystem(new MovementSystem(), SystemStage.PositionUpdate);
-// // $scene.addSystem(new PrintPositionSystem(), SystemStage.PositionUpdate - 1);
-// $scene.addEntity(player);
-// $sceneManager.update();
-
-// // Save a scene and reload
-// $sceneManager.saveCurrentScene("test2");
-// $sceneManager.removeScene("test1");
-// $sceneManager.loadScene("test2");
-
-// player.takeDamage(10);
-// $sceneManager.update();

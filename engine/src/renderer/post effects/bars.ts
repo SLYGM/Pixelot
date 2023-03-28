@@ -45,7 +45,7 @@ export default class BarShader extends PostProcess {
         super(v_shader, f_shader);
     }
 
-    draw() {
+    override draw() {
         $gl.uniform1f(
             $gl.getUniformLocation(this.program, "time"),
             performance.now() / 1000

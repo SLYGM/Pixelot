@@ -1,3 +1,5 @@
+import { Scene } from "./scene";
+
 export abstract class Component {
     /**
      * The list of components that this component depends on.
@@ -9,6 +11,19 @@ export abstract class Component {
     registerOwner(owner: GameObjectBase) {
         this.owner = owner;
     }
+
+    _create() {
+        this.onCreate();
+    }
+
+    _delete() {
+        this.owner = null;
+        this.onDelete();
+    }
+
+    onCreate() {}
+
+    onDelete() {}
 }
 
 export type ComponentType<T extends Component> = new (...args: unknown[]) => T;
@@ -37,6 +52,7 @@ export abstract class GameObjectBase {
     // Mapping from component name to component instance
     private component_map: Map<string, Component> = new Map();
     public name: string;
+    public scene: Scene = null;
 
     /**
      * Constructor which wraps the object in a proxy.
@@ -54,10 +70,34 @@ export abstract class GameObjectBase {
         });
     }
 
+    setScene(scene: Scene) {
+        this.scene = scene;
+    }
+
+    _delete() {
+        this.onDelete();
+        for (const component of this.component_map.values()) {
+            component._delete();
+        }
+        this.component_map.clear();
+    }
+
+    _create(...args: any[]) {
+        for (const component of this.component_map.values()) {
+            component._create();
+        }
+        this.onCreate(...args);
+    }
+
     /**
      * User-defined function that is called when the entity is spawned.
      */
     abstract onCreate(...args: any[]): void;
+
+    /**
+     * User-defined function that is called when the entity is deleted.
+     */
+    onDelete(): void {};
 
     /**
      * User-defined function that is called every frame.
@@ -100,6 +140,15 @@ export abstract class GameObjectBase {
     public get<T extends Component>(c: ComponentType<T>): T {
         return this.component_map.get(c.name) as T;
     }
+    /**
+     * Get the component instance of the given component name.
+     *
+     * @param name The name of the component to get.
+     * @returns The component instance.
+     */
+    public getByName(name: string): Component {
+        return this.component_map.get(name);
+    }
 
     /**
      * Get all components linked to this entity
@@ -129,6 +178,13 @@ export abstract class GameObjectBase {
     // TODO: Check if dependencies are still met
     public remove<T extends Component>(c: ComponentType<T>) {
         this.component_map.delete(c.name);
+    }
+
+    public removeByName(name: string) {
+        const component = this.component_map.get(name);
+        if (component)
+            this.component_map.get(name)._delete();
+        this.component_map.delete(name);
     }
 }
 

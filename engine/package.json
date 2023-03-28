@@ -1,14 +1,16 @@
 {
-  "name": "nw_renderer",
+  "name": "retro-engine",
   "version": "1.0.0",
   "description": "testing webgl in nw",
-  "main": "index.html",
+  "main": "./build/engineExport.js",
+  "types": "./build/engineExport.d.ts",
   "scripts": {
     "test": "jest --coverage",
     "check": "eslint ./src",
     "clean": "rimraf build/",
     "copy-files": "copyfiles -u 1 src/**/*.json build/",
     "build": "npm run clean && npm run copy-files && tsc",
+    "build-webpack": "npm run build && webpack --mode production",
     "start": "npm run build && nw .",
     "doc": "typedoc --out ./docs ./src/main.ts"
   },
@@ -17,6 +19,7 @@
   "devDependencies": {
     "@jest/globals": "^29.3.1",
     "@types/node": "^18.8.3",
+    "@types/offscreencanvas": "^2019.7.0",
     "@typescript-eslint/eslint-plugin": "^5.44.0",
     "@typescript-eslint/parser": "^5.44.0",
     "avl": "^1.5.3",
@@ -29,6 +32,8 @@
     "rimraf": "^3.0.2",
     "ts-jest": "^29.0.3",
     "typedoc": "^0.23.19",
-    "typescript": "^4.8.4"
+    "typescript": "^4.8.4",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
   }
 }

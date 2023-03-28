@@ -1,0 +1,55 @@
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.path-wrapper {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+
+  span {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+.container {
+  overflow-y: auto;
+}
+
+.file-or-folder-wrapper {
+  padding: 4px;
+  overflow: hidden;
+  width: 90px;
+  display: inline-block;
+
+  .file-or-folder span {
+    display: block;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.file-or-folder-icon {
+  width: 50px;
+  height: 50px;
+  font-size: 50px;
+  padding-left: 20px;
+}
+
+.pointer {
+  cursor: pointer;
+  flex-shrink: 0;
+}

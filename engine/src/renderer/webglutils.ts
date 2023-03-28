@@ -16,6 +16,7 @@ export class GLUtils {
 
         console.log($gl.getShaderInfoLog(shader));
         $gl.deleteShader(shader);
+        return undefined;
     }
 
     static createProgram(
@@ -37,6 +38,7 @@ export class GLUtils {
 
         console.log($gl.getProgramInfoLog(program));
         $gl.deleteProgram(program);
+        return undefined;
     }
 
     static programFromSources(

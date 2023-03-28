@@ -9,32 +9,42 @@ export class Type {
 }
 
 class StringType extends Type{
-    parse(value: string): string {
+    override parse(value: string): string {
         return value;
     }
 
-    stringify(value: string): string {
+    override stringify(value: string): string {
         return value;
     }
 }
 
 class NumberType extends Type {
-    parse(value: string): number {
+    override parse(value: string): number {
         return parseFloat(value);
     }
 
-    stringify(value: number): string {
+    override stringify(value: number): string {
         return value.toString();
     }
 }
 
 class BoolType extends Type {
-    parse(value: string): boolean {
+    override parse(value: string): boolean {
         return value === "true";
     }
 
-    stringify(value: boolean): string {
+    override stringify(value: boolean): string {
         return value.toString();
+    }
+}
+
+class FileType extends Type {
+    override parse(value: string): string {
+        return value;
+    }
+
+    override stringify(value: string): string {
+        return value;
     }
 }
 
@@ -42,4 +52,5 @@ export class Types {
     static String = new StringType();
     static Number = new NumberType();
     static Boolean = new BoolType();
+    static File = new FileType();
 }

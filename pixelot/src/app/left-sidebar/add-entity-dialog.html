@@ -1,0 +1,27 @@
+<h1 mat-dialog-title>New Entity</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Entity Name</mat-label>
+    <input type="text" matInput [formControl]="nameForm">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>GameObject</mat-label>
+    <input type="text" matInput [formControl]="gameObjectForm" [matAutocomplete]="autoGroup">
+    <mat-autocomplete #autoGroup="matAutocomplete" (optionSelected)='selectOption($event)' [displayWith] = 'displayFn'>
+      <mat-optgroup *ngIf="(filtered_base | async).length != 0" [label] = '"Scripts"'> 
+        <mat-option *ngFor="let option of filtered_base | async" [value]="option">
+          {{option.name}}
+        </mat-option>
+      </mat-optgroup>
+      <mat-optgroup *ngIf="(filtered_prefab | async).length != 0"[label] = '"Prefabs"'> 
+        <mat-option *ngFor="let option of filtered_prefab | async" [value]="option">
+          {{option.name}}
+        </mat-option>
+      </mat-optgroup>
+    </mat-autocomplete>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-raised-button (click)="onCancelClick()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onAddClick()" cdkFocusInitial>Add</button>
+</div>

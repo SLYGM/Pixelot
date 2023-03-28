@@ -1,0 +1,16 @@
+<div class="navbar">
+  <nav mat-tab-nav-bar fitInkBarToContent [color]="accent" [backgroundColor]="background" [tabPanel]="tabPanel" mat-stretch-tabs="false" mat-align-tabs="start">
+    <a mat-tab-link
+      *ngFor="let scene of scenes"
+      (click)="activeLink = scene" [active]="activeLink == scene"
+      routerLink="/scene/{{ scene }}"> {{ scene }} 
+    </a>
+    <label mat-tab-link>
+      <input type="file" (change)="handleFileSelect($event)" style="display: none"/>
+      <span>Load Scene</span>
+    </label>
+    <a mat-tab-link (click)="openDialog()"> + 
+    </a>
+  </nav>
+  <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+</div>

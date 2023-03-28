@@ -1,0 +1,31 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: #fafafa;
+}
+
+.title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  h1 {
+    font-size: 3em;
+    text-align: center;
+  }
+}
+
+.options {
+  flex: 1;
+  display: flex;
+  align-items: top;
+  justify-content: center;
+  gap: 1em;
+
+  button {
+    font-size: 1.5em;
+  }
+}
