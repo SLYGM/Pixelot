@@ -1,19 +1,19 @@
 {
     "name": "test_prefab",
-    "class": "Player",
+    "class": "TestEntity",
     "components": [
         {
           "component_name": "Position",
           "args": [
-            "10",
-            "10"
+            "1",
+            "2"
           ]
         },
         {
           "component_name": "Velocity",
           "args": [
-            "1",
-            "1"
+            "3",
+            "4"
           ]
         },
         {

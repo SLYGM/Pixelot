@@ -1,5 +1,5 @@
 import { beforeAll, expect, test } from "@jest/globals";
-import { Component, ComponentType, GameObjectBase, ImportManager, System, doProjectImports } from "retro-engine";
+import { doProjectImports } from "retro-engine";
 import { Scene } from "retro-engine/build/scene";
 import TestEntity from "../projects/test_project/scripts/entities/TestEntity.js";
 import Counter from "../projects/test_project/scripts/components/Counter.js";
@@ -13,8 +13,6 @@ beforeAll(async () => {
 test("Game Object Functionality", () => {
     const scene = new Scene("");
 
-    // const TestEntity = ImportManager.getEntity("TestEntity");
-    // const testEntity: any = new TestEntity.constr("test");
     const testEntity: any = new TestEntity("test");
     scene.addEntity(testEntity);
     scene.update();
@@ -42,29 +40,6 @@ test("System Functionality", () => {
     expect(testEntity.getByName("Counter").counter).toBe(2);
     expect(testEntity.getAllComponents()).toEqual(["Counter"]);
 });
-
-// test("System Priority", () => {
-    // const scene = new Scene("");
-
-    // const testEntity = new TestEntity("test");
-    // testEntity.add(new TestComponent());
-    // scene.addEntity(testEntity);
-    // const system1 = new TestSystem();
-    // const system2 = new TestSystem2();
-    // scene.addSystem(system1, 0);
-    // scene.addSystem(system2, 1);
-    // scene.update();
-
-    // expect(testEntity.get(TestComponent).counter).toBe(0);
-
-    // scene.removeSystem(system1);
-    // scene.removeSystem(system2);
-    // scene.addSystem(system2, 0);
-    // scene.addSystem(system1, 1);
-    // scene.update();
-
-    // expect(testEntity.get(TestComponent).counter).toBe(1);
-// });
 
 test("Component Functionality", () => {
     const testEntity: any = new TestEntity("test");
