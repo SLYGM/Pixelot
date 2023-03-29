@@ -9,21 +9,23 @@ export class MouseState {
     static {
         this.btns = new Map();
 
-        // track mouse position
-        // TODO: the mouse position is unknown until the mouse is moved
-        document.addEventListener("mousemove", (event) => {
-            this.handleMouseMove(event);
-        });
+        if (document) {
+            // track mouse position
+            // TODO: the mouse position is unknown until the mouse is moved
+            document.addEventListener("mousemove", (event) => {
+                this.handleMouseMove(event);
+            });
 
-        // handle mouse up
-        document.addEventListener("mouseup", (event) => {
-            this.handleMouseUp(event);
-        });
+            // handle mouse up
+            document.addEventListener("mouseup", (event) => {
+                this.handleMouseUp(event);
+            });
 
-        // handle mouse down
-        document.addEventListener("mousedown", (event) => {
-            this.handleMouseDown(event);
-        });
+            // handle mouse down
+            document.addEventListener("mousedown", (event) => {
+                this.handleMouseDown(event);
+            });
+        }
     }
 
     private static handleMouseMove(event: MouseEvent) {
