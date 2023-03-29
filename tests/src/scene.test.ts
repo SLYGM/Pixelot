@@ -1,15 +1,10 @@
-import { beforeAll, expect, test } from "@jest/globals";
-import { Scene, doProjectImports } from "retro-engine";
+import { expect, test } from "@jest/globals";
+import { Scene } from "retro-engine";
 import TestEntity from "../projects/test_project/scripts/entities/TestEntity.js";
 import CounterIncrement from "../projects/test_project/scripts/systems/Counter.js";
 import CounterReset from "../projects/test_project/scripts/systems/CounterReset.js";
 import Velocity from "../projects/test_project/scripts/components/Velocity.js";
 import Counter from "../projects/test_project/scripts/components/Counter.js";
-
-beforeAll(async () => {
-    console.log("Importing project scripts...");
-    await doProjectImports("test_project", "test");
-});
 
 test("Basic functionality", () => {
     const scene = new Scene("test_scene");

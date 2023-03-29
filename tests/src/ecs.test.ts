@@ -1,14 +1,8 @@
-import { beforeAll, expect, test } from "@jest/globals";
-import { doProjectImports } from "retro-engine";
+import { expect, test } from "@jest/globals";
 import { Scene } from "retro-engine/build/scene";
 import TestEntity from "../projects/test_project/scripts/entities/TestEntity.js";
 import Counter from "../projects/test_project/scripts/components/Counter.js";
 import DependencyTest from "../projects/test_project/scripts/components/DependencyTest.js";
-
-beforeAll(async () => {
-    console.log("Importing project scripts...");
-    await doProjectImports("test_project", "test");
-});
 
 test("Game Object Functionality", () => {
     const scene = new Scene("");

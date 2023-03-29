@@ -99,6 +99,9 @@ export class SceneManager {
         if (this.loaded_scenes.has(scene_name)) {
             this.loaded_scenes.get(scene_name).destroy();
             this.loaded_scenes.delete(scene_name);
+            if (this.currentScene.name === scene_name) {
+                this.currentScene = null;
+            }
         } else {
             throw new Error(`Scene ${scene_name} has not been loaded`);
         }
