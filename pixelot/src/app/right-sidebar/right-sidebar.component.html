@@ -34,7 +34,7 @@
 
     <h2 class="mat-h2">Components</h2>
     <mat-accordion multi>
-      <mat-expansion-panel *ngFor="let component of entity.getAllComponents()">
+      <mat-expansion-panel *ngFor="let component of entity.getAllComponents().sort()">
         <mat-expansion-panel-header>
           <mat-panel-title>
             {{component}}
