@@ -92,12 +92,13 @@ export class Scene {
 
     // Remove the entity with the given name from the scene
     deleteEntity(name: string) {
-        this.entities.delete(name);
         // Remove the entity from the systems that require it
         const entity = this.entities.get(name);
+        entity?._delete();
         for (const system_node of this.systems) {
             system_node.entities.delete(entity);
         }
+        this.entities.delete(name);
     }
 
     // Rename an entity
