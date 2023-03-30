@@ -16,7 +16,8 @@ beforeAll(async () => {
     Renderer.addLayer = jest.fn();
     // @ts-ignore
     Renderer.getLayer = jest.fn();
-    // Renderer.init(true);
+    // @ts-ignore
+    Renderer.loadTexture = jest.fn();
 
     await doProjectImports("test_project", "test");
     SceneManager.project_dir = "./projects/test_project/";
