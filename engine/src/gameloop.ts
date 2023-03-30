@@ -3,6 +3,7 @@ import { Updatable } from "./types.js";
 import { SceneManager } from "./sceneManager.js";
 import { ImportManager } from "./importManager.js";
 import { PostProcessing } from "./renderer/post_process.js";
+import { PathUtils } from "./utils/baseutils.js";
 
 const nw = (window as any).nw;
 let fs;
@@ -18,6 +19,8 @@ export class Game {
     static render_only = false;
     static time = 0;
     static start_scene: string;
+    static isDevMode: boolean = true;
+    static project_name: string;
 
     static {
         Game.updateQueue = new Array<Updatable>();
@@ -56,9 +59,14 @@ export class Game {
      * Required for projects loaded via the UI, but not for built projects.
      */
     static loadGame(project_dir?: string) {
+        this.isDevMode = project_dir ? true : false;
         let project_file_path: string;
         if (project_dir) {
             SceneManager.project_dir = project_dir;
+            // to find the project name, find the folder name after the projects folder
+            const path_folders = project_dir.split('/');
+            const projects_index = path_folders.findIndex((s) => s === 'projects');
+            this.project_name = path_folders[projects_index + 1];
             project_file_path = project_dir + "/project.proj";
         } else {
             project_file_path = "./game/project.proj";
@@ -77,7 +85,7 @@ export class Game {
     
     private static loadTextures(textures: {name: string, path: string}[]) {
         for (const texture of textures) {
-            Renderer.loadTexture(texture["path"], texture["name"]);
+            Renderer.loadTextureWithAlias(texture.path, texture.name);
         }
     }
     

@@ -1,6 +1,19 @@
 {
     "name": "test_scene_2",
-    "layers": ["background", "foreground", "ui"],
+    "layers": [
+        {
+        "name": "background",
+        "type": "sprite"
+        },
+        {
+        "name": "foreground",
+        "type": "sprite"
+        },
+        {
+        "name": "ui",
+        "type": "sprite"
+        }
+    ],
     "entities": [
         {
             "name": "foreground frog",
@@ -17,7 +30,7 @@
                 },
                 {
                     "component_name": "Sprite",
-                    "args": ["frog", "foreground", 0]
+                    "args": ["frog", "foreground", 0, 0, 0.5, 0.5]
                 }
             ]
         },
@@ -32,7 +45,7 @@
                 },
                 {
                     "component_name": "Sprite",
-                    "args": ["cog", "background", 0]
+                    "args": ["cog", "background", 0, 0, 0.5, 0.5]
                 }
             ]
         },
@@ -47,7 +60,7 @@
                 },
                 {
                     "component_name": "Sprite",
-                    "args": ["tile", "ui", 0]
+                    "args": ["tile", "ui", 0, 0, 0.5, 0.5]
                 }
             ]
         }

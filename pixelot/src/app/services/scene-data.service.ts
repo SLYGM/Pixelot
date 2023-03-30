@@ -18,13 +18,20 @@ export type Entity = {
 export class Scene {
   name: string;
   entities: Entity[];
-  layers: string[];
+  layers: Layer[];
 
   constructor(name: string) {
     this.name = name;
     this.entities = [];
+    this.layers = [];
   }
 };
+
+export type Layer = {
+  name: string;
+  type: string;
+  source?: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -189,10 +196,10 @@ export class SceneDataService {
     }
   }
 
-  addLayer(sceneName: string, layerName: string) {
+  addLayer(sceneName: string, layerName: string, type: string, source?: string) {
     const scene = this.scenes.get(sceneName);
     if (scene) {
-      scene.layers.push(layerName);
+      scene.layers.push({name: layerName, type, source});
     }
   }
 
@@ -208,7 +215,7 @@ export class SceneDataService {
         }
       });
     }
-    scene.layers = scene.layers.filter(l => l != layerName);
+    scene.layers = scene.layers.filter(l => l.name != layerName);
   }
 
 }

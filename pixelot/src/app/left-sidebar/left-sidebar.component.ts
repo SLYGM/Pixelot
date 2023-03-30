@@ -13,6 +13,9 @@ import { GameObjectBase } from 'retro-engine';
 import { TypedConstructor } from 'retro-engine/build/typedConstructor';
 import { FileUtils } from 'retro-engine';
 
+const nw = (window as any).nw;
+const path = nw.require('path');
+
 @Component({
   selector: 'app-left-sidebar',
   templateUrl: './left-sidebar.component.html',
@@ -227,17 +230,46 @@ export class LeftSidebarComponent {
 
   }
 
-  openLayerDialog(): void {
+  openLayerDialog(type: string): void {
     const dialogRef = this.dialog.open(AddLayerDialog, {
       width: '500px',
     });
+
+    if (type == 'tilemap') {
+      dialogRef.componentInstance.path_required = true;
+    }
 
     dialogRef.afterClosed().subscribe(result => {
       if (!result)
         return;
 
-      engine.Renderer.addLayer(new engine.SpriteLayer(), result, engine.SceneManager.currentScene);
-      this.sceneData.addLayer(this.scene.name, result);
+      let new_layer: engine.RenderLayer;
+
+      if (type == 'tilemap') {
+        // make sure the path is valid
+        if (result.tile_path == '') {
+          this._snackBar.open('Please enter a valid path', 'Close', {
+            duration: 5000
+          });
+          return;
+        }
+        
+        // attempt to parse the tilemap
+        try {
+          new_layer = engine.TileMapJSONParser.parse(result.tile_path);
+        } catch (e) {
+          this._snackBar.open('Error parsing tilemap', 'Close', {
+            duration: 5000
+          });
+          return;
+        }
+      }
+      else if (type == 'sprite') {
+        new_layer = new engine.SpriteLayer();
+      }
+
+      engine.Renderer.addLayer(new_layer, result.name, engine.SceneManager.currentScene);
+      this.sceneData.addLayer(this.scene.name, result.name, type, result.tile_path);
       this.update();
       this.sceneData.saveScene(this.scene.name);
     });
@@ -324,9 +356,13 @@ export class AddEntityDialog {
 @Component({
   selector: 'add-layer-dialog',
   templateUrl: 'add-layer-dialog.html',
+  styleUrls: ['./add-layer-dialog.scss']
 })
 export class AddLayerDialog {
   nameForm = new FormControl('');
+  pathForm = new FormControl('');
+  path_required = false;
+  file: any;
 
   constructor(
     public dialogRef: MatDialogRef<AddLayerDialog>,
@@ -336,8 +372,34 @@ export class AddLayerDialog {
     this.dialogRef.close();
   }
 
+  handleFileSelect(e: any) {
+    this.file = e.target.files[0];
+  
+    // update the path form
+    this.pathForm.setValue(this.file.name);
+  }
+
   onAddClick(): void {
     const name = this.nameForm.value;
-    this.dialogRef.close(name);
+    if (this.path_required) {
+      let tile_path;
+      if (!this.file) {
+        tile_path = '';
+      } else {
+        tile_path = this.file.path;
+        // truncate the path so that it is relative to the project directory
+        const project_dir = path.join(nw.App.startPath, 'projects', engine.Game.project_name);
+        tile_path = path.relative(project_dir, tile_path);
+
+        // check if the file is in the project directory
+        if (tile_path.startsWith('..')) {
+          tile_path = '';
+        }
+      }
+      this.dialogRef.close({name, tile_path});
+      return;
+    }
+
+    this.dialogRef.close({name});
   }
 }

@@ -83,6 +83,9 @@ export abstract class GameObjectBase {
     }
 
     _create(...args: any[]) {
+        for (const component of this.component_map.values()) {
+            component._create();
+        }
         this.onCreate(...args);
     }
 
@@ -125,7 +128,6 @@ export abstract class GameObjectBase {
         }
         this.component_map.set(component.constructor.name, component);
         component.registerOwner(this);
-        component._create();
         return this;
     }
 

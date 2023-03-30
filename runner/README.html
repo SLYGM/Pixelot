@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Runner</title>
+        <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="runner">Runner</h1>
+<p>Used for running a game made with Pixelot</p>
+<h2 id="usage">Usage</h2>
+<p><code>npm run build</code> - build the project with webpack (development mode)</p>
+<p><code>npm run build-prod</code> - build the project with webpack (production mode - recommended)</p>
+<p><code>npm start</code> - launch the game via nw</p>
+<h2 id="create-distributable-game">Create Distributable Game</h2>
+<p>Once built, run <code>npm run dist</code> to create distributable applications for each operating system, stored in the <code>dist/</code> directory.
+Alternatively, run <code>npm run dist:windows</code> to only create windows binaries (faster). Same goes for Mac and Linux.</p>
+<p>The <code>assets/</code> directory then needs to be copied into <code>dist/runner-1.0.0-[OS]/</code> for images to load properly.</p>
+<h3 id="directory-structure">Directory Structure</h3>
+<p>Built games must have the following directory structure:</p>
+<pre><code>game/
+├── assets/
+├── prefabs/
+├── scenes/
+├── scripts/
+│   ├── components/
+│   ├── entities/
+│   ├── shaders/
+│   ├── systems/
+└── project.proj
+</code></pre>
+<blockquote>
+<p>Note: assets folder should be structured internally the same way as the assets are located in the project</p>
+</blockquote>
+
+        
+        
+    </body>
+    </html>

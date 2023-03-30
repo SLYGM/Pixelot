@@ -5,6 +5,7 @@ Initialise();
 
 async function Initialise() {
   engine.Renderer.init();
+  engine.initAudio();
   engine.connectCanvas();
   await engine.doGameImports();
   engine.Game.loadGame();

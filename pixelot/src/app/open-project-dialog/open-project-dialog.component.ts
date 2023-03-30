@@ -49,6 +49,7 @@ export class OpenProjectDialogComponent {
 
   async projectSelected(project: string) {
     this.dialogRef.close();
+    this.fileService.proj_name = project;
     let projectPath: string;
     if (isDevMode()) {
       projectPath = "../pixelot/projects/" + project + "/";

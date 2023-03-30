@@ -1,16 +1,30 @@
 {
   "name": "test_scene",
   "layers": [
-    "background",
-    "foreground",
-    "ui"
+    {
+      "name": "background",
+      "type": "sprite"
+    },
+    {
+      "name": "foreground",
+      "type": "sprite"
+    },
+    {
+      "name": "ui",
+      "type": "sprite"
+    },
+    {
+      "name": "TileLayer",
+      "type": "tilemap",
+      "source": "tilemap.json"
+    }
   ],
   "entities": [
     {
       "name": "frog",
       "class": "Player",
       "args": [
-        0,
+        "1",
         "false"
       ],
       "components": [
@@ -24,9 +38,12 @@
         {
           "component_name": "Sprite",
           "args": [
-            "frog",
+            "assets\\frog.png",
             "background",
-            0
+            0,
+            "0",
+            0.5,
+            0.5
           ]
         },
         {
@@ -39,26 +56,27 @@
       ]
     },
     {
-      "name": "cog",
+      "name": "TextEntity",
       "class": "Player",
       "args": [
-        0,
-        false
+        "0",
+        "false"
       ],
       "components": [
         {
           "component_name": "Position",
           "args": [
-            "-100",
-            "-100"
+            "150",
+            "50"
           ]
         },
         {
-          "component_name": "Sprite",
+          "component_name": "Text",
           "args": [
-            "cog",
-            "foreground",
-            "0"
+            "Hello There!",
+            "default",
+            "2",
+            "true"
           ]
         }
       ]

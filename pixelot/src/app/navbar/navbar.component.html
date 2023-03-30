@@ -5,18 +5,6 @@
       (click)="activeLink = scene" [active]="activeLink == scene"
       routerLink="/scene/{{ scene }}"> {{ scene }} 
     </a>
-    <a mat-tab-link
-      (click)="activeLink = 'Visual Scripting Editor'" [active]="activeLink == 'Visual Scripting Editor'"
-      routerLink="/construction"> Visual Scripting Editor 
-    </a>
-    <a mat-tab-link
-      (click)="activeLink = 'State Graph'" [active]="activeLink == 'State Graph'"
-      routerLink="/construction"> State Graph
-    </a>
-    <a mat-tab-link
-      (click)="activeLink = 'Sprite Editor '" [active]="activeLink == 'Sprite Editor '"
-      routerLink="/construction"> Sprite Editor 
-    </a>
     <label mat-tab-link>
       <input type="file" (change)="handleFileSelect($event)" style="display: none"/>
       <span>Load Scene</span>

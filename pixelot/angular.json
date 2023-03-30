@@ -33,8 +33,13 @@
               "src/favicon.ico",
               {
                 "glob": "**/*",
-                "input": "src/assets",
-                "output": "/assets/"
+                "input": "engine_assets",
+                "output": "/engine_assets/"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects",
+                "output": "/projects/"
               }
             ],
             "styles": [

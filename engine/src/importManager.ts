@@ -33,11 +33,31 @@ class ProjectFiles {
     }
 }
 
+type ImportType = Component | System | GameObjectBase | PostProcess;
+
+class ImportRecord {
+    name: string;
+    map: Map<string, TypedConstructor<ImportType>>;
+    type: string;
+
+    constructor(name: string, map: Map<string, TypedConstructor<ImportType>>, type: string) {
+        this.name = name;
+        this.map = map;
+        this.type = type;
+    }
+
+    remove() {
+        this.map.delete(this.name);
+    }
+}
+
 export class ImportManager {
     private static components = new Map<string, TypedConstructor<Component>>();
     private static systems = new Map<string, TypedConstructor<System>>();
     private static entities = new Map<string, TypedConstructor<GameObjectBase>>();
     private static shaders = new Map<string, TypedConstructor<PostProcess>>();
+
+    private static cached_imports = new Map<string, ImportRecord>();
     
     static getFilePaths(srcPath: string) {
         function getScripts(srcPath: string, relPath: string) {
@@ -95,6 +115,20 @@ export class ImportManager {
             console.trace(`Error importing ${imp.name}: invalid script class: ${imp.prototype.name}`);
             return undefined;
     }
+
+    static getScriptTypeFromImport(imp: any) {
+        if (imp.prototype instanceof Component)
+            return "component";
+        else if (imp.prototype instanceof System)
+            return "system";
+        else if (imp.prototype instanceof GameObjectBase)
+            return "entity";
+        else if (imp.prototype instanceof PostProcess)
+            return "shader";
+        else
+            console.trace(`Error importing ${imp.name}: invalid script class: ${imp.prototype.name}`);
+            return undefined;
+    }
     
     static async importProjectScripts(project: string, mode = "dev") {
         let scripts: string[];
@@ -108,35 +142,54 @@ export class ImportManager {
             console.trace(e);
             return;
         }
-        
-        // dynamically import the default exports of the script
-        for (const script of scripts) {
-            // dynamic imports must have a static string beginning in order for webpack to load them
-            let a;
-            if (mode === "dev") {
-                a = await import(`../../pixelot/projects/${project}/${script}.js`);
-            } else if (mode === "built") {
-                a = await import(/* webpackIgnore: true */ `../projects/${project}/${script}.js`);
-            } else if (mode === "test") {
-                a = await import(`../../tests/projects/${project}/${script}.js`);
-            } else {
-                console.trace(`Error: invalid mode '${mode}'`);
-                return;
-            }
-            const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
-            // work out what kind of script this is (component, system, etc.)
-            const map = this.getMapFromImport(a.default);
-            if (map) {
-                // we know the types are correct here if map exists (see getMapFromImport), so we can use map as any
-                (map as any).set(a.default.name, typed_constr);
-            }
-        }
+
+        // await the import of all scripts before loading prefabs
+        await Promise.all(scripts.map((script) => this.importScript(project, script, mode)));
 
         // load prefabs once all scripts have been loaded
         for (const prefab of projFiles.prefabs) {
             PrefabFactory.loadPrefab(`./projects/${project}/` + prefab + ".prefab");
         }
     }
+
+    static async importScript(project: string, script: string, mode = "dev") {
+        let a: any;
+        if (mode === "dev") {
+            a = await import(/* webpackIgnore: true */`./projects/${project}/${script}.js?${Date.now()}`);
+        } else if (mode === "built") {
+            /* adding a query string to the end of the import path forces the browser to reload the script
+            this is necessary because the browser caches scripts, so if you change a script and reload the page,
+            the browser will still use the cached version of the script */
+            a = await import(/* webpackIgnore: true */ `../projects/${project}/${script}.js?${Date.now()}`);
+        } else if (mode === "test") {
+            a = await import(`../../tests/projects/${project}/${script}.js`);
+        } else {
+            console.trace(`Error: invalid mode '${mode}'`);
+            return;
+        }
+        const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
+        // work out what kind of script this is (component, system, etc.)
+        const map = this.getMapFromImport(a.default);
+        if (map) {
+            // we know the types are correct here if map exists (see getMapFromImport), so we can use map as any
+            (map as any).set(a.default.name, typed_constr);
+            const record = new ImportRecord(a.default.name, map, this.getScriptTypeFromImport(a.default));
+            this.cached_imports.set(script, record);
+        }
+    }
+
+    static removeScript(script: string) {
+        const record = this.cached_imports.get(script);
+        if (record) {
+            record.remove();
+        }
+        this.cached_imports.delete(script);
+    }
+
+    static getRecord(script: string) {
+        return this.cached_imports.get(script);
+    }
+
 
     static async importGameScripts() {
         let scripts: string[];

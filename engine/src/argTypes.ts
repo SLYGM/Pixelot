@@ -38,8 +38,19 @@ class BoolType extends Type {
     }
 }
 
+class FileType extends Type {
+    override parse(value: string): string {
+        return value;
+    }
+
+    override stringify(value: string): string {
+        return value;
+    }
+}
+
 export class Types {
     static String = new StringType();
     static Number = new NumberType();
     static Boolean = new BoolType();
+    static File = new FileType();
 }
