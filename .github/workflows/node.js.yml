@@ -14,22 +14,17 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [14.x, 16.x, 18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v3
-    - name: cd engine
-    - run: cd engine
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 18.x
         cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: cd ../tests
-    - run: npm ci
-    - run: npm start
+        cache-dependency-path: ./engine/package-lock.json
+    - name: build engine
+      working-directory: engine
+      run: npm ci && npm run build --if-present
+    - name: run tests
+      working-directory: tests
+      run: npm ci && npm start
