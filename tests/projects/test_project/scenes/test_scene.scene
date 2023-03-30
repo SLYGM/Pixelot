@@ -1,9 +1,14 @@
 {
   "name": "test_scene",
   "layers": [
-    "background",
-    "foreground",
-    "ui"
+    {
+      "name": "background",
+      "type": "sprite"
+    },
+    {
+      "name": "foreground",
+      "type": "sprite"
+    }
   ],
   "entities": [
     {

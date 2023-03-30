@@ -16,13 +16,5 @@
         }
     ],
     "shaders": [
-        {
-            "name": "BarrelShader",
-            "args": []
-        },
-        {
-            "name": "BarShader",
-            "args": []
-        }
     ]
 }
