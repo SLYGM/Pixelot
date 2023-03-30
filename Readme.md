@@ -18,4 +18,5 @@ At the top is the scene bar, which allows you to switch between scenes and creat
 You can also use the menu bar at the top to open/create projects as well as build your game.
 
 ## Scripts
-Scripts are used to add custom logic to entities. They are written in JavaScript and can be created through the file manager.
+Scripts are used to add custom logic to entities. They are written in JavaScript and can be created through the file manager. The button highlighted below will create a new script in the currently selected folder.
+![newscript](https://i.imgur.com/AKfrhFZ.png)
