@@ -3,6 +3,7 @@ import { $gl } from "./gl.js";
 import { Texture } from "../types.js";
 import { Renderer, RenderLayer } from "./renderer.js";
 import Text from '../components/Text';
+import { SceneManager } from "../sceneManager.js";
 
 const { mat4, vec3 } = require("gl-matrix");
 
@@ -124,6 +125,7 @@ export class TextRenderer {
       // render each text instance
       for (const text of this.texts) {
         if (!text.visible) continue;
+        if (text.owner.scene != SceneManager.currentScene) continue;
         // first bind the font texture
         this.bindFontTexture(text.font);
         this.renderTextInstance(text);

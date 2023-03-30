@@ -208,9 +208,9 @@ export class LeftSidebarComponent {
               default_args.push(false);
             }
           }
+
           this.scene?.addEntity(entity, default_args);
           this.sceneData.addEntity(this.scene.name, className, entityName, default_args);
-          this.update();
           
           // if it's a prefab, also add all the components to the scene data
           if (result.base.prefab) {
@@ -219,12 +219,14 @@ export class LeftSidebarComponent {
               // the args need to be converted back to strings
               this.sceneData.addComponent(this.scene.name, entityName, 
                 component.constr.constr.name, component.args.map(arg => String(arg)));
-              }
             }
           }
+          
+          this.update();
+        }
 
-          // finally, save the scene
-          this.sceneData.saveScene(this.scene.name);
+        // finally, save the scene
+        this.sceneData.saveScene(this.scene.name);
       }
     });
 
