@@ -6,8 +6,6 @@ import Text from '../components/Text';
 import { SceneManager } from "../sceneManager.js";
 
 const { mat4, vec3 } = require("gl-matrix");
-const nw = (window as any).nw;
-const fs = nw.require("fs");
 
 //source: https://webglfundamentals.org/webgl/lessons/webgl-text-glyphs.html 
 

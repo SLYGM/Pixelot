@@ -2,8 +2,14 @@ import { Game } from "./gameloop.js";
 import { ImportManager } from "./importManager.js";
 
 const nw = (window as any).nw;
-const fs = nw.require('fs');
-const path = nw.require('path');
+let fs, path;
+if (nw) {
+    fs = nw.require('fs');
+    path = nw.require('path');
+} else {
+    fs = require('fs');
+    path = require('path');
+}
 
 export class Builder {
     static build(destination: string, target_platform: string) {

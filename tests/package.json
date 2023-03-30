@@ -1,0 +1,26 @@
+{
+  "name": "tests",
+  "version": "1.0.0",
+  "description": "tests for retro-engine",
+  "main": "index.ts",
+  "scripts": {
+    "start": "npm run test",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-typescript": "^7.21.0",
+    "@jest/globals": "^29.3.1",
+    "babel-jest": "^29.5.0",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.0.3",
+    "typescript": "^5.0.2"
+  },
+  "dependencies": {
+    "@types/offscreencanvas": "^2019.7.0",
+    "avl": "^1.5.3",
+    "retro-engine": "file:../engine"
+  }
+}

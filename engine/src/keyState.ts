@@ -3,15 +3,17 @@ export class KeyStates {
     static {
         this.states = new Map();
 
-        // attach keydown handler
-        document.addEventListener("keydown", (event) => {
-            this.keyDownHandler(event);
-        });
+        if (document) {
+            // attach keydown handler
+            document.addEventListener("keydown", (event) => {
+                this.keyDownHandler(event);
+            });
 
-        // attach keyup handler
-        document.addEventListener("keyup", (event) => {
-            this.keyUpHandler(event);
-        });
+            // attach keyup handler
+            document.addEventListener("keyup", (event) => {
+                this.keyUpHandler(event);
+            });
+        }
     }
 
     static keyDownHandler(event: KeyboardEvent) {
