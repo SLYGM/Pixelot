@@ -4,7 +4,6 @@ import { Scene, doProjectImports, Renderer } from "retro-engine";
 beforeAll(async () => {
     // @ts-ignore
     Renderer.getLayer = jest.fn();
-    console.log("Importing project scripts...");
     await doProjectImports("test_project", "test");
 });
 

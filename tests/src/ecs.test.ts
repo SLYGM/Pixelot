@@ -1,7 +1,8 @@
 import { expect, test } from "@jest/globals";
-import { Scene } from "retro-engine/build/scene";
+import { Scene } from "retro-engine";
 import TestEntity from "../projects/test_project/scripts/entities/TestEntity.js";
 import Counter from "../projects/test_project/scripts/components/Counter.js";
+import CounterIncrement from "../projects/test_project/scripts/systems/Counter.js";
 import DependencyTest from "../projects/test_project/scripts/components/DependencyTest.js";
 
 test("Game Object Functionality", () => {
@@ -25,8 +26,7 @@ test("System Functionality", () => {
     const testEntity: any = new TestEntity("test");
     testEntity.add(new Counter());
     scene.addEntity(testEntity);
-    console.log("TODO: test fails because systems are not being added properly");
-    console.log("systems", scene.systems);
+    scene.addSystem(new CounterIncrement(), 0);
     scene.update();
     scene.update();
 
@@ -37,12 +37,10 @@ test("System Functionality", () => {
 
 test("Component Functionality", () => {
     const testEntity: any = new TestEntity("test");
-
     testEntity.add(new Counter());
 
     const counter = testEntity.getByName("Counter");
-
-    expect(counter.onCreateRun).toBe(true);
+    expect(counter.counter).toBe(0);
     expect(counter.onDeleteRun).toBe(false);
 
     testEntity.removeByName("Counter");
@@ -60,6 +58,7 @@ test("Component Dependencies", () => {
     testEntity.add(new Counter());
     testEntity.add(new DependencyTest());
     scene.addEntity(testEntity);
+    scene.addSystem(new CounterIncrement(), 0);
     scene.update();
     scene.update();
 

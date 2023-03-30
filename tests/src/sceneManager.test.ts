@@ -2,6 +2,7 @@ import { beforeAll, expect, jest, test } from "@jest/globals";
 import { Renderer, Scene, SceneManager, doProjectImports} from "retro-engine";
 
 beforeAll(async () => {
+    // Tell jest to mock things that don't work in the test environment
     // @ts-ignore
     global.ResizeObserver = jest.fn().mockImplementation(() => ({
         observe: jest.fn(),

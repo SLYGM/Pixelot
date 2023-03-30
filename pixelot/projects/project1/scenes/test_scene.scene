@@ -12,11 +12,6 @@
     {
       "name": "ui",
       "type": "sprite"
-    },
-    {
-      "name": "TileLayer",
-      "type": "tilemap",
-      "source": "tilemap.json"
     }
   ],
   "entities": [
