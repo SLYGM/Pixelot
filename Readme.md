@@ -15,7 +15,7 @@ Upon creating or opening a project you will be greeted by the main Pixelot inter
 In the centre you will see the main viewport, which is where you will be able to see your game as you develop it, as well as run the scene in the editor.  
 On the left you will see the list of **layers** and entities that are contained in them. The layers are used to control the rendering order of the entities. From here you can create/delete layers and entities, and drag and drop entities to change their layer.  
 On the right you will see the inspector. This is where you can modify the properties of the currently selected entity. This includes configuring the entity arguments and components.
-At the bottom of the interface you will find the file manager, which allows you to view and modify the contents of your project.  
+At the bottom of the interface you will find the file manager, which allows you to view and modify the contents of your project. If you ever modify the contents of the project outside of the editor, you can use the refresh button to update the file manager.  
 At the top is the scene bar, which allows you to switch between scenes and create new ones.  
 You can also use the menu bar at the top to open/create projects as well as build your game.
 
@@ -153,3 +153,70 @@ export default class HalfScreenShader extends engine.PostProcess {
 ```
 
 ## Prefabs
+When creating entities it can be useful to avoid having to add all the desired components manually, especially when creating an entity programmatically. Prefabs are a way of defining an entity base class with an associated list of components. A prefab can be created through the editor by pressing the 'Save as Prefab' button on the right sidebar. Then, when creating a new entity you can select the prefab from the dropdown menu. This will automatically add all the components from the prefab to the entity. Additionally, you can spawn a prefab programmatically through the `Scene` class using `spawnPrefab(prefab_name, args)`. The prefab will save all of the component arguments by default, but won't save the arguments for the entity itself. Prefabs can be particularly useful when creating instances of the same entity, such as creating bullets.
+
+## Rendering
+### Sprites
+The main way to render images in Pixelot is to use the provided `Sprite` component, which takes as argument the path to the image file (which must be contained within the project folder). **The sprites will be drawn true to the size of the original image.** Sprites can also be rotated and have their rotation anchor point set.
+
+### Layers
+Rendering layers control the order in which sprites will be drawn. Layers are drawn in order from top to bottom, which means lower layers will appear over higher layers. New sprite layers can be added by click 'Add Layer' in the left sidebar and selecting the 'Sprite Layer'. When creating a sprite component, specify the name of the layer that the sprite should be drawn on. By default, newly added entities will be added to the 'No Layer' tab.  
+Within the layers, the render order can be controlled through the sprite z-index, which is set through the `z_index` property of the sprite component. The default z-index is 0, and sprites with a higher z-index will be drawn on top of sprites with a lower z-index. 
+
+### Text
+To display text use the `Text` component, which takes as argument the text to be displayed. Currently there is no support for using custom fonts, but the engine has some built in fonts. Which font to use can also be specified as an argument to the `Text` component.  
+**The fonts available are:**
+- default
+  
+### Tilemaps
+Pixelot supports rendering tilemap layers. Tilemaps should be created in 'Tiled' (https://www.mapeditor.org/). In order to export in the correct format, ensure that the tilesets are embedded in the `json` file (can be toggled when opening a tileset in Tiled). Additionally, make sure to export it directly into the projects directory, as Tiled will configure the paths to the tilesets relative to the `json` file. As such, also make sure that the tileset images are being stored within the projects directory. **This means that if you want to move the location of the tilemap `.json`, or the tileset images, you should delete it and re-export from Tiled to ensure the relative paths stay valid**
+
+Pixelot supports arbitrary layers and tilesets, but won't support any custom properties, or transparency colours set in Tiled. In order to add transparency, make tilesets with transparent backgrounds in an image editor, and then export them as `.png` files.
+
+To retrieve objects from the object layer, use the `getObject` function of the `TileMapObjectLayer` class. 
+To retrieve an object layer from the tilemap, use the `getObjectLayer` function of the `TileMapLayer` class.
+
+
+### Shaders
+
+## Sound
+Sound can be played by creating an instance of the [`Sound`](docs\classes\Sound.md) class, and then using its associated `play()` method.  
+This is an example entity script which will play a sound when the 'a' key is pressed:
+```js
+export default class Player extends engine.GameObjectBase {
+    static arg_names = [];
+    static arg_types = [];
+
+    onCreate() {
+        this.keyPressed = false;
+        this.sound = new engine.Sound('./assets/sound/aeuuuh.wav');
+    }
+
+    update() {
+        if (engine.KeyStates.isPressed("a")) {
+            if (!this.keyPressed) {
+                this.sound.play();
+                this.keyPressed = true;
+            }
+            
+        } else {
+            this.keyPressed = false;
+        }
+    }
+}
+```
+
+## Input
+Pixelot can currently handle keyboard and mouse input, with support for gamepads planned for the future.
+### Keyboard
+Keyboard input can be accessed through the [`KeyStates`](docs\classes\KeyStates.md) class. This class provides a `isPressed(key)` function which returns true if the key is currently pressed. The `key` parameter is a string. The example in the [sound](#sound) section shows how to use this class to play a sound when a key is pressed.
+
+### Mouse
+Mouse input can be accessed through the [`MouseState`](docs\classes\MouseState.md) class. This class provides a `isPressed(button)` function which returns true if the mouse button is currently pressed. Additionally, it provides properties:
+* `screen_pos` - the current position of the mouse in screen coordinates (wit h the origin in the top left)
+* `world_pos` - the current position of the mouse in world coordinates
+
+## Building and Deploying
+To build a game in the editor, use Game->Build in the toolbar, as shown below:
+![build](https://i.imgur.com/zNowHa6.png)
+This will prompt you to select a destination and build target, after which a folder will be created at the destination containing a game executable.
