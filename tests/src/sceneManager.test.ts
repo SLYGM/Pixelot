@@ -31,7 +31,7 @@ test("Load and edit scene", () => {
     expect(scene.name).toBe("test_scene");
     expect(SceneManager.getSceneNames()).toEqual(["test_scene"]);
     const entities = scene.getEntities();
-    expect(entities.size).toBe(2);
+    expect(entities.length).toBe(2);
 
     SceneManager.unloadScene("test_scene");
     expect(SceneManager.loaded_scenes.get("test_scene")).toBe(undefined);
@@ -47,7 +47,7 @@ test("Preload scene", () => {
     expect(scene.name).toBe("test_scene");
     expect(SceneManager.getSceneNames()).toEqual(["test_scene"]);
     const entities = scene.getEntities();
-    expect(entities.size).toBe(2);
+    expect(entities.length).toBe(2);
 
     SceneManager.switchToScene("test_scene");
     expect(SceneManager.currentScene).toBe(scene);

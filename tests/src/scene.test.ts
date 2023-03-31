@@ -10,17 +10,17 @@ test("Basic functionality", () => {
     const scene = new Scene("test_scene");
     expect(scene).not.toBe(null);
     expect(scene.name).toBe("test_scene");
-    expect(scene.getEntities().size).toBe(0);
+    expect(scene.getEntities().length).toBe(0);
     expect(scene.getSystems().length).toBe(0);
 
     scene.addEntity(new TestEntity("test_entity"));
-    expect(scene.getEntities().size).toBe(1);
+    expect(scene.getEntities().length).toBe(1);
 
     scene.addSystem(new CounterIncrement(), 0);
     expect(scene.getSystems().length).toBe(1);
 
     scene.destroy();
-    expect(scene.getEntities().size).toBe(0);
+    expect(scene.getEntities().length).toBe(0);
     expect(scene.getSystems().length).toBe(0);
 });
 
@@ -29,21 +29,21 @@ test("Entity manipulation", () => {
     const entity = new TestEntity("test_entity");
 
     scene.addEntity(entity);
-    expect(scene.getEntities().size).toBe(1);
+    expect(scene.getEntities().length).toBe(1);
 
     scene.renameEntity("test_entity", "new_name");
     expect(scene.getEntity("new_name")).toBe(entity);
 
     scene.addEntity(new TestEntity("test_entity_2"));
-    expect(scene.getEntities().size).toBe(2);
+    expect(scene.getEntities().length).toBe(2);
 
     entity.add(new Velocity(1, 1));
     const entities = scene.getEntitiesWithComponent(Velocity);
     expect(entities.length).toBe(1);
     expect(entities[0]).toBe(entity);
 
-    scene.deleteEntity("new_name");
-    expect(scene.getEntities().size).toBe(1);
+    scene.deleteEntityByName("new_name");
+    expect(scene.getEntities().length).toBe(1);
     expect(scene.getEntity("new_name")).toBe(undefined);
     scene.destroy();
 });
