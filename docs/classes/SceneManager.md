@@ -18,9 +18,6 @@ Class that manages the scenes in the game. Can be used to switch between scenes,
 - [switchToScene](SceneManager.md#switchtoscene)
 - [unloadScene](SceneManager.md#unloadscene)
 
-
-## Properties
-
 ### currentScene
 
 ▪ `Static` **currentScene**: [`Scene`](Scene.md)

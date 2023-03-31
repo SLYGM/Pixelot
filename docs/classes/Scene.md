@@ -92,14 +92,37 @@ Manually add a system to the scene. The priority determines the order in which s
 
 #### Defined in
 
-[src/scene.ts:123](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L123)
+[src/scene.ts:147](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L147)
 
 ___
 
 ### deleteEntity
-Delete an entity from the scene by name.
+Delete an entity from the scene.
 
-▸ **deleteEntity**(`name`): `void`
+▸ **deleteEntity**(`entity`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `entity` | `GameObjectBase` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/scene.ts:111](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L111)
+
+___
+
+___
+
+### deleteEntityByName
+Delete an entity from the scene.
+
+▸ **deleteEntityByName**(`name`): `void`
 
 #### Parameters
 
@@ -113,7 +136,7 @@ Delete an entity from the scene by name.
 
 #### Defined in
 
-[src/scene.ts:94](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L94)
+[src/scene.ts:102](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L102)
 
 ___
 
@@ -155,7 +178,7 @@ Get a list of all entities with a specific component.
 
 #### Defined in
 
-[src/scene.ts:115](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L115)
+[src/scene.ts:139](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L139)
 
 ___
 
@@ -233,7 +256,7 @@ Remove a system from the scene.
 
 #### Defined in
 
-[src/scene.ts:139](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L139)
+[src/scene.ts:163](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L163)
 
 ___
 
@@ -255,7 +278,7 @@ Rename an entity in the scene.
 
 #### Defined in
 
-[src/scene.ts:105](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L105)
+[src/scene.ts:129](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L129)
 
 ___
 
