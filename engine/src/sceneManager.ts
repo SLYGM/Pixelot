@@ -229,43 +229,4 @@ export class SceneManager {
         fs.writeFileSync(path + sceneName + ".scene", template);
         return true;
     }
-
-    /**
-     * Save current scene to a json file
-     *
-     * @param fileName name of file to which scene will be saved
-     */
-    // saveCurrentScene(fileName: string) {
-    //     // create a JSON object
-    //     const proxies = this.currentScene.getEntities();
-    //     const entities = [];
-
-    //     for (const proxy of proxies) {
-    //         const components = [];
-    //         for (const component of [...proxy.getAllComponents()]) {
-    //             const component_constr = $component_map.get(component);
-    //             components.push({
-    //                 component_name: component,
-    //                 value: proxy.get(component_constr),
-    //             });
-    //         }
-    //         entities.push({ name: proxy.name, components: components });
-    //     }
-
-    //     const sceneSaveFile = {
-    //         name: this.currentSceneName,
-    //         entities: entities,
-    //     };
-
-    //     // convert JSON object to a string
-    //     const data = JSON.stringify(sceneSaveFile);
-
-    //     const fs = require("fs");
-    //     fs.writeFile(fileName + ".json", data, function (err) {
-    //         if (err) {
-    //             console.log(err);
-    //         }
-    //         console.log("saving json");
-    //     });
-    // }
 }
