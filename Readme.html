@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>&lbrack;Documentation&rbrack;&lpar;docs&sol;modules&period;md&rpar;</title>
+        <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="documentation"><a href="docs/modules.html">Documentation</a></h1>
+<h1 id="pixelot">Pixelot</h1>
+<p>Pixelot is an ECS-based 2D game engine designed to streamline the creation of retro-styled games, through pixel-perfect rendering and provided retro style shaders.</p>
+<h2 id="ecs">ECS</h2>
+<p>Pixelot uses an Entity-Component-System architecture to manage game objects. This allows for a more modular approach to game development, and makes it easier to create and reuse components.<br>
+This architecture works by having a collection of <strong>entities</strong>, each of which can have a collection of <strong>components</strong>. Each component can have an associated <strong>system</strong> which handles the logic for that component.<br>
+Pixelot takes a hybrid approach to ECS by also having each entity have an associated script, which can be used to handle logic that should be unique to that entity. Additionally, each component has an object-oriented interface, which can be used to access and modify the component's data.<br>
+As a user, you can freely create your own entities, components, systems, and shaders, or you can use the ones provided by Pixelot.</p>
+<h2 id="the-interface">The Interface</h2>
+<p>Upon creating or opening a project you will be greeted by the main Pixelot interface:
+<img src="https://i.imgur.com/jtzaOx3.png" alt="Screenshot 2023-03-30 155255">
+In the centre you will see the main viewport, which is where you will be able to see your game as you develop it, as well as run the scene in the editor.<br>
+On the left you will see the list of <strong>layers</strong> and entities that are contained in them. The layers are used to control the rendering order of the entities. From here you can create/delete layers and entities, and drag and drop entities to change their layer.<br>
+On the right you will see the inspector. This is where you can modify the properties of the currently selected entity. This includes configuring the entity arguments and components.
+At the bottom of the interface you will find the file manager, which allows you to view and modify the contents of your project.<br>
+At the top is the scene bar, which allows you to switch between scenes and create new ones.<br>
+You can also use the menu bar at the top to open/create projects as well as build your game.</p>
+<h2 id="scripts">Scripts</h2>
+<p>Scripts are used to add custom logic to entities. They are written in JavaScript and can be created through the file manager. The button highlighted below will create a new script in the currently selected folder, after selecting the script type.
+<img src="https://i.imgur.com/AKfrhFZ.png" alt="newscript">
+Scripts in Pixelot are written in a similar way to Unity's MonoBehaviour scripts. Each script is a class which extends from a base class in the Pixelot engine. The base class provides a number of useful functions which can be overridden to add custom logic to the script. To interface with the engine from any script, you can use the <code>engine</code> global variable.</p>
+<h3 id="script-arguments">Script Arguments</h3>
+<p>Each script can have a number of arguments, which can be accessible through the editor. In order to have this functionality, you must add static <code>arg_names</code> and <code>arg_types</code> arrays, which are <code>string</code> and <code>engine.Types</code> arrays respectively. The <code>arg_names</code> array contains the names of the arguments, and the <code>arg_types</code> array contains the types of the arguments. The order of the arguments in each array must match.</p>
+<h3 id="entity-scripts">Entity Scripts</h3>
+<p>Entity scripts are scripts which are attached to entities. When creating a new entity, you must select the script that you want to use for that entity. Entity scripts must extend from the <code>GameObjectBase</code> class.</p>
+<h2 id="prefabs">Prefabs</h2>
+
+        
+        
+    </body>
+    </html>
