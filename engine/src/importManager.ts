@@ -130,7 +130,7 @@ export class ImportManager {
             return undefined;
     }
     
-    static async importProjectScripts(project: string, isDevMode = true) {
+    static async importProjectScripts(project: string, mode = "dev") {
         let scripts: string[];
         let projFiles: ProjectFiles;
         try {
@@ -144,7 +144,7 @@ export class ImportManager {
         }
 
         // await the import of all scripts before loading prefabs
-        await Promise.all(scripts.map((script) => this.importScript(project, script, isDevMode)));
+        await Promise.all(scripts.map((script) => this.importScript(project, script, mode)));
 
         // load prefabs once all scripts have been loaded
         for (const prefab of projFiles.prefabs) {
@@ -152,15 +152,20 @@ export class ImportManager {
         }
     }
 
-    static async importScript(project: string, script: string, isDevMode = true) {
+    static async importScript(project: string, script: string, mode = "dev") {
         let a: any;
-        if (isDevMode) {
+        if (mode === "dev") {
             a = await import(/* webpackIgnore: true */`./projects/${project}/${script}.js?${Date.now()}`);
-        } else {
+        } else if (mode === "built") {
             /* adding a query string to the end of the import path forces the browser to reload the script
             this is necessary because the browser caches scripts, so if you change a script and reload the page,
             the browser will still use the cached version of the script */
             a = await import(/* webpackIgnore: true */ `../projects/${project}/${script}.js?${Date.now()}`);
+        } else if (mode === "test") {
+            a = await import(`../../tests/projects/${project}/${script}.js`);
+        } else {
+            console.trace(`Error: invalid mode '${mode}'`);
+            return;
         }
         const typed_constr = new TypedConstructor(a.default.arg_names, a.default.arg_types, a.default);
         // work out what kind of script this is (component, system, etc.)
@@ -263,8 +268,8 @@ export class ImportManager {
 * Import user scripts for given project name. For use in app context only, for built game imports, see `doGameImports()`.   
 * **NOTE:** This function assumes the relative path of the project to the engine source will be `../../pixelot/projects/<project>`
 */
-export async function doProjectImports(project: string, isDevMode = true) {
-    await ImportManager.importProjectScripts(project, isDevMode);
+export async function doProjectImports(project: string, mode = "dev") {
+    await ImportManager.importProjectScripts(project, mode);
 }
 
 /**

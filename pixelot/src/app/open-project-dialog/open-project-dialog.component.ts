@@ -68,7 +68,7 @@ export class OpenProjectDialogComponent {
     this.sceneData.add(sceneName, scene, scenePath);
 
     // initialize engine
-    await engine.doProjectImports(project, isDevMode());
+    await engine.doProjectImports(project, isDevMode() ? "dev" : "built");
     engine.Game.loadGame(projectPath);
     const startScene = engine.Game.start_scene;
     // preload the start scene

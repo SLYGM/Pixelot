@@ -8,10 +8,6 @@
     {
       "name": "foreground",
       "type": "sprite"
-    },
-    {
-      "name": "ui",
-      "type": "sprite"
     }
   ],
   "entities": [
@@ -19,7 +15,7 @@
       "name": "frog",
       "class": "Player",
       "args": [
-        "1",
+        0,
         "false"
       ],
       "components": [
@@ -33,12 +29,9 @@
         {
           "component_name": "Sprite",
           "args": [
-            "assets\\frog.png",
+            "frog",
             "background",
-            0,
-            "0",
-            0.5,
-            0.5
+            0
           ]
         },
         {
@@ -51,27 +44,26 @@
       ]
     },
     {
-      "name": "TextEntity",
+      "name": "cog",
       "class": "Player",
       "args": [
-        "0",
-        "false"
+        0,
+        false
       ],
       "components": [
         {
           "component_name": "Position",
           "args": [
-            "150",
-            "50"
+            "-100",
+            "-100"
           ]
         },
         {
-          "component_name": "Text",
+          "component_name": "Sprite",
           "args": [
-            "Hello There!",
-            "default",
-            "2",
-            "true"
+            "cog",
+            "foreground",
+            "0"
           ]
         }
       ]

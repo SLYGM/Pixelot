@@ -49,7 +49,7 @@ export class FileManagerComponent {
         }
         // otherwise it is newly created
         else {
-          engine.ImportManager.importScript(this.fileService.proj_name, path.join(file.dir, file.name), false);
+          engine.ImportManager.importScript(this.fileService.proj_name, path.join(file.dir, file.name), "built");
         }
       }
       // if the file has been changed, then reimport it (if it is a script)
@@ -57,7 +57,7 @@ export class FileManagerComponent {
         if (file.ext === '.js') {
           const script_name = filename.split('.')[0];
           engine.ImportManager.removeScript(script_name);
-          engine.ImportManager.importScript(this.fileService.proj_name, script_name, false);
+          engine.ImportManager.importScript(this.fileService.proj_name, script_name, "built");
         }
       }
     });

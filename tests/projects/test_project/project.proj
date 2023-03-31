@@ -1,0 +1,20 @@
+{
+    "resolution": [426, 240],
+    "start_scene": "test_scene",
+    "textures": [
+        {
+            "name": "frog",
+            "path": "./assets/images/frog.png"
+        },
+        {
+            "name": "cog",
+            "path": "./assets/images/cog.png"
+        },
+        {
+            "name": "tile",
+            "path": "./assets/images/tile.png"
+        }
+    ],
+    "shaders": [
+    ]
+}

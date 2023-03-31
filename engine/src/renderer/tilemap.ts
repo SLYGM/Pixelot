@@ -6,8 +6,14 @@ import { PathUtils } from "../engineExport";
 
 const { mat4, vec3 } = require("gl-matrix");
 const nw = (window as any).nw;
-const fs = nw.require("fs");
-const path = nw.require("path");
+let fs, path;
+if (nw) {
+    fs = nw.require("fs");
+    path = nw.require("path");
+} else {
+    fs = require("fs");
+    path = require("path");
+}
 
 const vert_source = `#version 300 es
 
