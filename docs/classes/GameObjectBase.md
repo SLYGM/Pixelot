@@ -3,19 +3,24 @@
 # Class: GameObjectBase
 
 The base class inherited by all game objects.
+> Note that when creating a game object, a proxy is returned which allows you to directly access entity components without having to use the `get` method. In the example below, the `Velocity` component is accessed directly.
 
 **`Example`**
 
 An example user-defined game object:
-```
-class Player extends GameObjectBase {
-  times_jumped: number;
-  onCreate() {
+```js
+class Player extends engine.GameObjectBase {
+  static arg_names = ["Jump Speed"];
+  static arg_types = [engine.Types.Number];
+
+  times_jumped;
+  onCreate(jump_speed) {
+    this.jump_speed = jump_speed;
     this.times_jumped = 0;
   }
   update() {
-    if (event.key == "space") {
-      this.get(Velocity).y = 10;
+    if (engine.KeyStates.isPressed("Space")) {
+      this.Velocity.y = this.jump_speed;
       this.times_jumped++;
     }
   }
@@ -30,14 +35,11 @@ class Player extends GameObjectBase {
 
 ### Properties
 
-- [component\_map](GameObjectBase.md#component_map)
 - [name](GameObjectBase.md#name)
 - [scene](GameObjectBase.md#scene)
 
 ### Methods
 
-- [\_create](GameObjectBase.md#_create)
-- [\_delete](GameObjectBase.md#_delete)
 - [add](GameObjectBase.md#add)
 - [get](GameObjectBase.md#get)
 - [getAllComponents](GameObjectBase.md#getallcomponents)
@@ -48,7 +50,6 @@ class Player extends GameObjectBase {
 - [onDelete](GameObjectBase.md#ondelete)
 - [remove](GameObjectBase.md#remove)
 - [removeByName](GameObjectBase.md#removebyname)
-- [setScene](GameObjectBase.md#setscene)
 - [update](GameObjectBase.md#update)
 
 ## Constructors
@@ -62,24 +63,15 @@ This allows the user to access the components directly.
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `name` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `name` | `string` | The name of the entity, used for retrieving an entity from a scene by name. |
 
 #### Defined in
 
 [src/ecs.ts:61](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/ecs.ts#L61)
 
 ## Properties
-
-### component\_map
-
-• `Private` **component\_map**: `Map`<`string`, [`Component`](Component.md)\>
-
-#### Defined in
-
-[src/ecs.ts:53](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/ecs.ts#L53)
-
 ___
 
 ### name
@@ -102,40 +94,6 @@ ___
 
 ## Methods
 
-### \_create
-
-▸ **_create**(`...args`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `...args` | `any`[] |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/ecs.ts:85](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/ecs.ts#L85)
-
-___
-
-### \_delete
-
-▸ **_delete**(): `void`
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/ecs.ts:77](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/ecs.ts#L77)
-
-___
-
 ### add
 
 ▸ **add**(`component`): [`GameObjectBase`](GameObjectBase.md)
@@ -145,7 +103,7 @@ Returns itself allowing calls to be chained.
 
 **`Example`**
 
-```
+```ts
 entity.add(new Position(0, 0)).add(new Velocity(0, 0));
 ```
 
@@ -199,7 +157,7 @@ ___
 
 ▸ **getAllComponents**(): `string`[]
 
-Get all components linked to this entity
+Get the names of all components linked to this entity
 
 #### Returns
 
@@ -217,7 +175,7 @@ ___
 
 ▸ **getByName**(`name`): [`Component`](Component.md)
 
-Get the component instance of the given component name.
+Get the component instance of the given component name, returns null if the component doesn't exist.
 
 #### Parameters
 
@@ -291,7 +249,7 @@ ___
 
 ▸ `Abstract` **onCreate**(`...args`): `void`
 
-User-defined function that is called when the entity is spawned.
+User-defined function that is called when the entity is added to a scene, after all components have been created (if using a editor created entity, or prefab entity).
 
 #### Parameters
 
@@ -327,6 +285,8 @@ ___
 
 ### remove
 
+Remove a component from the entity.
+
 ▸ **remove**<`T`\>(`c`): `void`
 
 #### Type parameters
@@ -352,6 +312,7 @@ ___
 ___
 
 ### removeByName
+Remove a component from the entity by its name.
 
 ▸ **removeByName**(`name`): `void`
 
@@ -368,32 +329,11 @@ ___
 #### Defined in
 
 [src/ecs.ts:183](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/ecs.ts#L183)
-
-___
-
-### setScene
-
-▸ **setScene**(`scene`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `scene` | [`Scene`](Scene.md) |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/ecs.ts:73](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/ecs.ts#L73)
-
 ___
 
 ### update
 
-▸ `Abstract` **update**(): `void`
+▸ **update**(): `void`
 
 User-defined function that is called every frame.
 

@@ -1,44 +1,26 @@
 [retro-engine](../README.md) / [Exports](../modules.md) / Scene
 
 # Class: Scene
+Class representing a scene. A scene is a collection of entities and systems.
 
 ## Table of contents
 
-### Constructors
-
-- [constructor](Scene.md#constructor)
-
 ### Properties
-
-- [added\_systems](Scene.md#added_systems)
-- [dt](Scene.md#dt)
-- [entities](Scene.md#entities)
 - [name](Scene.md#name)
-- [systems](Scene.md#systems)
 
 ### Methods
 
 - [addEntity](Scene.md#addentity)
 - [addSystem](Scene.md#addsystem)
 - [deleteEntity](Scene.md#deleteentity)
-- [destroy](Scene.md#destroy)
 - [getEntities](Scene.md#getentities)
 - [getEntitiesWithComponent](Scene.md#getentitieswithcomponent)
 - [getEntity](Scene.md#getentity)
 - [getSystems](Scene.md#getsystems)
 - [hasSystem](Scene.md#hassystem)
-- [onPause](Scene.md#onpause)
-- [onResume](Scene.md#onresume)
 - [removeSystem](Scene.md#removesystem)
 - [renameEntity](Scene.md#renameentity)
 - [spawnPrefab](Scene.md#spawnprefab)
-- [update](Scene.md#update)
-
-## Constructors
-
-### constructor
-
-• **new Scene**(`name`)
 
 #### Parameters
 
@@ -52,37 +34,8 @@
 
 ## Properties
 
-### added\_systems
-
-• `Private` **added\_systems**: `Map`<`string`, `boolean`\>
-
-#### Defined in
-
-[src/scene.ts:16](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L16)
-
-___
-
-### dt
-
-• **dt**: `number`
-
-#### Defined in
-
-[src/scene.ts:19](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L19)
-
-___
-
-### entities
-
-• `Private` **entities**: `Map`<`string`, [`GameObjectBase`](GameObjectBase.md)\>
-
-#### Defined in
-
-[src/scene.ts:13](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L13)
-
-___
-
 ### name
+The name of the scene.
 
 • **name**: `string`
 
@@ -90,19 +43,10 @@ ___
 
 [src/scene.ts:20](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L20)
 
-___
-
-### systems
-
-• `Private` **systems**: [`SystemNode`](../modules.md#systemnode)[]
-
-#### Defined in
-
-[src/scene.ts:15](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L15)
-
 ## Methods
 
 ### addEntity
+Add an entity to the scene.
 
 ▸ **addEntity**<`T`\>(`entity`, `args?`): `void`
 
@@ -130,6 +74,8 @@ ___
 ___
 
 ### addSystem
+Manually add a system to the scene. The priority determines the order in which systems are updated. Systems with a higher priority are updated first. Systems with the same priority are updated in the order they were added.
+> Generally, systems are added automatically when an entity with the required components is added to the scene.
 
 ▸ **addSystem**(`system`, `priority`): `void`
 
@@ -151,6 +97,7 @@ ___
 ___
 
 ### deleteEntity
+Delete an entity from the scene by name.
 
 ▸ **deleteEntity**(`name`): `void`
 
@@ -170,21 +117,8 @@ ___
 
 ___
 
-### destroy
-
-▸ **destroy**(): `void`
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/scene.ts:30](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L30)
-
-___
-
 ### getEntities
+Get a map of all entities in the scene.
 
 ▸ **getEntities**(): `Map`<`string`, [`GameObjectBase`](GameObjectBase.md)\>
 
@@ -199,6 +133,7 @@ ___
 ___
 
 ### getEntitiesWithComponent
+Get a list of all entities with a specific component.
 
 ▸ **getEntitiesWithComponent**<`T`\>(`component`): [`GameObjectBase`](GameObjectBase.md)[]
 
@@ -225,6 +160,7 @@ ___
 ___
 
 ### getEntity
+Get an entity by name.
 
 ▸ **getEntity**(`name`): [`GameObjectBase`](GameObjectBase.md)
 
@@ -245,6 +181,7 @@ ___
 ___
 
 ### getSystems
+Get a list of all systems in the scene.
 
 ▸ **getSystems**(): [`SystemNode`](../modules.md#systemnode)[]
 
@@ -259,6 +196,7 @@ ___
 ___
 
 ### hasSystem
+Check if a system is in the scene.
 
 ▸ **hasSystem**(`system_name`): `boolean`
 
@@ -278,35 +216,8 @@ ___
 
 ___
 
-### onPause
-
-▸ **onPause**(): `void`
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/scene.ts:38](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L38)
-
-___
-
-### onResume
-
-▸ **onResume**(): `void`
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/scene.ts:40](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L40)
-
-___
-
 ### removeSystem
+Remove a system from the scene.
 
 ▸ **removeSystem**(`system`): `void`
 
@@ -327,6 +238,7 @@ ___
 ___
 
 ### renameEntity
+Rename an entity in the scene.
 
 ▸ **renameEntity**(`old_name`, `new_name`): `void`
 
@@ -348,6 +260,7 @@ ___
 ___
 
 ### spawnPrefab
+Spawn a prefab in the scene.
 
 ▸ **spawnPrefab**(`prefab_name`, `args`): `void`
 
@@ -365,17 +278,3 @@ ___
 #### Defined in
 
 [src/scene.ts:81](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L81)
-
-___
-
-### update
-
-▸ **update**(): `void`
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/scene.ts:144](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/scene.ts#L144)

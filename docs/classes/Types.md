@@ -1,12 +1,9 @@
 [retro-engine](../README.md) / [Exports](../modules.md) / Types
 
 # Class: Types
+The types are used by the editor to determine how to parse and stringify arguments. These should be provided in each script (whether that be a component/system/shader/entity) in the `arg_types`  static property.
 
 ## Table of contents
-
-### Constructors
-
-- [constructor](Types.md#constructor)
 
 ### Properties
 
@@ -14,18 +11,13 @@
 - [File](Types.md#file)
 - [Number](Types.md#number)
 - [String](Types.md#string)
-
-## Constructors
-
-### constructor
-
-• **new Types**()
-
+  
 ## Properties
 
 ### Boolean
 
-▪ `Static` **Boolean**: `BoolType`
+▪ `Static` **Boolean**: `BoolType`  
+Represents a boolean type.
 
 #### Defined in
 
@@ -35,7 +27,8 @@ ___
 
 ### File
 
-▪ `Static` **File**: `FileType`
+▪ `Static` **File**: `FileType`  
+Represents a file type, which takes a path relative to the project root.
 
 #### Defined in
 
@@ -46,6 +39,7 @@ ___
 ### Number
 
 ▪ `Static` **Number**: `NumberType`
+Represents a number type.
 
 #### Defined in
 
@@ -56,6 +50,7 @@ ___
 ### String
 
 ▪ `Static` **String**: `StringType`
+Represents a string type.
 
 #### Defined in
 

@@ -1,12 +1,12 @@
-# [Documentation](docs/modules.md)
+# [Engine Documentation](docs/modules.md)
 
 # Pixelot
-Pixelot is an ECS-based 2D game engine designed to streamline the creation of retro-styled games, through pixel-perfect rendering and provided retro style shaders.
+Pixelot is an ECS-based 2D game engine designed to streamline the creation of retro-styled games, through pixel-perfect rendering and provided retro-style shaders.
 
 ## ECS
 Pixelot uses an Entity-Component-System architecture to manage game objects. This allows for a more modular approach to game development, and makes it easier to create and reuse components.  
 This architecture works by having a collection of **entities**, each of which can have a collection of **components**. Each component can have an associated **system** which handles the logic for that component.  
-Pixelot takes a hybrid approach to ECS by also having each entity have an associated script, which can be used to handle logic that should be unique to that entity. Additionally, each component has an object-oriented interface, which can be used to access and modify the component's data.  
+Pixelot takes a hybrid approach to ECS by also having each entity have an associated script, which can be used to handle logic that should be unique to that entity. Additionally, each component has an object-oriented interface, which can be used to access and modify the component's data in an intuitive way.  
 As a user, you can freely create your own entities, components, systems, and shaders, or you can use the ones provided by Pixelot.
 
 ## The Interface
@@ -20,15 +20,39 @@ At the top is the scene bar, which allows you to switch between scenes and creat
 You can also use the menu bar at the top to open/create projects as well as build your game.
 
 ## Scripts
-Scripts are used to add custom logic to entities. They are written in JavaScript and can be created through the file manager. The button highlighted below will create a new script in the currently selected folder, after selecting the script type.
+Scripts are used to add custom logic to entities. They are written in **JavaScript** and can be created through the file manager. The button highlighted below will create a new script in the currently selected folder, after selecting the script type.
 ![newscript](https://i.imgur.com/AKfrhFZ.png)
-Scripts in Pixelot are written in a similar way to Unity's MonoBehaviour scripts. Each script is a class which extends from a base class in the Pixelot engine. The base class provides a number of useful functions which can be overridden to add custom logic to the script. To interface with the engine from any script, you can use the `engine` global variable.
+Scripts in Pixelot are written in a similar way to Unity's MonoBehaviour scripts. Each script is a class which extends from a base class in the Pixelot engine. The base class provides a number of useful functions which can be overridden to add custom logic to the script. To interface with the engine from any script, you can use the `engine` global variable. The full documentation for the engine can be found [here](docs/modules.md).
 
 ### Script Arguments
 Each script can have a number of arguments, which can be accessible through the editor. In order to have this functionality, you must add static `arg_names` and `arg_types` arrays, which are `string` and `engine.Types` arrays respectively. The `arg_names` array contains the names of the arguments, and the `arg_types` array contains the types of the arguments. The order of the arguments in each array must match.
 
 ### Entity Scripts
-Entity scripts are scripts which are attached to entities. When creating a new entity, you must select the script that you want to use for that entity. Entity scripts must extend from the `GameObjectBase` class.
+Entity scripts are scripts which are attached to entities. When creating a new entity, you must select the script that you want to use for that entity. Entity scripts must extend from the [`GameObjectBase`](docs/classes/GameObjectBase.md) class. The `GameObjectBase` class provides a number of useful functions which can be overridden:
+* `onCreate`: Called when the entity is added to a scene.
+* `update(dt)`: Called every frame.
+* `onDelete`: Called when the entity is removed from a scene.
 
+> It is important that you do **not** override the `constructor` function, as this is used by the engine to create the entity.
+
+Within an entity script you can also access the entity's components as properties of the obejct. In the example below, we access the 'Velocity' component of the entity as `this.velocity`:
+```js
+class Player extends engine.GameObjectBase {
+  static arg_names = ["Jump Speed"];
+  static arg_types = [engine.Types.Number];
+
+  times_jumped;
+  onCreate(jump_speed) {
+    this.jump_speed = jump_speed;
+    this.times_jumped = 0;
+  }
+  update() {
+    if (engine.KeyStates.isPressed("Space")) {
+      this.Velocity.y = this.jump_speed;
+      this.times_jumped++;
+    }
+  }
+}
+```
 
 ## Prefabs

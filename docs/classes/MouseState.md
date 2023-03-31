@@ -1,12 +1,9 @@
 [retro-engine](../README.md) / [Exports](../modules.md) / MouseState
 
 # Class: MouseState
+Class for handling mouse input.
 
 ## Table of contents
-
-### Constructors
-
-- [constructor](MouseState.md#constructor)
 
 ### Properties
 
@@ -15,22 +12,12 @@
 - [world\_pos](MouseState.md#world_pos)
 
 ### Methods
-
-- [handleMouseDown](MouseState.md#handlemousedown)
-- [handleMouseMove](MouseState.md#handlemousemove)
-- [handleMouseUp](MouseState.md#handlemouseup)
 - [isPressed](MouseState.md#ispressed)
-- [updatePos](MouseState.md#updatepos)
-
-## Constructors
-
-### constructor
-
-• **new MouseState**()
 
 ## Properties
 
 ### btns
+The map of mouse button states.
 
 ▪ `Static` `Private` **btns**: `Map`<`number`, `boolean`\>
 
@@ -41,6 +28,7 @@
 ___
 
 ### screen\_pos
+The position of the mouse on the screen, relative to the top-left corner.
 
 ▪ `Static` **screen\_pos**: `Object`
 
@@ -58,6 +46,7 @@ ___
 ___
 
 ### world\_pos
+The position of the mouse in the world.
 
 ▪ `Static` **world\_pos**: `Object`
 
@@ -74,67 +63,8 @@ ___
 
 ## Methods
 
-### handleMouseDown
-
-▸ `Static` `Private` **handleMouseDown**(`event`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `event` | `MouseEvent` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/mouseState.ts:51](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/mouseState.ts#L51)
-
-___
-
-### handleMouseMove
-
-▸ `Static` `Private` **handleMouseMove**(`event`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `event` | `MouseEvent` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/mouseState.ts:31](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/mouseState.ts#L31)
-
-___
-
-### handleMouseUp
-
-▸ `Static` `Private` **handleMouseUp**(`event`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `event` | `MouseEvent` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/mouseState.ts:47](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/mouseState.ts#L47)
-
-___
-
 ### isPressed
+Checks if a mouse button is currently pressed.
 
 ▸ `Static` **isPressed**(`btn`): `boolean`
 
@@ -151,24 +81,3 @@ ___
 #### Defined in
 
 [src/mouseState.ts:55](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/mouseState.ts#L55)
-
-___
-
-### updatePos
-
-▸ `Static` `Private` **updatePos**(`x`, `y`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `x` | `number` |
-| `y` | `number` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/mouseState.ts:35](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/mouseState.ts#L35)

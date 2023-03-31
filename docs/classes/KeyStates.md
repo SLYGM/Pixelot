@@ -1,12 +1,9 @@
 [retro-engine](../README.md) / [Exports](../modules.md) / KeyStates
 
 # Class: KeyStates
+The KeyStates class is used to keep track of the state of the keyboard.
 
 ## Table of contents
-
-### Constructors
-
-- [constructor](KeyStates.md#constructor)
 
 ### Properties
 
@@ -15,18 +12,11 @@
 ### Methods
 
 - [isPressed](KeyStates.md#ispressed)
-- [keyDownHandler](KeyStates.md#keydownhandler)
-- [keyUpHandler](KeyStates.md#keyuphandler)
-
-## Constructors
-
-### constructor
-
-• **new KeyStates**()
 
 ## Properties
 
 ### states
+The map of key states.
 
 ▪ `Static` `Private` **states**: `Map`<`string`, `boolean`\>
 
@@ -37,6 +27,7 @@
 ## Methods
 
 ### isPressed
+Checks if a key is currently pressed.
 
 ▸ `Static` **isPressed**(`key`): `boolean`
 
@@ -53,43 +44,3 @@
 #### Defined in
 
 [src/keyState.ts:27](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/keyState.ts#L27)
-
-___
-
-### keyDownHandler
-
-▸ `Static` **keyDownHandler**(`event`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `event` | `KeyboardEvent` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/keyState.ts:19](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/keyState.ts#L19)
-
-___
-
-### keyUpHandler
-
-▸ `Static` **keyUpHandler**(`event`): `void`
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `event` | `KeyboardEvent` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[src/keyState.ts:23](https://github.com/SLYGM/RetroEngineTM/blob/7ef0169/engine/src/keyState.ts#L23)
