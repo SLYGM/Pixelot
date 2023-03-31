@@ -8,8 +8,7 @@ Represents a system that acts on a specific component. Systems are added automat
 
 An example user-defined game object:
 ```js
-
-import VelocityComponent from "./VelocityComponent.js";
+import VelocityComponent from "./Velocity.js";
 class Velocity extends engine.System {
   static arg_names = [];
   static arg_types = [];

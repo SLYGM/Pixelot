@@ -55,4 +55,101 @@ class Player extends engine.GameObjectBase {
 }
 ```
 
+### Component Scripts
+Component scripts define custom components which can be added to entities, either programmatically or through the editor. Component scripts must extend from the [`ComponentBase`](docs/classes/ComponentBase.md) class. The `ComponentBase` class provides a number of useful functions which can be overridden:
+* `onCreate`: Called when the owner of the component is added to a scene.
+* `onDelete`: Called when this component is deleted.
+
+Additionally, components have a `owner` property available which can be used to access the entity that owns the component.  
+The component may also have a list of dependency components stored in the `dependencies` array. This is used to ensure that the component is only added to an entity if it has all of the required components. For example, the `Velocity` component has a dependency on the `Position` component.
+
+This is an example of a Position component:
+```js
+class Position extends engine.Component {
+  static arg_names = ["x", "y"];
+  static arg_types = [engine.Types.Number, engine.Types.Number];
+
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  distanceTo(other) {
+    return Math.sqrt((this.x - other.x) ** 2 + (this.y - other.y) ** 2);
+  }
+}
+```
+
+### System Scripts
+System scripts define custom systems which can be added to scenes which act on a component. Systems are added to a scene automatically if an entity with the desired component is added to the scene. They can also be added manually through the [`Scene`](docs\classes\Scene.md) or [`SceneManager`](docs\classes\SceneManager.md) class.
+> Note that currently the system name must match the component name to be added automatically.
+> 
+System scripts must extend from the [`SystemBase`](docs/classes/SystemBase.md) class. The `SystemBase` class provides the `update(entities)` function which is called every frame. The `entities` parameter is an array of entities which have the component that the system is associated with. To define the component that the system is associated with, you must set the `component` property of the class to the component class.
+
+An example of a Velocity system is shown below:
+```js
+import VelocityComponent from "./Velocity.js";
+class Velocity extends engine.System {
+  static arg_names = [];
+  static arg_types = [];
+  component = VelocityComponent;
+  
+  update(entities) {
+    entities.forEach(entity => {
+        entity.Position.x += entity.Velocity.x;
+        entity.Position.y += entity.Velocity.y;
+    });
+  }
+}
+```
+
+### Shader Scripts
+Custom shaders can be created by extending the [`PostProcess`](docs/classes/PostProcess.md) class. In order to instantiate a shader, you must use the super constructor for `PostProcess`, which takes as arugment a vertex and fragment shader as strings. Additionally, the class provides a `draw()` function which is called each frame when applying the shader. This is where you will implement any required setup for the shader drawing logic. The default implementation simply draws a quad with the shader applied. Here it will be useful to access the global variable `engine.$gl` which is a reference to the WebGL2 context. 
+ This shader can then be added through the [`PostProcessing`](docs\classes\PostProcessing.md) class.
+
+This is an example shader which will colour the left half of the screen in red:
+```js
+export default class HalfScreenShader extends engine.PostProcess {
+    static arg_names = [];
+    static arg_types = [];
+
+    constructor() {
+        const v_shader = `#version 300 es
+
+    in vec4 a_position;
+
+    out vec2 v_texcoord;
+
+    void main() {
+      gl_Position = a_position * vec4(2, 2, 1, 1) - vec4(1, 1, 0, 0);
+      v_texcoord = a_position.xy;
+    }
+    `;
+
+        const f_shader = `#version 300 es
+
+    precision highp float;
+
+    uniform sampler2D u_texture;
+    in vec2 v_texcoord;
+
+    out vec4 outColor;
+
+    void main()
+    {
+        if (v_texcoord.x > 0.5) {
+            outColor = texture(u_texture, v_texcoord);
+        } else {
+            outColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }
+    }
+    `;
+        super(v_shader, f_shader);
+    }
+    draw() {
+        engine.$gl.drawArrays(engine.$gl.TRIANGLES, 0, 6);
+    }
+}
+```
+
 ## Prefabs
