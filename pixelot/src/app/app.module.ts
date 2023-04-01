@@ -37,6 +37,7 @@ import { NewProjectDialogComponent } from './new-project-dialog/new-project-dial
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BuildDialogueComponent } from './build-dialogue/build-dialogue.component';
 import { MatSelectModule } from '@angular/material/select';
+import { SystemsEditorComponent } from './systems-editor/systems-editor.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { MatSelectModule } from '@angular/material/select';
     LandingComponent,
     OpenProjectDialogComponent,
     NewProjectDialogComponent,
-    BuildDialogueComponent
+    BuildDialogueComponent,
+    SystemsEditorComponent
   ],
   imports: [
     BrowserModule,

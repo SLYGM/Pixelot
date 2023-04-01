@@ -1,3 +1,6 @@
+<div id="right-sidebar-resizer" (mousedown)="onResizeBarMouseDown($event)"></div>
+<mat-tab-group>
+<mat-tab label="Entities">
 <div id="right-sidebar">
   <div *ngIf="entity">
     <mat-form-field appearance="fill" [style.width.%]="100">
@@ -78,4 +81,6 @@
     <h2 class="mat-h2">No entity selected</h2>
   </div>
 </div>
-<div id="right-sidebar-resizer" (mousedown)="onResizeBarMouseDown($event)"></div>
+</mat-tab>
+<mat-tab label="Systems"> <app-systems-editor></app-systems-editor> </mat-tab>
+</mat-tab-group>
