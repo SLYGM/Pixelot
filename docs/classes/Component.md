@@ -1,7 +1,7 @@
 [retro-engine](../README.md) / [Exports](../modules.md) / Component
 
 # Class: Component
-The base class inhgerited by all user-defined components.  
+The base class inherited by all user-defined components.  
 
 **`Example`**
 
