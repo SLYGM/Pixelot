@@ -56,7 +56,7 @@ class Player extends engine.GameObjectBase {
 ```
 
 ### Component Scripts
-Component scripts define custom components which can be added to entities, either programmatically or through the editor. Component scripts must extend from the [`ComponentBase`](docs/classes/ComponentBase.md) class. The `ComponentBase` class provides a number of useful functions which can be overridden:
+Component scripts define custom components which can be added to entities, either programmatically or through the editor. Component scripts must extend from the [`Component`](docs/classes/Component.md) class. The `Component` class provides a number of useful functions which can be overridden:
 * `onCreate`: Called when the owner of the component is added to a scene.
 * `onDelete`: Called when this component is deleted.
 
@@ -84,7 +84,7 @@ class Position extends engine.Component {
 System scripts define custom systems which can be added to scenes which act on a component. Systems are added to a scene automatically if an entity with the desired component is added to the scene. They can also be added manually through the [`Scene`](docs\classes\Scene.md) or [`SceneManager`](docs\classes\SceneManager.md) class.
 > Note that currently the system name must match the component name to be added automatically.
 > 
-System scripts must extend from the [`SystemBase`](docs/classes/SystemBase.md) class. The `SystemBase` class provides the `update(entities)` function which is called every frame. The `entities` parameter is an array of entities which have the component that the system is associated with. To define the component that the system is associated with, you must set the `component` property of the class to the component class.
+System scripts must extend from the [`System`](docs/classes/System.md) class. The `System` class provides the `update(entities)` function which is called every frame. The `entities` parameter is an array of entities which have the component that the system is associated with. To define the component that the system is associated with, you must set the `component` property of the class to the component class.
 
 An example of a Velocity system is shown below:
 ```js
