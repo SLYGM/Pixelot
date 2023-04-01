@@ -51,5 +51,19 @@
                 }
             ]
         }
-    ]
+    ],
+    "systems": [
+    {
+      "name": "CounterIncrement",
+      "args": []
+    },
+    {
+      "name": "TestSystem2",
+      "args": []
+    },
+    {
+      "name": "Velocity",
+      "args": []
+    }
+  ]
 }
