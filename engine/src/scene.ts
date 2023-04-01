@@ -9,8 +9,10 @@ import { ImportManager } from "./importManager.js";
 import { PrefabFactory } from "./prefabs.js";
 
 export class Scene {
+    // the map of named entities in the scene
+    private named_entities: Map<string, GameObjectBase>;
     // The list of entities in the scene
-    private entities: Map<string, GameObjectBase>;
+    private entities: GameObjectBase[];
     // The systems in a priority queue
     private systems: SystemNode[];
     private added_systems: Map<string, boolean>;
@@ -20,7 +22,8 @@ export class Scene {
     public name: string;
 
     constructor(name: string) {
-        this.entities = new Map<string, GameObjectBase>();
+        this.named_entities = new Map<string, GameObjectBase>();
+        this.entities = [];
         this.systems = [];
         this.added_systems = new Map<string, boolean>();
         this.dt = 0;
@@ -31,7 +34,8 @@ export class Scene {
         for (const entity of this.entities.values()) {
             entity._delete();
         }
-        this.entities.clear();
+        this.named_entities.clear();
+        this.entities = [];
         this.systems = [];
     }
 
@@ -65,8 +69,12 @@ export class Scene {
             }
         }
         
-
-        this.entities.set(entity.name, entity);
+        // if the entity has a name, add it to the named entities map
+        if (entity.name) {
+            this.named_entities.set(entity.name, entity);
+        }
+        // add the entity to the list of entities
+        this.entities.push(entity);
         entity._create(...args);
 
         // Add the entity to the systems that require it
@@ -78,8 +86,8 @@ export class Scene {
     }
 
     // Spawn an instance of a prefab into the scene
-    spawnPrefab(prefab_name: string, args: any[]) {
-        const entity = PrefabFactory.create(prefab_name);
+    spawnPrefab(prefab_name: string, args: any[], name?: string) {
+        const entity = PrefabFactory.create(prefab_name, name);
         if (entity) {
             this.addEntity(entity, args);
         }
@@ -87,27 +95,43 @@ export class Scene {
 
     // Get the entity with the given name
     getEntity(name: string): GameObjectBase | undefined {
-        return this.entities.get(name);
+        return this.named_entities.get(name);
     }
 
     // Remove the entity with the given name from the scene
-    deleteEntity(name: string) {
+    deleteEntityByName(name: string) {
+        const entity = this.named_entities.get(name);
+        if (!entity) {
+            return;
+        } else {
+            this.deleteEntity(entity);
+        }
+    }
+
+    deleteEntity(entity: GameObjectBase) {
+        entity._delete();
+        
         // Remove the entity from the systems that require it
-        const entity = this.entities.get(name);
-        entity?._delete();
         for (const system_node of this.systems) {
             system_node.entities.delete(entity);
         }
-        this.entities.delete(name);
+        
+        // delete the entity from the named entities map, if it has a name
+        if (entity.name) {
+            this.named_entities.delete(entity.name);
+        }
+
+        // delete the entity from the list of entities
+        this.entities = this.entities.filter((e) => e != entity);
     }
 
     // Rename an entity
     renameEntity(old_name: string, new_name: string) {
-        const entity = this.entities.get(old_name);
+        const entity = this.named_entities.get(old_name);
         if (entity) {
             entity.name = new_name;
-            this.entities.delete(old_name);
-            this.entities.set(new_name, entity);
+            this.named_entities.delete(old_name);
+            this.named_entities.set(new_name, entity);
         }
     }
 
@@ -151,7 +175,7 @@ export class Scene {
         }
 
         // Run all entity update functions
-        for (const entity of this.entities.values()) {
+        for (const entity of this.entities) {
             entity.update();
         }
     }

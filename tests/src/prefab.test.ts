@@ -14,7 +14,7 @@ test("Load prefab", () => {
 
     scene.spawnPrefab("test_prefab", []);
 
-    expect(scene.getEntities().size).toBe(1);
+    expect(scene.getEntities().length).toBe(1);
     // NOTE: This is the only way to get the entity since entities created from prefabs are not given a name.
     // This should probably be changed in the future.
     const entity = scene.getEntities().values().next().value;
