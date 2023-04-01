@@ -133,9 +133,13 @@ export class SceneManager {
         const loadedSceneJson = JSON.parse(data.toString());
         const loadedEntities = loadedSceneJson["entities"];
         const loadedLayers = loadedSceneJson["layers"];
+        const loadedSystems = loadedSceneJson["systems"];
 
         // construct Scene object from json data and add to sceneManager
         const scene = new Scene(loadedSceneJson["name"]);
+
+        // construct the map of system arguments
+        scene.makeSystemArgs(loadedSystems);
 
         // construct each layer in the scene
         for (const layer of loadedLayers) {

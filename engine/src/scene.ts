@@ -14,6 +14,7 @@ export class Scene {
     // The systems in a priority queue
     private systems: SystemNode[];
     private added_systems: Map<string, boolean>;
+    private system_args: Map<string, string[]>;
 
     // The time that has elapsed since the last frame.
     public dt: number;
@@ -23,6 +24,7 @@ export class Scene {
         this.entities = new Map<string, GameObjectBase>();
         this.systems = [];
         this.added_systems = new Map<string, boolean>();
+        this.system_args = new Map<string, string[]>();
         this.dt = 0;
         this.name = name;
     }
@@ -51,6 +53,12 @@ export class Scene {
         return this.added_systems.has(system_name);
     }
 
+    makeSystemArgs(systemJson: any) {
+        for (const system of systemJson) {
+            this.system_args.set(system.name, system.args);
+        }
+    }
+
     // Add an entity to the Scene
     addEntity<T extends GameObjectBase>(entity: T, args: any[] = []) {
         entity.setScene(this);
@@ -58,9 +66,12 @@ export class Scene {
         for (const comp_name of entity.getAllComponents()){
             if (ImportManager.hasSystem(comp_name)) {
                 if (!this.hasSystem(comp_name)) {
-                    //TODO: system args aren't stored anywhere in json currently
-                    const system_constr = ImportManager.getSystem(comp_name).constr;
-                    this.addSystem(new system_constr(), 1);
+                    const system_import = ImportManager.getSystem(comp_name);
+                    const system_constr = system_import.constr;
+                    // retrieve and parse the args for this system
+                    const system_args = this.system_args.get(comp_name);
+                    const args = system_import.parseArgs(system_args);
+                    this.addSystem(new system_constr(...args), 1);
                 }
             }
         }
