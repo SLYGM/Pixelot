@@ -1,0 +1,23 @@
+{
+    "name": "system_args",
+    "layers": [],
+    "entities": [
+        {
+            "name": "sys_arg_test_entity",
+            "class": "Player",
+            "args": [],
+            "components": [
+                {
+                    "component_name": "SysArgs",
+                    "args": []
+                }
+            ]
+        }
+    ],
+    "systems": [
+        {
+            "name": "SysArgs",
+            "args": ["5"]
+        }
+    ]
+}

@@ -57,3 +57,13 @@ test("Preload scene", () => {
     expect(SceneManager.getSceneNames()).toEqual([]);
     expect(SceneManager.currentScene).toBe(null);
 });
+
+test("LoadSystem Args", () => {
+    SceneManager.preLoadScene("system_args");
+    const scene = SceneManager.loaded_scenes.get("system_args");
+    expect(scene).not.toBe(undefined);
+
+    scene!.update();
+    const ent = scene!.getEntity("sys_arg_test_entity");
+    expect((ent as any).SysArgs.num).toBe(5);
+});

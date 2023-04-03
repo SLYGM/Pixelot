@@ -238,6 +238,9 @@ export class ImportManager {
         console.trace("Cannot find system '" + system + "'.");
         return null;
     }
+    static getAllSystems(): string[] {
+        return Array.from(this.systems.keys());
+    }
     static hasSystem(system: string): boolean {
         return this.systems.has(system);
     }

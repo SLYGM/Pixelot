@@ -47,6 +47,10 @@
             "0.1",
             0
           ]
+        },
+        {
+          "component_name": "TestSys",
+          "args": []
         }
       ]
     },
@@ -74,6 +78,19 @@
             "true"
           ]
         }
+      ]
+    }
+  ],
+  "systems": [
+    {
+      "name": "Velocity",
+      "args": []
+    },
+    {
+      "name": "TestSys",
+      "args": [
+        "hello there!",
+        "2"
       ]
     }
   ]

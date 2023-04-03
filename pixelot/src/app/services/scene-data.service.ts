@@ -19,11 +19,13 @@ export class Scene {
   name: string;
   entities: Entity[];
   layers: Layer[];
+  systems: SystemArgs[];
 
   constructor(name: string) {
     this.name = name;
     this.entities = [];
     this.layers = [];
+    this.systems = [];
   }
 };
 
@@ -31,6 +33,11 @@ export type Layer = {
   name: string;
   type: string;
   source?: string;
+}
+
+export type SystemArgs = {
+  name: string;
+  args: string[];
 }
 
 @Injectable({
@@ -94,6 +101,17 @@ export class SceneDataService {
       const entity = scene.entities.find(e => e.name === entityName);
       if (entity) {
         return entity.args;
+      }
+    }
+    return [];
+  }
+
+  getSystemArgs(sceneName: string, systemName: string): string[] {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      const system = scene.systems.find(s => s.name === systemName);
+      if (system) {
+        return system.args;
       }
     }
     return [];
@@ -169,6 +187,16 @@ export class SceneDataService {
         if (component) {
           component.args[index] = value;
         }
+      }
+    }
+  }
+
+  updateSystemArg(sceneName: string, systemName: string, index: number, value: string) {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      const system = scene.systems.find(s => s.name === systemName);
+      if (system) {
+        system.args[index] = value;
       }
     }
   }
