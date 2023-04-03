@@ -60,6 +60,15 @@ export class SceneDataService {
     }
   }
 
+  saveSceneSync(sceneName: string) {
+    const scene = this.scenes.get(sceneName);
+    if (scene) {
+      const sceneJson = JSON.stringify(scene, null, 2);
+      const scenePath = this.scene_paths.get(sceneName);
+      fs.writeFileSync(scenePath, sceneJson);
+    }
+  }
+
   add(name: string, scene: Scene, path: string) {
     this.scenes.set(name, scene);
     this.scene_paths.set(name, path);
