@@ -50,7 +50,7 @@ export class LeftSidebarComponent {
       for (let i = 0; i < this.layerNames.length; i++) {
         this.layerEntities.push([]);
       }
-      for (const [_, entity] of this.scene.getEntities()) {
+      for (const entity of this.scene.getEntities()) {
         const layer = this.sceneData.getEntityLayer(this.scene.name, entity.name);
         if (this.layerNames.indexOf(layer) !== -1) {
           this.layerEntities[this.layerNames.indexOf(layer)].push(entity.name);
@@ -86,7 +86,7 @@ export class LeftSidebarComponent {
 
   deleteEntity(entity: string) {
     this.sceneData.removeEntity(this.scene.name, entity);
-    engine.SceneManager.currentScene.deleteEntity(entity);
+    engine.SceneManager.currentScene.deleteEntityByName(entity);
     this.entitySelected.emit(null);
     this.update();
     this.sceneData.saveScene(this.scene.name);

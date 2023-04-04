@@ -16,8 +16,32 @@ test("Game Object Functionality", () => {
     expect(testEntity.counter).toBe(2);
     expect(testEntity.onCreateRun).toBe(true);
     expect(testEntity.onDeleteRun).toBe(false);
-    scene.deleteEntity("test");
+    scene.deleteEntityByName("test");
     expect(testEntity.onDeleteRun).toBe(true);
+});
+
+test("Un-named Entities", () => {
+    const scene = new Scene("");
+
+    const testEntity1 = new TestEntity();
+    const testEntity2 = new TestEntity();
+    const testEntity3 = new TestEntity("named");
+    scene.addEntity(testEntity1);
+    scene.addEntity(testEntity2);
+    scene.addEntity(testEntity3);
+    scene.update();
+    scene.update();
+
+    expect(testEntity1.counter).toBe(2);
+    expect(testEntity1.onCreateRun).toBe(true);
+    expect(testEntity2.counter).toBe(2);
+    expect(testEntity2.onCreateRun).toBe(true);
+    expect(scene.getEntities().length).toBe(3);
+    expect(scene.getEntity("named")).toBe(testEntity3);
+
+    scene.deleteEntity(testEntity1);
+    expect(scene.getEntities().length).toBe(2);
+    expect(testEntity1.onDeleteRun).toBe(true);
 });
 
 test("System Functionality", () => {

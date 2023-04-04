@@ -6,7 +6,11 @@ import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import * as engine from 'retro-engine';
-import { SceneDataService } from 'app/services/scene-data.service';
+import { SceneDataService, Scene } from 'app/services/scene-data.service';
+import { FileService } from 'app/services/file.service';
+
+const nw = (window as any).nw;
+const path = nw.require("path");
 
 @Component({
   selector: 'app-navbar',
@@ -19,7 +23,7 @@ export class NavbarComponent {
   accent: ThemePalette = 'accent'
   scenes: string[] = [];
 
-  constructor(public dialog: MatDialog, private sceneData: SceneDataService, private router: Router, private route: ActivatedRoute) {
+  constructor(public dialog: MatDialog, private sceneData: SceneDataService, private router: Router, private route: ActivatedRoute, private fileService: FileService) {
     this.scenes = [ ...engine.SceneManager.loaded_scenes.keys() ];
     this.route.params.subscribe(params => {
       this.activeLink = params['sceneName'];
@@ -62,15 +66,19 @@ export class NavbarComponent {
   }
 
   createScene(sceneName:string){
-    //TODO: scenes should be created in the current project location
-    // create new scene in engine manager
-    // if (engine.SceneManager.createScene(sceneName)) {
-    //   // if the scene has been successfully created, switch to it
-    //   engine.SceneManager.switchToScene(sceneName);
-    //   this.scenes.push(sceneName);
-    //   this.activeLink = sceneName;
-    //   this.router.navigateByUrl(`/scene/${sceneName}`);
-    // }
+    //create new scene in engine
+    const ui_scene = new Scene(sceneName);
+    const scenePath = path.join(this.fileService.path, `${sceneName}.scene`);
+    this.sceneData.add(sceneName, ui_scene, scenePath);
+    this.sceneData.saveSceneSync(sceneName);
+    
+    // load scene in engine
+    engine.SceneManager.preLoadScene(sceneName);
+    this.scenes = [ ...engine.SceneManager.loaded_scenes.keys() ];
+    // switch to scene
+    engine.SceneManager.switchToScene(sceneName, false);
+    this.activeLink = sceneName;
+    this.router.navigate([`/scene/${sceneName}`]);
   }
 }
 

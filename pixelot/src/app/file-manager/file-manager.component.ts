@@ -45,7 +45,6 @@ export class FileManagerComponent {
         // if the file no longer exists, then it has been deleted
         if (!fs.existsSync(path.join(this.currentPath, file.dir, file.base))) {
           if (file.ext === '.js') {
-            console.log(`Searching for import record: ${path.posix.join(file.dir, file.name)}`);
             this.removeScript(path.posix.join(file.dir, file.name));
           }
         }

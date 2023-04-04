@@ -107,8 +107,9 @@ export class RightSidebarComponent {
   }
 
   handleEntityNameChange(event: any) {
-    this.sceneData.updateEntityName(this.currentSceneName, this.entityName, event.target.value);
-    this.renameEntity.emit({'oldName': this.entityName, 'newName': event.target.value});
+    const new_name = event.target.value != '' ? event.target.value : 'Unnamed Entity';
+    this.sceneData.updateEntityName(this.currentSceneName, this.entityName, new_name);
+    this.renameEntity.emit({'oldName': this.entityName, 'newName': new_name});
     // Save changes to file
     this.sceneData.saveScene(this.currentSceneName);
   }

@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "npm run test",
-    "test": "jest"
+    "test": "jest --detectOpenHandles"
   },
   "author": "",
   "license": "ISC",
