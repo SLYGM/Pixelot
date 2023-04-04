@@ -1,9 +1,10 @@
 // import { PostProcess } from "retro-engine";
 
 export default class BarrelShader extends engine.PostProcess {
-    static arg_names = [];
-    static arg_types = [];
-    constructor() {
+    static arg_names = ["TEST"];
+    static arg_types = [engine.Types.Number];
+    constructor(test) {
+        console.log(test);
         const v_shader = `#version 300 es
 
         in vec4 a_position;

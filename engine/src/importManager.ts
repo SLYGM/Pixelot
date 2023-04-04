@@ -265,6 +265,9 @@ export class ImportManager {
     static hasShader(shader: string): boolean {
         return this.shaders.has(shader);
     }
+    static getAllShaders(): string[] {
+        return Array.from(this.shaders.keys());
+    }
 }
 
 /**

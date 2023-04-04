@@ -1,4 +1,14 @@
+<div id="left-sidebar-resizer" (mousedown)="onResizeBarMouseDown($event)"></div>
+
+<mat-tab-group dynamicHeight>
+<mat-tab label="Layers">
 <div id="left-sidebar">
+  <mat-menu #menu="matMenu">
+    <ng-template matMenuContent let-entity="entity">
+      <button mat-menu-item (click)="deleteEntity(entity)">Delete</button>
+    </ng-template>
+  </mat-menu>
+  
   <mat-accordion multi displayMode="flat" *ngIf="scene">
     <div cdkDropListGroup>
       <mat-expansion-panel *ngFor="let layer of layerNames; index as i">
@@ -52,10 +62,7 @@
     <button mat-menu-item id="add-layer-button" (click)="openLayerDialog('tilemap')">Tile Layer</button>
   </mat-menu>
 </div>
-<div id="left-sidebar-resizer" (mousedown)="onResizeBarMouseDown($event)"></div>
+</mat-tab>
 
-<mat-menu #menu="matMenu">
-  <ng-template matMenuContent let-entity="entity">
-    <button mat-menu-item (click)="deleteEntity(entity)">Delete</button>
-  </ng-template>
-</mat-menu>
+<mat-tab label="Shaders"> <app-shader-editor></app-shader-editor> </mat-tab>
+</mat-tab-group>

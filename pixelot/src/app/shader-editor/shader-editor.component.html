@@ -1,0 +1,45 @@
+<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+<mat-expansion-panel *ngFor="let shader of shader_names; index as j" cdkDrag>
+<mat-expansion-panel-header>
+    <mat-panel-title>
+    {{shader}}
+    </mat-panel-title>
+</mat-expansion-panel-header>
+
+<ng-container *ngFor="let arg of shader_args[j]; index as i">
+    <!-- if property is a string: -->
+    <mat-form-field *ngIf="arg.type == 'StringType'" [style.width.%]="100">
+      <mat-label color="primary">{{arg.name}}</mat-label>
+      <input matInput value={{arg.value}} (change)="handleArgChange(j, i, $event)">
+    </mat-form-field>
+
+    <!-- if property is a number: -->
+    <mat-form-field *ngIf="arg.type == 'NumberType'" [style.width.%]="100">
+      <mat-label color="primary">{{arg.name}}</mat-label>
+      <input matInput type="number" value={{arg.value}} (change)="handleArgChange(j, i, $event)">
+    </mat-form-field>
+
+    <!-- if property is a bool: -->
+    <mat-slide-toggle *ngIf="arg.type == 'BoolType'" [style.width.%]="100" [checked]="arg.value" (change)="handleArgChange(j, i, $event)">
+      {{arg.name}}
+    </mat-slide-toggle>
+
+    <!-- if property is a file: -->
+    <mat-form-field *ngIf="arg.type == 'FileType'" [style.width.%]="100">
+      <mat-label color="primary">{{arg.name}}</mat-label>
+      <button mat-icon-button matPrefix (click)="f_input.click()">
+        <mat-icon>attach_file</mat-icon>
+      </button>
+      <input type="text" readonly matInput value={{arg.value}}>
+      <input type="file" hidden #f_input (change)="handleArgChange(j, i, $event)">
+    </mat-form-field>
+
+
+</ng-container>
+<mat-action-row>
+  <button mat-stroked-button color="warn" (click)="removeShader(j)">Remove Shader</button>
+</mat-action-row>
+</mat-expansion-panel>
+
+<button mat-raised-button id="add-shader-button" (click)="openShaderDialogue()" >Add Shader</button>
+</div>
