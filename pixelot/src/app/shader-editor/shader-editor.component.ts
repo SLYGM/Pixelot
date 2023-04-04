@@ -15,18 +15,32 @@ type ShaderArg = {name: string, type: string, value: any};
 export class ShaderEditorComponent {
   shader_names: string[] = [];
   shader_args: ShaderArg[][] = [];
+  show_states: boolean[] = [];
 
+  
   constructor(private dialog: MatDialog, private projService: ProjDataService, private importWatcher: ImportWatcherService) {
     this.shader_names = this.getShaders();
     for (let i = 0; i < this.shader_names.length; i++) {
-      const shader = this.shader_names[i];
       this.shader_args.push(this.getShaderArgs(i));
+      this.show_states.push(true);
     }
 
     // watch for shader imports
     this.importWatcher.getShaderUpdate().subscribe(() => {
       this.handleShaderImport();
     });
+  }
+
+  hideShader(index: number, event: any) {
+    event.stopPropagation();
+    this.show_states[index] = false;
+    engine.PostProcessing.post_queue[index].disabled = true;
+  }
+
+  showShader(index: number, event: any) {
+    event.stopPropagation();
+    this.show_states[index] = true;
+    engine.PostProcessing.post_queue[index].disabled = false;
   }
 
   handleShaderImport() {

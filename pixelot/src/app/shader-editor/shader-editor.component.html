@@ -4,6 +4,10 @@
     <mat-panel-title>
     {{shader}}
     </mat-panel-title>
+    <mat-panel-description>
+      <button *ngIf="show_states[j]" id="hide-shader-button" (click) = "hideShader(j, $event)" mat-icon-button> <mat-icon>visibility</mat-icon> </button>
+      <button *ngIf="!show_states[j]" id="hide-shader-button" (click) = "showShader(j, $event)" mat-icon-button> <mat-icon>visibility_off</mat-icon> </button>
+    </mat-panel-description>
 </mat-expansion-panel-header>
 
 <ng-container *ngFor="let arg of shader_args[j]; index as i">

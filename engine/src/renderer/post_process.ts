@@ -4,6 +4,7 @@ import { GLUtils } from './webglutils.js'
 
 export class PostProcess {
     program: WebGLProgram;
+    disabled = false;
 
     constructor(v_shader: string, f_shader: string) {
         this.program = GLUtils.programFromSources(v_shader, f_shader);
@@ -96,6 +97,7 @@ export class PostProcessing {
 
         // use each provided shader
         for (const post_process of this.post_queue) {
+            if (post_process.disabled) continue;
             $gl.useProgram(post_process.program);
             this.#switchBuffer();
             this.#renderToBuffer(this.#currBuffer(), post_process);
