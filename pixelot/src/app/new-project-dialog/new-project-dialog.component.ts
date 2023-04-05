@@ -3,18 +3,12 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FileService } from 'app/services/file.service';
 import { Scene } from 'app/services/scene-data.service';
+import { ProjDataService } from 'app/services/proj-data.service';
 
 const nw = (window as any).nw;
 const fs = nw.require("fs");
 const path = nw.require("path");
 
-export type Project = {
-  resolution: number[];
-  start_scene: string;
-  layers: string[];
-  textures: object[];
-  shaders: object[];
-};
 
 @Component({
   selector: 'app-new-project-dialog',
@@ -27,7 +21,8 @@ export class NewProjectDialogComponent {
   width: number = 426;
   height: number = 240;
 
-  constructor(private dialogRef: MatDialogRef<NewProjectDialogComponent>, private snackBar: MatSnackBar, private fileService: FileService) {}
+  constructor(private dialogRef: MatDialogRef<NewProjectDialogComponent>, private snackBar: MatSnackBar, private fileService: FileService,
+    private projService: ProjDataService) {}
 
   onCancelClick() {
     this.dialogRef.close();
@@ -53,24 +48,7 @@ export class NewProjectDialogComponent {
 
     fs.mkdirSync(projectPath);
 
-    const project: Project = {
-      resolution: [this.width, this.height],
-      start_scene: "main",
-      layers: ["Background", "Foreground", "UI"],
-      textures: [],
-      shaders: []
-    };
-
-    // create the project file
-    const json = JSON.stringify(project, null, 2);
-    fs.writeFile(projectPath + "/project.proj", json, (err: any) => {
-      if (err) {
-        console.error(err);
-        this.snackBar.open("An error occurred while creating the project", "OK", {
-          duration: 2000,
-        });
-      }
-    });
+    this.projService.newProject(this.projectName, {width: this.width, height: this.height});
 
     // create the initial scene
     fs.mkdirSync(projectPath + "/scenes");

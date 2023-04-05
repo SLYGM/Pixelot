@@ -1,28 +1,24 @@
 {
-    "resolution": [426, 240],
-    "start_scene": "test_scene",
-    "textures": [
-        {
-            "name": "frog",
-            "path": "assets/frog.png"
-        },
-        {
-            "name": "cog",
-            "path": "assets/cog.png"
-        },
-        {
-            "name": "tile",
-            "path": "assets/tile.png"
-        }
-    ],
-    "shaders": [
-        {
-            "name": "BarrelShader",
-            "args": []
-        },
-        {
-            "name": "BarShader",
-            "args": []
-        }
-    ]
+  "resolution": [
+    426,
+    240
+  ],
+  "textures": [],
+  "start_scene": "test_scene",
+  "shaders": [
+    {
+      "name": "TestHalfScreenShader",
+      "args": []
+    },
+    {
+      "name": "BarShader",
+      "args": []
+    },
+    {
+      "name": "BarrelShader",
+      "args": [
+        0
+      ]
+    }
+  ]
 }

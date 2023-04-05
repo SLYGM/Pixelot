@@ -13,8 +13,8 @@ As a user, you can freely create your own entities, components, systems, and sha
 Upon creating or opening a project you will be greeted by the main Pixelot interface:
 ![Screenshot 2023-03-30 155255](https://i.imgur.com/jtzaOx3.png)
 In the centre you will see the main viewport, which is where you will be able to see your game as you develop it, as well as run the scene in the editor.  
-On the left you will see the list of **layers** and entities that are contained in them. The layers are used to control the rendering order of the entities. From here you can create/delete layers and entities, and drag and drop entities to change their layer.  
-On the right you will see the inspector. This is where you can modify the properties of the currently selected entity. This includes configuring the entity arguments and components.
+On the left you will see the list of **layers** and entities that are contained in them. The layers are used to control the rendering order of the entities. From here you can create/delete layers and entities, and drag and drop entities to change their layer. The left sidebar also contains the 'Shaders' tab which allows you to add and modify shaders.  
+On the right you will see the inspector. This is where you can modify the properties of the currently selected entity. This includes configuring the entity arguments and components. The left sidebar also contains a 'Systems' tab, which allows you to configure the arguments for systems.
 At the bottom of the interface you will find the file manager, which allows you to view and modify the contents of your project. If you ever modify the contents of the project outside of the editor, you can use the refresh button to update the file manager.  
 At the top is the scene bar, which allows you to switch between scenes and create new ones.  
 You can also use the menu bar at the top to open/create projects as well as build your game.
@@ -25,7 +25,9 @@ Scripts are used to add custom logic to entities. They are written in **JavaScri
 Scripts in Pixelot are written in a similar way to Unity's MonoBehaviour scripts. Each script is a class which extends from a base class in the Pixelot engine. The base class provides a number of useful functions which can be overridden to add custom logic to the script. To interface with the engine from any script, you can use the `engine` global variable. The full documentation for the engine can be found [here](docs/modules.md).
 
 ### Script Arguments
-Each script can have a number of arguments, which can be accessible through the editor. In order to have this functionality, you must add static `arg_names` and `arg_types` arrays, which are `string` and `engine.Types` arrays respectively. The `arg_names` array contains the names of the arguments, and the `arg_types` array contains the types of the arguments. The order of the arguments in each array must match.
+Each script can have a number of arguments (to the `onCreate`/`constructor`, depending on whether it is an entity script or not), which can be accessible through the editor. In order to have this functionality, you must add static `arg_names` and `arg_types` arrays, which are `string` and [`engine.Types`](docs/classes/Types.md) arrays respectively. The `arg_names` array contains the names of the arguments, and the `arg_types` array contains the types of the arguments. The order of the arguments in each array must match.
+
+> Note that the arguments are only necessary for objects you wish to create in the editor. If you wish to create an object programmatically, you can simply pass the arguments to the [`scene.addEntity`](docs/classes/Scene.md#L48) function, and these can be of **any** type.
 
 ### Entity Scripts
 Entity scripts are scripts which are attached to entities. When creating a new entity, you must select the script that you want to use for that entity. Entity scripts must extend from the [`GameObjectBase`](docs/classes/GameObjectBase.md) class. The `GameObjectBase` class provides a number of useful functions which can be overridden:
@@ -178,6 +180,7 @@ To retrieve an object layer from the tilemap, use the `getObjectLayer` function 
 
 
 ### Shaders
+Shaders can be added/removed through the 'Shaders' tab in the left sidebar. The shaders will be applied in the order they are listed, with the first shader being applied first. The shaders will be applied to the entire screen, and will be applied after the sprites have been drawn. This means that the shaders will be applied to the sprites as well. The shaders can be re-ordered by dragging and dropping them in the list. Here you can also configure any arguments that the shader takes. You can also hide the effects of the shader within the editor by clicking the 'Hide' button. This will have no effect on the built game itself.
 
 ## Sound
 Sound can be played by creating an instance of the [`Sound`](docs\classes\Sound.md) class, and then using its associated `play()` method.  
@@ -216,7 +219,11 @@ Mouse input can be accessed through the [`MouseState`](docs\classes\MouseState.m
 * `screen_pos` - the current position of the mouse in screen coordinates (wit h the origin in the top left)
 * `world_pos` - the current position of the mouse in world coordinates
 
+## Console Access
+Within the Pixelot editor you can access the console at any time by pressing the F12 key. This will open the standard chrome console, which will have access to the `engine` object. This object contains all of the classes and functions that are available to you when writing scripts, i.e. you can access any of the engine's functionality through the console. The console can be used to test out code, or to debug your game.  
+Simlarly, this console is also available for use when running a built game.
+
 ## Building and Deploying
 To build a game in the editor, use Game->Build in the toolbar, as shown below:
-![build](https://i.imgur.com/zNowHa6.png)
+![build](https://i.imgur.com/zNowHa6.png)  
 This will prompt you to select a destination and build target, after which a folder will be created at the destination containing a game executable.

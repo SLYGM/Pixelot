@@ -283,9 +283,9 @@ Rename an entity in the scene.
 ___
 
 ### spawnPrefab
-Spawn a prefab in the scene.
+Spawn a prefab in the scene. The optional `name` parameter can be used to give the spawned entity a custom name, which can be used to access the entity by name through the `Scene` it is in.
 
-▸ **spawnPrefab**(`prefab_name`, `args`): `void`
+▸ **spawnPrefab**(`prefab_name`, `args`, `name?`): `void`
 
 #### Parameters
 
@@ -293,6 +293,7 @@ Spawn a prefab in the scene.
 | :------ | :------ |
 | `prefab_name` | `string` |
 | `args` | `any`[] |
+| `name` | `string` |
 
 #### Returns
 

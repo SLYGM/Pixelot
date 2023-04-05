@@ -38,6 +38,6 @@ export default class TestHalfScreenShader extends engine.PostProcess {
         super(v_shader, f_shader);
     }
     draw() {
-        engine.$gl.drawArrays($gl.TRIANGLES, 0, 6);
+        engine.$gl.drawArrays(engine.$gl.TRIANGLES, 0, 6);
     }
 }

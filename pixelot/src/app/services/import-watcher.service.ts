@@ -6,6 +6,7 @@ import { Observable, Subject } from 'rxjs';
 })
 export class ImportWatcherService {
   private systemUpdate: Subject<void> = new Subject();
+  private shaderUpdate: Subject<void> = new Subject();
 
   getSystemUpdate(): Observable<void> {
     return this.systemUpdate.asObservable();
@@ -13,5 +14,13 @@ export class ImportWatcherService {
 
   updateSystems() {
     this.systemUpdate.next();
+  }
+
+  getShaderUpdate(): Observable<void> {
+    return this.shaderUpdate.asObservable();
+  }
+
+  updateShaders() {
+    this.shaderUpdate.next();
   }
 }

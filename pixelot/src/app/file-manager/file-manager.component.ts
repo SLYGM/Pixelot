@@ -45,12 +45,12 @@ export class FileManagerComponent {
         // if the file no longer exists, then it has been deleted
         if (!fs.existsSync(path.join(this.currentPath, file.dir, file.base))) {
           if (file.ext === '.js') {
-            this.removeScript(path.join(file.dir, file.name));
+            this.removeScript(path.posix.join(file.dir, file.name));
           }
         }
         // otherwise it is newly created
         else {
-          this.importScript(path.join(file.dir, file.name));
+          this.importScript(path.posix.join(file.dir, file.name));
         }
       }
       // if the file has been changed, then reimport it (if it is a script)
@@ -68,9 +68,7 @@ export class FileManagerComponent {
     // check the type to trigger import watcher update
     const type = engine.ImportManager.getRecord(script_path).type;
     engine.ImportManager.removeScript(script_path);
-    if (type === 'system') {
-      this.importService.updateSystems();
-    }
+    this.updateImportService(type);
   }
 
   importScript(script_path: string) {
@@ -78,10 +76,16 @@ export class FileManagerComponent {
     .then(() => {
        // check the type to trigger import watcher update
       const type = engine.ImportManager.getRecord(script_path).type;
-      if (type === 'system') {
-        this.importService.updateSystems();
-      }
+      this.updateImportService(type);
     });
+  }
+
+  updateImportService(type: string) {
+    if (type === 'system') {
+      this.importService.updateSystems();
+    } else if (type === 'shader') {
+      this.importService.updateShaders();
+    }
   }
 
   addFolder(folder: { name: string }) {

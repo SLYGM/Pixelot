@@ -38,6 +38,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BuildDialogueComponent } from './build-dialogue/build-dialogue.component';
 import { MatSelectModule } from '@angular/material/select';
 import { SystemsEditorComponent } from './systems-editor/systems-editor.component';
+import { AddShaderDialog, ShaderEditorComponent } from './shader-editor/shader-editor.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { SystemsEditorComponent } from './systems-editor/systems-editor.componen
     RightSidebarComponent,
     AddComponentDialog,
     AddEntityDialog,
+    AddShaderDialog,
     AddLayerDialog,
     NavbarComponent,
     SceneTabComponent,
@@ -62,7 +64,8 @@ import { SystemsEditorComponent } from './systems-editor/systems-editor.componen
     OpenProjectDialogComponent,
     NewProjectDialogComponent,
     BuildDialogueComponent,
-    SystemsEditorComponent
+    SystemsEditorComponent,
+    ShaderEditorComponent
   ],
   imports: [
     BrowserModule,

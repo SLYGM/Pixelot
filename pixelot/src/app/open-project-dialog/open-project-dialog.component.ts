@@ -3,6 +3,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { FileService } from 'app/services/file.service';
 import { SceneDataService } from 'app/services/scene-data.service';
+import { ProjDataService } from 'app/services/proj-data.service';
 import * as engine from 'retro-engine';
 
 const nw = (window as any).nw;
@@ -16,7 +17,8 @@ const fs = nw.require("fs");
 export class OpenProjectDialogComponent {
   projects: string[] = [];
 
-  constructor(public dialogRef: MatDialogRef<OpenProjectDialogComponent>, private router: Router, private sceneData: SceneDataService, public fileService: FileService) {}
+  constructor(public dialogRef: MatDialogRef<OpenProjectDialogComponent>, private router: Router, private sceneData: SceneDataService, 
+    public fileService: FileService, private projService: ProjDataService) {}
 
   ngOnInit() {
     let basePath: string;
@@ -75,5 +77,7 @@ export class OpenProjectDialogComponent {
     engine.SceneManager.preLoadScene(startScene);
     engine.Game.start(true);
     this.router.navigate(["/scene/" + projectJson.start_scene]);
+
+    this.projService.loadProject(projectJson, projectPath);
   }
 }
