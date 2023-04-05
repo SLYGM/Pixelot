@@ -98,6 +98,7 @@ export class ShaderEditorComponent {
         this.projService.saveProject();
         this.shader_names = this.getShaders();
         this.shader_args.push(this.getShaderArgs(this.shader_names.length - 1));
+        this.show_states.push(true);
       }
     });
   }
