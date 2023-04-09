@@ -1,0 +1,128 @@
+{
+  "name": "main",
+  "entities": [
+    {
+      "name": "ground",
+      "class": "ExampleEntity",
+      "args": [
+        0
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            0,
+            "-16"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets\\ground.png",
+            "Foreground",
+            0,
+            "4",
+            0,
+            0,
+            "1",
+            "1"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        },
+        {
+          "component_name": "PlayerDamange",
+          "args": []
+        }
+      ]
+    },
+    {
+      "name": "player",
+      "class": "Player",
+      "args": [
+        0,
+        false
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "-93",
+            0
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets\\bomb.png",
+            "Foreground",
+            0,
+            0,
+            0,
+            0,
+            "1",
+            "2"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            false
+          ]
+        },
+        {
+          "component_name": "Platformer",
+          "args": []
+        },
+        {
+          "component_name": "Animated",
+          "args": []
+        }
+      ]
+    },
+    {
+      "name": "bomb",
+      "class": "ExampleEntity",
+      "args": [
+        0
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "3",
+            0
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets\\bomb.png",
+            "Foreground",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "Animated",
+          "args": []
+        }
+      ]
+    }
+  ],
+  "layers": [
+    {
+      "name": "Foreground",
+      "type": "sprite"
+    }
+  ],
+  "systems": []
+}

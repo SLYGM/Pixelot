@@ -9,7 +9,7 @@ import { Scene } from "../scene.js";
 import { SceneManager } from "../sceneManager.js";
 import { TextRenderer } from "./textRenderer.js";
 
-const { mat4, vec3 } = require("gl-matrix");
+const { mat4, vec3, vec2 } = require("gl-matrix");
 
 const nw = (window as any).nw;
 let AVLTree;
@@ -55,7 +55,7 @@ export class SpriteLayer extends RenderLayer {
         this.sprites.forEach((node) => {
             const sprite = node.key as Sprite;
             const pos = sprite.getPos();
-            Renderer.drawImage(sprite.tex, pos.x, pos.y, sprite.rotation, sprite.anchor.x, sprite.anchor.y);
+            Renderer.drawImage(sprite.tex, pos.x, pos.y, sprite.sizeMult.x, sprite.sizeMult.y, sprite.rotation, sprite.anchor.x, sprite.anchor.y, sprite.texture_offset, sprite.texture_scale);
         })
     }
 }
@@ -68,13 +68,15 @@ export class Renderer {
         
         uniform mat4 u_projection;
         uniform mat4 u_matrix;
+        uniform vec2 u_offset;
+        uniform vec2 u_scale;
         
         out vec2 v_texcoord;
         
         void main() {
             gl_Position = u_projection * u_matrix * a_position; 
             // the texture coordinates are the same as the vertex coordinates
-            v_texcoord = a_position.xy;
+            v_texcoord = u_offset + a_position.xy * u_scale;
         }
     `;
     //GLSL Fragment Shader
@@ -97,6 +99,8 @@ export class Renderer {
         proj_loc: WebGLUniformLocation;
         mat_loc: WebGLUniformLocation;
         tex_loc: WebGLUniformLocation;
+        offset_loc: WebGLUniformLocation;
+        scale_loc: WebGLUniformLocation;
     };
     static resolution: {
         x: number;
@@ -124,6 +128,8 @@ export class Renderer {
             proj_loc: undefined,
             mat_loc: undefined,
             tex_loc: undefined,
+            offset_loc: undefined,
+            scale_loc: undefined,
         };
         this.shader.prog = GLUtils.programFromSources(
             this.vert_source,
@@ -143,6 +149,14 @@ export class Renderer {
         this.shader.tex_loc = $gl.getUniformLocation(
             this.shader.prog,
             "u_texture"
+        );
+        this.shader.offset_loc = $gl.getUniformLocation(
+            this.shader.prog,
+            "u_offset"
+        );
+        this.shader.scale_loc = $gl.getUniformLocation(
+            this.shader.prog,
+            "u_scale"
         );
 
         this.vao = $gl.createVertexArray();
@@ -311,11 +325,17 @@ export class Renderer {
         return tex_info;
     }
 
-    static drawImage(tex: Texture, x: number, y: number, rotation: number = 0, anchorX: number = 0.5, anchorY: number = 0.5) {
+    static drawImage(tex: Texture, x: number, y: number, width: number, height: number, rotation: number = 0, anchorX: number = 0.5, anchorY: number = 0.5, texture_offset: {x: number, y: number} = {x: 0, y: 0}, texture_scale: {x: number, y: number} = {x: 1, y: 1}) {
         const textureUnit = 0;
         $gl.uniform1i(this.shader.tex_loc, textureUnit);
         $gl.activeTexture($gl.TEXTURE0 + textureUnit);
         $gl.bindTexture($gl.TEXTURE_2D, tex.texture);
+        //only draw the top left (0,0) to middle (0.5,0.5) of the texture
+        const offset_matrix = vec2.fromValues(texture_offset.x, texture_offset.y);
+        const scale_matrix = vec2.fromValues(texture_scale.x, texture_scale.y);
+        $gl.uniform2fv(this.shader.offset_loc, offset_matrix);
+        $gl.uniform2fv(this.shader.scale_loc, scale_matrix);
+
 
         const img_matrix = mat4.create();
         mat4.translate(img_matrix, img_matrix, vec3.fromValues(x, y, 0));
@@ -327,7 +347,7 @@ export class Renderer {
         mat4.scale(
             img_matrix,
             img_matrix,
-            vec3.fromValues(tex.width, tex.height, 1)
+            vec3.fromValues(tex.width * width * texture_scale.x, tex.height * height * texture_scale.y, 1)
         );
         //rotate around the center of the image
         mat4.translate(img_matrix, img_matrix, vec3.fromValues(anchorX, anchorY, 0));

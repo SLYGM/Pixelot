@@ -8,8 +8,8 @@ import { Texture } from "../types.js";
 import { PathUtils } from "../engineExport.js";
 
 export default class Sprite extends Component {
-    static arg_names = ["texture", "layer", "z-index", "rotation", "anchor x", "anchor y"];
-    static arg_types = [Types.File, Types.String, Types.Number, Types.Number, Types.Number, Types.Number];
+    static arg_names = ["texture", "layer", "z-index", "rotation", "anchor x", "anchor y", "width mult", "height mult"];
+    static arg_types = [Types.File, Types.String, Types.Number, Types.Number, Types.Number, Types.Number, Types.Number, Types.Number];
 
     override dependencies = [Position];
     tex: Texture;
@@ -18,9 +18,12 @@ export default class Sprite extends Component {
     lr: string;
     rotation: number;
     anchor: {x: number, y: number};
+    sizeMult: {x: number, y: number};
+    texture_offset: {x: number, y: number} = {x: 0, y: 0};
+    texture_scale: {x: number, y: number} = {x: 1, y: 1};
 
     //sprites will be drawn above objects with a lower z index than their own
-    constructor(tex_path: string, lr: string, zi: number = 0, rotation: number = 0, anchorX: number = 0.5, anchorY: number = 0.5) {
+    constructor(tex_path: string, lr: string, zi: number = 0, rotation: number = 0, anchorX: number = 0.5, anchorY: number = 0.5, widthMult: number = 1, heightMult: number = 1) {
         super();
         const full_path = PathUtils.assetPath(tex_path);
         this.tex = Renderer.loadTexture(tex_path);
@@ -29,6 +32,7 @@ export default class Sprite extends Component {
         this.rotation = rotation * Math.PI;
         this.anchor.x = anchorX;
         this.anchor.y = anchorY;
+        this.sizeMult = {x: widthMult, y: heightMult } ;
     }
 
     override onCreate() {

@@ -154,6 +154,10 @@ export class Scene {
         return [...this.entities.values()].filter((e) => e.has(component));
     }
 
+    getEntitiesOfType<T extends GameObjectBase>(type: new (...args: any[]) => T): T[] {
+        return [...this.entities.values()].filter((e) => e.constructor == type) as T[];
+    }
+
     // Add a system to the Scene
     addSystem(system: System, priority: number) {
         this.added_systems.set(system.constructor.name, true);
