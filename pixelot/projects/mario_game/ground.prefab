@@ -1,0 +1,1 @@
+{"name":"ground","class":"ExampleEntity","args":[0],"components":[{"component_name":"Position","args":[0,"-16"]},{"component_name":"Sprite","args":["assets\\ground.png","Foreground",0,"4",0,0,"1","1"]},{"component_name":"BoxCollider","args":["true"]},{"component_name":"PlayerDamange","args":[]}]}

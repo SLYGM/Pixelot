@@ -33,10 +33,6 @@
           "args": [
             "true"
           ]
-        },
-        {
-          "component_name": "PlayerDamange",
-          "args": []
         }
       ]
     },
@@ -58,7 +54,7 @@
         {
           "component_name": "Sprite",
           "args": [
-            "assets\\bomb.png",
+            "assets\\idle_left.png",
             "Foreground",
             0,
             0,
@@ -80,7 +76,14 @@
         },
         {
           "component_name": "Animated",
-          "args": []
+          "args": [
+            "assets\\idle_left.png",
+            "assets\\idle_right.png",
+            "assets\\walk_left.png",
+            "assets\\walk_right.png",
+            "assets\\jump_left.png",
+            "assets\\jump_right.png"
+          ]
         }
       ]
     },
@@ -110,9 +113,151 @@
             0,
             0
           ]
+        }
+      ]
+    },
+    {
+      "name": "floor1",
+      "class": "ExampleEntity",
+      "args": [
+        0
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "-128",
+            "47"
+          ]
         },
         {
-          "component_name": "Animated",
+          "component_name": "Sprite",
+          "args": [
+            "assets\\ground.png",
+            "Foreground",
+            "0",
+            "4",
+            "0",
+            "0",
+            "61",
+            "1"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wall1",
+      "class": "ExampleEntity",
+      "args": [
+        0
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "82",
+            "-10"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets\\ground.png",
+            "Foreground",
+            "0",
+            "4",
+            "0",
+            "0",
+            "1",
+            "4"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wall2",
+      "class": "ExampleEntity",
+      "args": [
+        0
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "184",
+            "-11"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets\\ground.png",
+            "Foreground",
+            "0",
+            "4",
+            "0",
+            "0",
+            "1",
+            "4"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "enemy",
+      "class": "Enemy",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "101",
+            0
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets\\red_ground.png",
+            "Foreground",
+            0,
+            0,
+            0,
+            0,
+            "1",
+            "1"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            false
+          ]
+        },
+        {
+          "component_name": "Platformer",
+          "args": []
+        },
+        {
+          "component_name": "PlayerDamange",
           "args": []
         }
       ]

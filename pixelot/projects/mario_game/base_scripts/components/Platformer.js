@@ -21,7 +21,7 @@ export default class Platformer extends engine.Component {
     }
 
     jump() {
-        this.dy = -0.5;
+        this.dy = -1;
     }
 
     move(x) {
@@ -29,9 +29,9 @@ export default class Platformer extends engine.Component {
     }
 
     update() {
-        this.updatePos();
         this.dy += this.gravity;
-        this.dy = Math.max(this.dy, 0.3);
+        this.dy = Math.min(this.dy, 3);
+        this.updatePos();
     }
 
     updatePos() {

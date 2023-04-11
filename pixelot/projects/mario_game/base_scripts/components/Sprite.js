@@ -24,6 +24,12 @@ export default class Sprite extends engine.Component {
         this.anchor = { x: anchorX, y: anchorY };
         this.sizeMult = { x: widthMult, y: heightMult };
     }
+
+    setTex(tex_path) {
+        tex_path = engine.PathUtils.assetPath(tex_path);
+        this.tex = engine.Renderer.loadTexture(tex_path);
+    }
+
     onCreate() {
         const layer = engine.Renderer.getLayer(this.lr, this.owner.scene);
         if (layer && layer instanceof engine.SpriteLayer)
