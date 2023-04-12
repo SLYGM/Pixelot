@@ -182,9 +182,9 @@ export class SceneManager {
     /**
      * Updates the current scene only
      */
-    static update() {
+    static update(dt: number) {
         if (this.currentScene) {
-            this.currentScene.update();
+            this.currentScene.update(dt);
         }
     }
 

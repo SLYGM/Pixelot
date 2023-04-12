@@ -102,7 +102,7 @@ export abstract class GameObjectBase {
     /**
      * User-defined function that is called every frame.
      */
-    abstract update(): void;
+    abstract update(dt: number): void;
 
     /**
      * Add a new component to the entity.

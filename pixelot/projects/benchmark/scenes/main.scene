@@ -1,0 +1,140 @@
+{
+  "name": "main",
+  "entities": [
+    {
+      "name": "ball1",
+      "class": "Ball",
+      "args": [
+        "1",
+        false
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "100",
+            0
+          ]
+        },
+        {
+          "component_name": "Velocity",
+          "args": [
+            "-1",
+            0
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/ball.png",
+            "Main",
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "Collider",
+          "args": [
+            "10"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ball2",
+      "class": "Ball",
+      "args": [
+        "1",
+        false
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            0,
+            "3"
+          ]
+        },
+        {
+          "component_name": "Velocity",
+          "args": [
+            "1",
+            0
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/ball.png",
+            "Main",
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "Collider",
+          "args": [
+            "10"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ball spawner",
+      "class": "BallSpawner",
+      "args": [
+        "100"
+      ],
+      "components": []
+    },
+    {
+      "name": "fps display",
+      "class": "FpsDisplay",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "",
+            "UI",
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "Text",
+          "args": [
+            "FPS",
+            "default",
+            "1",
+            "true"
+          ]
+        }
+      ]
+    }
+  ],
+  "layers": [
+    {
+      "name": "Main",
+      "type": "sprite"
+    },
+    {
+      "name": "UI",
+      "type": "sprite"
+    }
+  ],
+  "systems": []
+}
