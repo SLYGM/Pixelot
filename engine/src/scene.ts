@@ -179,7 +179,7 @@ export class Scene {
     update(dt: number) {
         // Run all systems
         for (const system_node of this.systems) {
-            system_node.system.update(system_node.entities);
+            system_node.system.update(system_node.entities, dt);
         }
 
         // Run all entity update functions

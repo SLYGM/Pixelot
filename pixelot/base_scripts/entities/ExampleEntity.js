@@ -6,18 +6,18 @@ export default class ExampleEntity extends engine.GameObjectBase {
         this.speed = speed;
     }
 
-    update() {
+    update(dt) {
         if (engine.KeyStates.isPressed("a")) {
-            this.Position.x -= this.speed;
+            this.Position.x -= this.speed * dt;
         }
         if (engine.KeyStates.isPressed("d")) {
-            this.Position.x += this.speed;
+            this.Position.x += this.speed * dt;
         }
         if (engine.KeyStates.isPressed("w")) {
-            this.Position.y -= this.speed;
+            this.Position.y -= this.speed * dt;
         }
         if (engine.KeyStates.isPressed("s")) {
-            this.Position.y += this.speed;
+            this.Position.y += this.speed * dt;
         }
     }
 }

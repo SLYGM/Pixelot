@@ -1,1 +1,1 @@
-{"name":"ball","class":"Ball","args":["1",false],"components":[{"component_name":"Position","args":[0,"3"]},{"component_name":"Velocity","args":["1",0]},{"component_name":"Sprite","args":["assets/ball.png","Main",0,0,0,0]},{"component_name":"Collider","args":["5"]}]}
+{"name":"test","class":"Ball","args":["100"],"components":[{"component_name":"Position","args":["0","3"]},{"component_name":"Velocity","args":["1","0"]},{"component_name":"Sprite","args":["assets/ball.png","Main","0","0","0","0"]},{"component_name":"Collider","args":["5"]}]}

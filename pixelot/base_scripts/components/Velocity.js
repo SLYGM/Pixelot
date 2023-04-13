@@ -1,4 +1,3 @@
-// import * as engine from 'retro-engine';
 export default class Velocity extends engine.Component {
     static arg_names = ["x", "y"];
     static arg_types = [engine.Types.Number, engine.Types.Number];
