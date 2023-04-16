@@ -11,11 +11,12 @@ export default class BallSpawner extends engine.GameObjectBase {
   onCreate(amount, spawn_time) {
     self.amount = amount;
     self.spawned = false;
+    self.spawn_time = spawn_time;
     self.spawn_timer = spawn_time;
   }
 
   // The update() method is called every frame.
-  update() {
+  update(dt) {
     if (!self.spawned) {
       for (let i = 0; i < self.amount; i++) {
         engine.SceneManager.currentScene.spawnPrefab("ball", [100], "ball");
@@ -24,10 +25,16 @@ export default class BallSpawner extends engine.GameObjectBase {
       let entities = engine.SceneManager.currentScene.getEntitiesWithComponent(Position);
       for (let i = 0; i < entities.length; i++) {
         let entity = entities[i];
-        entity.Position.x = Math.random() * 200;
-        entity.Position.y = Math.random() * 100;
+        entity.Position.x = Math.random() * 426;
+        entity.Position.y = Math.random() * 240;
       }
       self.spawned = true;
+    }
+
+    self.spawn_timer -= dt;
+    if (self.spawn_timer <= 0) {
+      engine.SceneManager.currentScene.spawnPrefab("temp_ball", [100], "ball");
+      self.spawn_timer = self.spawn_time;
     }
   }
 }
