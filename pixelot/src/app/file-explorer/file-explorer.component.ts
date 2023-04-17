@@ -183,7 +183,7 @@ export class FileExplorerComponent {
       }
 
       // The update() method is called every frame.
-      update() {
+      update(dt) {
 
       }
     }
@@ -215,7 +215,7 @@ export class FileExplorerComponent {
 
       // The update method is called every frame. 
       // The entities parameter is an array of all the entities that have the component that this system operates on.
-      update(entities) {
+      update(entities, dt) {
 
       }
     }

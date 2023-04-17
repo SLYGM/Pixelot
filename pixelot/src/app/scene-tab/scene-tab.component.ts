@@ -100,6 +100,7 @@ export class SceneTabComponent {
     engine.Game.render_only = true;
     // reload the current scene
     engine.SceneManager.switchToScene(this.sceneName);
+    this.scene = engine.SceneManager.currentScene;
     // since the selected entity is recreated, we need to refresh the sidebar
     this.rightSidebar.update();
   }
