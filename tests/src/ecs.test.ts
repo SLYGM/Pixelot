@@ -10,8 +10,8 @@ test("Game Object Functionality", () => {
 
     const testEntity: any = new TestEntity("test");
     scene.addEntity(testEntity);
-    scene.update();
-    scene.update();
+    scene.update(0);
+    scene.update(0);
 
     expect(testEntity.counter).toBe(2);
     expect(testEntity.onCreateRun).toBe(true);
@@ -29,8 +29,8 @@ test("Un-named Entities", () => {
     scene.addEntity(testEntity1);
     scene.addEntity(testEntity2);
     scene.addEntity(testEntity3);
-    scene.update();
-    scene.update();
+    scene.update(0);
+    scene.update(0);
 
     expect(testEntity1.counter).toBe(2);
     expect(testEntity1.onCreateRun).toBe(true);
@@ -51,8 +51,8 @@ test("System Functionality", () => {
     testEntity.add(new Counter());
     scene.addEntity(testEntity);
     scene.addSystem(new CounterIncrement(), 0);
-    scene.update();
-    scene.update();
+    scene.update(0);
+    scene.update(0);
 
     expect(testEntity.counter).toBe(2);
     expect(testEntity.getByName("Counter").counter).toBe(2);
@@ -83,10 +83,32 @@ test("Component Dependencies", () => {
     testEntity.add(new DependencyTest());
     scene.addEntity(testEntity);
     scene.addSystem(new CounterIncrement(), 0);
-    scene.update();
-    scene.update();
+    scene.update(0);
+    scene.update(0);
 
     expect(testEntity.hasAll([Counter, DependencyTest])).toBe(true);
     expect(testEntity.counter).toBe(2);
     expect(testEntity.get(Counter).counter).toBe(2);
+});
+
+test("Entity delta time", () => {
+    const scene = new Scene("");
+
+    const testEntity: any = new TestEntity("test");
+    scene.addEntity(testEntity);
+    scene.update(0.5);
+
+    expect(testEntity.dt).toBe(0.5);
+});
+
+test("System delta time", () => {
+    const scene = new Scene("");
+
+    const testEntity: any = new TestEntity("test");
+    testEntity.add(new Counter());
+    scene.addEntity(testEntity);
+    scene.addSystem(new CounterIncrement(), 0);
+    scene.update(0.5);
+
+    expect(testEntity.Counter.system_dt).toBe(0.5);
 });

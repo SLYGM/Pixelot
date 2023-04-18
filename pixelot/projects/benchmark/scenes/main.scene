@@ -1,0 +1,93 @@
+{
+  "name": "main",
+  "entities": [
+    {
+      "name": "ball spawner",
+      "class": "BallSpawner",
+      "args": [
+        "100",
+        "0.2"
+      ],
+      "components": []
+    },
+    {
+      "name": "fps display",
+      "class": "FpsDisplay",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "",
+            "UI",
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "Text",
+          "args": [
+            "FPS",
+            "default",
+            "1",
+            "true"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ball count display",
+      "class": "BallCountDisplay",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            0,
+            "10"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "",
+            "UI",
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "Text",
+          "args": [
+            "Balls",
+            "default",
+            "1",
+            "true"
+          ]
+        }
+      ]
+    }
+  ],
+  "layers": [
+    {
+      "name": "Main",
+      "type": "sprite"
+    },
+    {
+      "name": "UI",
+      "type": "sprite"
+    }
+  ],
+  "systems": []
+}

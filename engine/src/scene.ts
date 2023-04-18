@@ -176,18 +176,15 @@ export class Scene {
     }
 
     // Perform all the updates for the current frame
-    update() {
-        // TODO: Calculate dt properly. For now its just 1.
-        this.dt = 1;
-
+    update(dt: number) {
         // Run all systems
         for (const system_node of this.systems) {
-            system_node.system.update(system_node.entities);
+            system_node.system.update(system_node.entities, dt);
         }
 
         // Run all entity update functions
         for (const entity of this.entities) {
-            entity.update();
+            entity.update(dt);
         }
     }
 }
