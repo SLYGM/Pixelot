@@ -25,6 +25,15 @@
   border: 2px dashed #ccc;
 }
 
+#left-sidebar-tabs {
+  max-height: 100%;
+}
+
+#left-sidebar {
+  height: 100%;
+  overflow-y: auto;
+}
+
 #left-sidebar-resizer {
   position: absolute;
   top: 0;
