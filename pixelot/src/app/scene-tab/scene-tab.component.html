@@ -2,11 +2,11 @@
 <div class="scene-tab">
   <app-left-sidebar [scene]="scene" [layerNames]="layerNames" (entitySelected)="handleEntitySelected($event)"></app-left-sidebar>
   <div class="center-wrapper">
-    <div class="scene-toolbar">
-      <button mat-icon-button aria-label="Stop" (click)="stopScene()"><mat-icon>stop</mat-icon></button>
-      <button mat-icon-button aria-label="Play" (click)="playScene()"><mat-icon>play_arrow</mat-icon></button>
-    </div>
     <div class="canvas-wrapper">
+      <div class="scene-toolbar">
+        <button mat-icon-button aria-label="Stop" (click)="stopScene()"><mat-icon>stop</mat-icon></button>
+        <button mat-icon-button aria-label="Play" (click)="playScene()"><mat-icon>play_arrow</mat-icon></button>
+      </div>
       <canvas id="canvas" (mousedown) = "handleMouseDown($event)" (mouseup) = "handleMouseUp($event)"></canvas>
     </div>
     <app-file-manager></app-file-manager>

@@ -1,5 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { BuildDialogueComponent } from 'app/build-dialogue/build-dialogue.component';
 import { NewProjectDialogComponent } from 'app/new-project-dialog/new-project-dialog.component';
 import { OpenProjectDialogComponent } from 'app/open-project-dialog/open-project-dialog.component';
@@ -14,7 +15,7 @@ import * as engine from 'retro-engine';
 
 export class ToolbarComponent {
 
-  constructor(public dialog: MatDialog, private zone: NgZone) {
+  constructor(public dialog: MatDialog, private zone: NgZone, private router: Router) {
     let nw = window.nw;
     if (nw) {
       let menu = new nw.Menu({ type: 'menubar' });
@@ -36,15 +37,15 @@ export class ToolbarComponent {
           });
         }
       }));
-      file.append(new nw.MenuItem({ label: 'Save' }));
-      file.append(new nw.MenuItem({ label: 'Save As' }));
+      file.append(new nw.MenuItem({
+        label: 'Close Project',
+        click: () => {
+          this.zone.run(() => {
+            this.router.navigate(['/']);
+          });
+        }
+      }));
       menu.append(new nw.MenuItem({ label: 'File', submenu: file }));
-
-      let edit = new nw.Menu();
-      edit.append(new nw.MenuItem({ label: 'Undo' }));
-      edit.append(new nw.MenuItem({ label: 'Redo' }));
-      edit.append(new nw.MenuItem({ label: 'Preferences' }));
-      menu.append(new nw.MenuItem({ label: 'Edit', submenu: edit }));
 
       let game = new nw.Menu();
       game.append(new nw.MenuItem({
@@ -69,8 +70,25 @@ export class ToolbarComponent {
       }));
       menu.append(new nw.MenuItem({ label: 'Game', submenu: game }));
 
+      const open = nw.require('open');
+
       let help = new nw.Menu();
-      help.append(new nw.MenuItem({ label: 'About' }));
+      help.append(new nw.MenuItem({
+        label: 'Open Documentation',
+        click: () => {
+          open('https://github.com/SLYGM/RetroEngineTM/blob/master/docs/modules.md');
+        }
+      }));
+      help.append(new nw.MenuItem({
+        label: 'Open GitHub Repository',
+        click: () => {
+          open('https://github.com/SLYGM/RetroEngineTM/');
+        }
+      }));
+      help.append(new nw.MenuItem({
+        label: 'Version: ' + nw.App.manifest.version,
+        enabled: false
+      }));
       menu.append(new nw.MenuItem({ label: 'Help', submenu: help }));
 
       nw.Window.get().menu = menu;
