@@ -7,10 +7,6 @@
   "start_scene": "test_scene",
   "shaders": [
     {
-      "name": "TestHalfScreenShader",
-      "args": []
-    },
-    {
       "name": "BarShader",
       "args": []
     },
@@ -19,6 +15,10 @@
       "args": [
         0
       ]
+    },
+    {
+      "name": "TestHalfScreenShader",
+      "args": []
     }
   ]
 }

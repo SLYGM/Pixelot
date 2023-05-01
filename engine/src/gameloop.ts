@@ -77,16 +77,9 @@ export class Game {
         const game_data = JSON.parse(data.toString());
     
         Renderer.setResolution(game_data["resolution"][0], game_data["resolution"][1]);
-        this.loadTextures(game_data["textures"]);
         this.loadShaders(game_data["shaders"]);
 
         this.start_scene = game_data["start_scene"];
-    }
-    
-    private static loadTextures(textures: {name: string, path: string}[]) {
-        for (const texture of textures) {
-            Renderer.loadTextureWithAlias(texture.path, texture.name);
-        }
     }
     
     private static loadShaders(shaders: {name: string, args: any[]}[]) {
