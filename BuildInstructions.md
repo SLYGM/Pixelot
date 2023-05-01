@@ -1,10 +1,11 @@
 # Building Pixelot
+> Note that these instructions are only necessary for development work on Pixelot, to install the current version of Pixelot, do so from [here](https://github.com/SLYGM/RetroEngineTM/releases/tag/Release).
 ## Building the Runners
-1. Within `runners\` run `npm run build-prod`
+1. Within `runner\` run `npm run build-prod`
 2. Then run `npm run dist:<target>` where `<target>` is one of `windows`, `mac`, or `linux` (or just `npm run dist` to build all three)
-3. Within `runners\dist\` you will find the distributable files for each target
-4. Within `runners\dist\<target>` find the reference in `package.json` to the engine library and correct the relative path to point to the `engine` directory
-5. Now run `npm run install` within `runners\dist\<target>`
+3. Within `runner\dist\` you will find the distributable files for each target
+4. Within `runner\dist\<target>` find the reference in `package.json` to the engine library and correct the relative path to point to the `engine` directory
+5. Now run `npm run install` within `runner\dist\<target>`
 6. Delete the `game` folder within the runner (this will be created by the engine when building)
 7. Finally, copy the built runner to `pixelot\runners\<target>` and rename the folder to 'Windows', 'Linux', or 'Mac'  
    Your `pixelot` directory should now look like (if you only want to build to Windows, the other folders aren't necessary):

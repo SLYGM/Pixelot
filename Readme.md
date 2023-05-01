@@ -1,5 +1,7 @@
 # [Engine Documentation](docs/modules.md)
 
+# [Download Pixelot](https://github.com/SLYGM/RetroEngineTM/releases/tag/Release)
+
 # Pixelot
 Pixelot is an ECS-based 2D game engine designed to streamline the creation of retro-styled games, through pixel-perfect rendering and provided retro-style shaders.
 
