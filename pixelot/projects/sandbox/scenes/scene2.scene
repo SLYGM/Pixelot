@@ -1,0 +1,155 @@
+{
+  "name": "scene2",
+  "entities": [
+    {
+      "name": "player",
+      "class": "PlatformerController",
+      "args": [
+        "100",
+        "200",
+        "10"
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "50",
+            "50"
+          ]
+        },
+        {
+          "component_name": "Velocity",
+          "args": [
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/idle_right.png",
+            "foreground",
+            0,
+            0,
+            "0",
+            "0"
+          ]
+        },
+        {
+          "component_name": "PlatformerAnimation",
+          "args": [
+            "assets/idle_left.png",
+            "assets/idle_right.png",
+            "assets/walk_left.png",
+            "assets/walk_right.png",
+            "assets/jump_left.png",
+            "assets/jump_right.png"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "platform",
+      "class": "Default",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "223",
+            "90"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/platform.png",
+            "background",
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        },
+        {
+          "component_name": "Position",
+          "args": [
+            "50",
+            "100"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/platform.png",
+            "background",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "platform 2",
+      "class": "Default",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "50",
+            "200"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/platform.png",
+            "background",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        }
+      ]
+    }
+  ],
+  "layers": [
+    {
+      "name": "background",
+      "type": "sprite"
+    },
+    {
+      "name": "foreground",
+      "type": "sprite"
+    }
+  ],
+  "systems": []
+}

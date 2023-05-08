@@ -1,0 +1,214 @@
+{
+  "name": "main",
+  "entities": [
+    {
+      "name": "player",
+      "class": "RPGController",
+      "args": [
+        "50"
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "20",
+            "100"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/idle_right.png",
+            "foreground",
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "Velocity",
+          "args": [
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "CoinCollector",
+          "args": [
+            "10"
+          ]
+        },
+        {
+          "component_name": "Health",
+          "args": [
+            "1",
+            "5"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Score display",
+      "class": "ScoreDisplay",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "5",
+            "20"
+          ]
+        },
+        {
+          "component_name": "Text",
+          "args": [
+            "score",
+            "default",
+            "2",
+            "true"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "coin",
+      "class": "Default",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "66",
+            "42"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/coin1.png",
+            "foreground",
+            0,
+            "2",
+            "0.5",
+            "0.5"
+          ]
+        },
+        {
+          "component_name": "Coin",
+          "args": [
+            "10",
+            "100"
+          ]
+        },
+        {
+          "component_name": "Animation",
+          "args": [
+            "assets/coin1.png",
+            "assets/coin2.png",
+            "assets/coin3.png",
+            "assets/coin2.png",
+            "0.2"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FPS display",
+      "class": "FpsDisplay",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "5",
+            "10"
+          ]
+        },
+        {
+          "component_name": "Text",
+          "args": [
+            "fps",
+            "default",
+            "1",
+            "true"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ball",
+      "class": "Ball",
+      "args": [
+        "50"
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "10",
+            "11"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/ball.png",
+            "foreground",
+            "1",
+            0,
+            "0.5",
+            "0.5"
+          ]
+        },
+        {
+          "component_name": "Collider",
+          "args": [
+            "8"
+          ]
+        },
+        {
+          "component_name": "Velocity",
+          "args": [
+            "50",
+            "50"
+          ]
+        },
+        {
+          "component_name": "Deadly",
+          "args": [
+            "8"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ball spawner",
+      "class": "BallSpawner",
+      "args": [
+        "10",
+        0
+      ],
+      "components": []
+    }
+  ],
+  "layers": [
+    {
+      "name": "tilemap",
+      "type": "tilemap",
+      "source": "tilemap.json"
+    },
+    {
+      "name": "foreground",
+      "type": "sprite"
+    }
+  ],
+  "systems": [
+    {
+      "name": "Gravity",
+      "args": [
+        "10"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "resolution": [
+    426,
+    240
+  ],
+  "start_scene": "main",
+  "shaders": [
+    {
+      "name": "BarShader",
+      "args": []
+    },
+    {
+      "name": "BarrelShader",
+      "args": []
+    }
+  ]
+}

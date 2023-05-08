@@ -1,0 +1,1 @@
+{"name":"platform","class":"Default","args":[],"components":[{"component_name":"Position","args":["50","100"]},{"component_name":"Sprite","args":["assets/platform.png","background",0,0,0,0]},{"component_name":"BoxCollider","args":["true"]}]}
