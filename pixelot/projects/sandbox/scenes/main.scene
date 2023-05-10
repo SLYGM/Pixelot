@@ -5,7 +5,7 @@
       "name": "player",
       "class": "RPGController",
       "args": [
-        "50"
+        "70"
       ],
       "components": [
         {
@@ -184,12 +184,48 @@
     },
     {
       "name": "ball spawner",
-      "class": "BallSpawner",
+      "class": "Spawner",
       "args": [
+        "ball",
         "10",
-        0
+        "true",
+        "10"
       ],
       "components": []
+    },
+    {
+      "name": "coin spawner",
+      "class": "Spawner",
+      "args": [
+        "coin",
+        0,
+        "true",
+        "2"
+      ],
+      "components": []
+    },
+    {
+      "name": "game over text",
+      "class": "Default",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "97",
+            "100"
+          ]
+        },
+        {
+          "component_name": "Text",
+          "args": [
+            "game over",
+            "default",
+            "3",
+            "false"
+          ]
+        }
+      ]
     }
   ],
   "layers": [

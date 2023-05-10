@@ -22,6 +22,10 @@ export default class Deadly extends engine.System {
                     entity.scene.deleteEntity(entity);
                     if (entity2.Health.hp <= 0) {
                         entity2.scene.deleteEntity(entity2);
+                        let text = engine.SceneManager.currentScene.getEntity("game over text");
+                        if (text) {
+                            text.Text.visible = true;
+                        }
                     }
                 }
             });

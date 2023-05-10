@@ -14,7 +14,7 @@ export default class Collider extends engine.System {
     for (let i = 0; i < entities.length; i++) {
       let entity1 = entities[i];
       // Check for collisions with walls
-      if (entity1.Position.x + entity1.Collider.radius >= 426) {
+      if (entity1.Position.x + entity1.Collider.radius >= 410) {
         // Collided with right wall
         if (entity1.Velocity.x > 0) {
           entity1.Velocity.x *= -1;
@@ -25,7 +25,7 @@ export default class Collider extends engine.System {
           entity1.Velocity.x *= -1;
         }
       }
-      if (entity1.Position.y + entity1.Collider.radius >= 240) {
+      if (entity1.Position.y + entity1.Collider.radius >= 200) {
         // Collided with bottom wall
         if (entity1.Velocity.y > 0) {
           entity1.Velocity.y *= -1;
@@ -50,12 +50,12 @@ export default class Collider extends engine.System {
           entity1.Velocity.x = entity1.Position.x - entity2.Position.x;
           entity1.Velocity.y = entity1.Position.y - entity2.Position.y;
           entity1.Velocity.normalize();
-          entity1.Velocity.multiply(entity1.speed);
+          entity1.Velocity.multiply(entity1.speed? entity1.speed : 30);
 
           entity2.Velocity.x = entity2.Position.x - entity1.Position.x;
           entity2.Velocity.y = entity2.Position.y - entity1.Position.y;
           entity2.Velocity.normalize();
-          entity2.Velocity.multiply(entity2.speed);
+          entity2.Velocity.multiply(entity2.speed? entity2.speed : 30);
         }
       }
     }
