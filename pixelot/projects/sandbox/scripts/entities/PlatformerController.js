@@ -72,7 +72,6 @@ export default class PlatformerController extends engine.GameObjectBase {
                 this.dx = x;
             }
             newV = { x: v1.x, y: v1.y + y, w: v1.w, h: v1.h }; //create new estimated position based on changes
-            console.log(y);
             if (box.checkCollision(newV, v2)) {
                 if (y > 0)
                     y = Math.max(v2.y - (v1.y + v1.h), 0);

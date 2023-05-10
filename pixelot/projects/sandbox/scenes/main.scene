@@ -110,6 +110,14 @@
             "assets/coin2.png",
             "0.2"
           ]
+        },
+        {
+          "component_name": "Oscillate",
+          "args": [
+            "7",
+            "2",
+            "false"
+          ]
         }
       ]
     },
@@ -140,7 +148,7 @@
       "name": "ball",
       "class": "Ball",
       "args": [
-        "50"
+        "100"
       ],
       "components": [
         {
@@ -164,7 +172,7 @@
         {
           "component_name": "Collider",
           "args": [
-            "8"
+            "4"
           ]
         },
         {
@@ -186,7 +194,7 @@
       "name": "ball spawner",
       "class": "Spawner",
       "args": [
-        "ball",
+        "spikeball",
         "10",
         "true",
         "10"
@@ -223,6 +231,71 @@
             "default",
             "3",
             "false"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "player 2",
+      "class": "PlatformerController",
+      "args": [
+        "50",
+        "20",
+        0
+      ],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "50",
+            "50"
+          ]
+        },
+        {
+          "component_name": "Velocity",
+          "args": [
+            "0",
+            "0"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/idle_right.png",
+            "foreground",
+            "0",
+            "0",
+            "0.5",
+            "0.5"
+          ]
+        },
+        {
+          "component_name": "PlatformerAnimation",
+          "args": [
+            "assets/idle_left.png",
+            "assets/idle_right.png",
+            "assets/walk_left.png",
+            "assets/walk_right.png",
+            "assets/jump_left.png",
+            "assets/jump_right.png"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        },
+        {
+          "component_name": "CoinCollector",
+          "args": [
+            0
+          ]
+        },
+        {
+          "component_name": "Spin",
+          "args": [
+            "10"
           ]
         }
       ]

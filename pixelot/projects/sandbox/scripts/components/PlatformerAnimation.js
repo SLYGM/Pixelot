@@ -98,18 +98,18 @@ export default class PlatformerAnimation extends engine.Component {
     }
 
     setAnimation(animation) {
-        console.log("setAnimation", animation);
+        // console.log("setAnimation", animation);
         if (this.animation === animation) return;
         const sprite = this.owner.get(Sprite);
         const anim = this.animations[animation];
-        console.log("setAnimation", animation, anim)
+        // console.log("setAnimation", animation, anim)
         if (anim === undefined) return;
         if (anim.source === null) return;
         this.animation = animation;
         sprite.setTex(anim.source);
         const texInfo = sprite.tex;
         this.updateFrameDetails();
-        console.log("setAnimation", animation, texInfo, this.frame_width, this.frame_height, this.frame);
+        // console.log("setAnimation", animation, texInfo, this.frame_width, this.frame_height, this.frame);
         this.frame = 0;
         this.frame_timer = 0;
     }

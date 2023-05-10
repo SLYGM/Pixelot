@@ -51,6 +51,16 @@
           "args": [
             "true"
           ]
+        },
+        {
+          "component_name": "CameraFollow",
+          "args": []
+        },
+        {
+          "component_name": "CoinCollector",
+          "args": [
+            "8"
+          ]
         }
       ]
     },
@@ -117,8 +127,8 @@
         {
           "component_name": "Position",
           "args": [
-            "50",
-            "200"
+            "200",
+            "110"
           ]
         },
         {
@@ -136,6 +146,95 @@
           "component_name": "BoxCollider",
           "args": [
             "true"
+          ]
+        },
+        {
+          "component_name": "Oscillate",
+          "args": [
+            "0.5",
+            "0.5",
+            "true"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "platform 3",
+      "class": "Default",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "350",
+            "90"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/platform.png",
+            "background",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "coin",
+      "class": "Default",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "400",
+            "42"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/coin1.png",
+            "foreground",
+            "0",
+            "2",
+            "0.5",
+            "0.5"
+          ]
+        },
+        {
+          "component_name": "Coin",
+          "args": [
+            "10",
+            "100"
+          ]
+        },
+        {
+          "component_name": "Animation",
+          "args": [
+            "assets/coin1.png",
+            "assets/coin2.png",
+            "assets/coin3.png",
+            "assets/coin2.png",
+            "0.2"
+          ]
+        },
+        {
+          "component_name": "Oscillate",
+          "args": [
+            "1",
+            "0.2",
+            false
           ]
         }
       ]
