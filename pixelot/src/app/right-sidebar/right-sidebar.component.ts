@@ -85,14 +85,20 @@ export class RightSidebarComponent {
               default_args.push(false);
             }
           }
-          // Add to scene JSON
-          this.sceneData.addComponent(this.currentSceneName, this.entityName, result, default_args);
           // Add to entity
           const comp_args = component_constr.parseArgs(default_args);
           const new_component = new component_constr.constr(...comp_args);
-          this.entity.add(new_component);
-          // Save changes to file
-          this.sceneData.saveScene(this.currentSceneName);
+          try {
+            this.entity.add(new_component);
+            // Add to scene JSON
+            this.sceneData.addComponent(this.currentSceneName, this.entityName, result, default_args);
+            // Save changes to file
+            this.sceneData.saveScene(this.currentSceneName);
+          } catch (error) {
+            this._snackBar.open(error.message, 'Close', {
+              duration: 2000,
+            });
+          }
         }
       }
     });
@@ -136,7 +142,7 @@ export class RightSidebarComponent {
     // trim the path to be relative to the project directory
     const project_dir = path.join(nw.App.startPath, 'projects', engine.Game.project_name);
     const relative_path = path.relative(project_dir, file_path);
-    
+
     // check if the file is in the project directory
     if (relative_path.startsWith('..')) {
       this._snackBar.open('File must be in project directory', 'Close', {

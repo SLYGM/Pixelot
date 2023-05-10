@@ -96,12 +96,20 @@ export class Scene {
         }
     }
 
-    // Spawn an instance of a prefab into the scene
-    spawnPrefab(prefab_name: string, args: any[], name?: string) {
+    /**
+     * Spawn a new instance of the given prefab in the scene.
+     *
+     * @param prefab_name The name of the prefab to spawn.
+     * @param args The arguments to pass to the prefab's constructor.
+     * @param name The name of the new entity.
+     * @returns The spawned entity.
+     */
+    spawnPrefab(prefab_name: string, args: any[], name?: string): GameObjectBase {
         const entity = PrefabFactory.create(prefab_name, name);
         if (entity) {
             this.addEntity(entity, args);
         }
+        return entity;
     }
 
     // Get the entity with the given name
