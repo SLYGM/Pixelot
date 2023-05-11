@@ -187,6 +187,16 @@
           "args": [
             "8"
           ]
+        },
+        {
+          "component_name": "Drag",
+          "args": [
+            "0.2"
+          ]
+        },
+        {
+          "component_name": "Gravity",
+          "args": []
         }
       ]
     },
@@ -316,7 +326,14 @@
     {
       "name": "Gravity",
       "args": [
-        "10"
+        "20"
+      ]
+    },
+    {
+      "name": "Velocity",
+      "args": [
+        "0",
+        "0"
       ]
     }
   ]

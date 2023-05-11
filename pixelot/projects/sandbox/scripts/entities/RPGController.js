@@ -7,17 +7,20 @@ export default class RPGController extends engine.GameObjectBase {
     }
 
     update(dt) {
+        this.Velocity.x = 0;
+        this.Velocity.y = 0;
+        
         if (engine.KeyStates.isPressed("a")) {
-            this.Position.x -= this.speed * dt;
+            this.Velocity.x -= this.speed;
         }
         if (engine.KeyStates.isPressed("d")) {
-            this.Position.x += this.speed * dt;
+            this.Velocity.x += this.speed;
         }
         if (engine.KeyStates.isPressed("w")) {
-            this.Position.y -= this.speed * dt;
+            this.Velocity.y -= this.speed;
         }
         if (engine.KeyStates.isPressed("s")) {
-            this.Position.y += this.speed * dt;
+            this.Velocity.y += this.speed;
         }
     }
 }

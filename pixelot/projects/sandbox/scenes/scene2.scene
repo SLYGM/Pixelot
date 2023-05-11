@@ -238,6 +238,37 @@
           ]
         }
       ]
+    },
+    {
+      "name": "platform 4",
+      "class": "Default",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "100",
+            "300"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/platform.png",
+            "background",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        }
+      ]
     }
   ],
   "layers": [
@@ -250,5 +281,19 @@
       "type": "sprite"
     }
   ],
-  "systems": []
+  "systems": [
+    {
+      "name": "Gravity",
+      "args": [
+        "20"
+      ]
+    },
+    {
+      "name": "Velocity",
+      "args": [
+        "0",
+        "0"
+      ]
+    }
+  ]
 }
