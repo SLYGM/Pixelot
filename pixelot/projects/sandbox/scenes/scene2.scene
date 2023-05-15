@@ -236,6 +236,13 @@
             "0.2",
             false
           ]
+        },
+        {
+          "component_name": "Velocity",
+          "args": [
+            0,
+            0
+          ]
         }
       ]
     },
@@ -248,7 +255,38 @@
           "component_name": "Position",
           "args": [
             "100",
-            "300"
+            "200"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/platform.png",
+            "background",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "platform5",
+      "class": "Default",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "-100",
+            "150"
           ]
         },
         {
@@ -285,7 +323,7 @@
     {
       "name": "Gravity",
       "args": [
-        "20"
+        "40"
       ]
     },
     {

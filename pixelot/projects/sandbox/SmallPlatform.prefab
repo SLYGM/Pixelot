@@ -1,0 +1,1 @@
+{"name":"SmallPlatform","class":"Default","args":[],"components":[{"component_name":"Position","args":["100","200"]},{"component_name":"Sprite","args":["assets/platform.png","platforms",0,0,0,0]},{"component_name":"BoxCollider","args":["true"]}]}

@@ -48,7 +48,7 @@ export default class PlatformerController extends engine.GameObjectBase {
     updatePos() {
         let x = this.dx;
         let y = this.dy;
-        const box = this.get(BoxCollider);
+        const box = this.BoxCollider;
         const v1 = box.getValues();
         let newV = { x: v1.x + x, y: v1.y + y, w: v1.w, h: v1.h }
 

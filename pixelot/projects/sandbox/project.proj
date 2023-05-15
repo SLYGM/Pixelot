@@ -6,11 +6,11 @@
   "start_scene": "main",
   "shaders": [
     {
-      "name": "BarShader",
+      "name": "BarrelShader",
       "args": []
     },
     {
-      "name": "BarrelShader",
+      "name": "BarShader",
       "args": []
     }
   ]

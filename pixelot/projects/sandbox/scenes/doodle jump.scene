@@ -1,0 +1,157 @@
+{
+  "name": "doodle jump",
+  "entities": [
+    {
+      "name": "PlatformSpawner",
+      "class": "PlatformSpawner",
+      "args": [
+        "100"
+      ],
+      "components": []
+    },
+    {
+      "name": "SmallPlatform",
+      "class": "Default",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "100",
+            "200"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/platform.png",
+            "platforms",
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "jim",
+      "class": "Default",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "200",
+            "100"
+          ]
+        },
+        {
+          "component_name": "Velocity",
+          "args": [
+            0,
+            "1"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/spikeyball.png",
+            "entities",
+            "0",
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "Gravity",
+          "args": []
+        },
+        {
+          "component_name": "JimMove",
+          "args": [
+            0,
+            0
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            false
+          ]
+        },
+        {
+          "component_name": "CameraFollow",
+          "args": []
+        }
+      ]
+    },
+    {
+      "name": "SmallPlatform2",
+      "class": "Default",
+      "args": [],
+      "components": [
+        {
+          "component_name": "Position",
+          "args": [
+            "100",
+            "50"
+          ]
+        },
+        {
+          "component_name": "Sprite",
+          "args": [
+            "assets/platform.png",
+            "platforms",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "component_name": "BoxCollider",
+          "args": [
+            "true"
+          ]
+        }
+      ]
+    }
+  ],
+  "layers": [
+    {
+      "name": "platforms",
+      "type": "sprite"
+    },
+    {
+      "name": "entities",
+      "type": "sprite"
+    },
+    {
+      "name": "foreground",
+      "type": "sprite"
+    }
+  ],
+  "systems": [
+    {
+      "name": "Gravity",
+      "args": [
+        "1000"
+      ]
+    },
+    {
+      "name": "Velocity",
+      "args": [
+        "0",
+        "0"
+      ]
+    }
+  ]
+}
